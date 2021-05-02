@@ -46,7 +46,10 @@ drawDialog st = [ui]
     ui =
       C.vCenter $
         vBox
-          [ C.hCenter $ str "File:     " <+> hLimitPercent 75 e1,
+          [
+            C.hCenter $ str "kpxhs (GPLv3)",
+            C.hCenter $ str " ",
+            C.hCenter $ str "File:     " <+> hLimitPercent 75 e1,
             C.hCenter $ str " ",
             C.hCenter $ str "Password: " <+> hLimitPercent 75 e2,
             C.hCenter $ str " ",
