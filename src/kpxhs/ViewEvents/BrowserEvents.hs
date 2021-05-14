@@ -26,8 +26,10 @@ browserEvent =
     ( \st e ->
         case e of
           V.EvKey V.KEsc [] -> handleEsc st
-          V.EvKey V.KEnter [] | isDir st -> liftIO (enterDir st) >>= M.continue
-          V.EvKey V.KEnter [] -> liftIO (showEntry st) >>= M.continue
+          V.EvKey V.KEnter [] ->
+            if isDir st
+              then liftIO (enterDir st) >>= M.continue
+              else liftIO (showEntry st) >>= M.continue
           V.EvKey (V.KChar 'p') [] ->
             liftIO (copyEntryFromBrowser st CopyPassword) >>= M.continue
           V.EvKey (V.KChar 'u') [] ->
