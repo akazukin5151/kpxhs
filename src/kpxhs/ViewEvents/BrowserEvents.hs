@@ -104,10 +104,11 @@ goUpParent st =
     entries = fromMaybe ["Failed to get entries!"] $ maybeGetEntries st
 
 maybeGetEntries :: State -> Maybe [String]
-maybeGetEntries st = do
-  let newDir = initOrDef ["."] (st ^. currentDir)
-  let dir = dirsToStr newDir
+maybeGetEntries st =
   (st ^. allEntryNames) !? dir
+  where
+    newDir = initOrDef ["."] (st ^. currentDir)
+    dir = dirsToStr newDir
 
 showEntryTryCache :: State -> String -> IO State
 showEntryTryCache st entryname = fromMaybe def (showEntryWithCache st entryname)
