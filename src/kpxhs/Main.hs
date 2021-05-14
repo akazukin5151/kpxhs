@@ -77,13 +77,13 @@ tui = do
 parseConfig :: String -> IO (String, String, F.FocusRing Field)
 parseConfig cfgdir = do
   file <- catch (readFile cfgdir) f
-  case lines file of
+  pure $ case lines file of
     [dbdir, kfdir] | dbdir /= "" && kfdir /= "" ->
-      pure (dbdir, kfdir, passwordfirst)
+      (dbdir, kfdir, passwordfirst)
     [dbdir] | dbdir /= "" ->
-      pure (dbdir, "", passwordfirst)
+      (dbdir, "", passwordfirst)
     _ ->
-      pure ("", "", pathfirst)
+      ("", "", pathfirst)
   where
     f :: IOException -> IO String
     f _ = pure ""
