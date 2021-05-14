@@ -84,15 +84,14 @@ drawSearchBox st = str "Search: " <+> hLimitPercent 75 ed
 
 drawBrowserList :: State -> Widget Field
 drawBrowserList st =
-  let label = drawBrowserLabel st in
-      drawBorderColor st $
-        B.borderWithLabel label $
-          hLimitPercent 90 $
-            vLimitPercent 90 $
-              drawBrowserListInner st
+  st & drawBrowserListInner
+     & vLimitPercent 90
+     & hLimitPercent 90
+     & drawBrowserLabel st
+     & drawBorderColor st
 
-drawBrowserLabel :: State -> Widget Field
-drawBrowserLabel st = label
+drawBrowserLabel :: State -> Widget Field -> Widget Field
+drawBrowserLabel st = B.borderWithLabel label
   where
     label = foldr1 (<+>) $ str <$> [currentDir_, "(", cur, "/", total, ")"]
     currentDir_ = case dirsToStr $ st^.currentDir of
