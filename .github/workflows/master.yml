@@ -27,15 +27,14 @@ jobs:
       uses: actions/checkout@v2
     - name: Build
       run: stack install
-    - name: Copy binary
+    - name: Copy binary and rename
       run: |
         mkdir dist
         cp ~/.local/bin/kpxhs dist
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
+        mv dist/kpxhs dist/${{ matrix.asset_name }}_${{ github.sha }}
+    - uses: softprops/action-gh-release@v1
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: dist/kpxhs
-        asset_name: ${{ matrix.asset_name }}_${{ github.sha }}
-        tag: ${{ github.ref }}
-        release_name: master_${{ github.sha }}
+        files: dist/${{ matrix.asset_name }}_${{ github.sha }}
+        name: master_${{ github.sha }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
