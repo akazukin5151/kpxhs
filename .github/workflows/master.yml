@@ -36,5 +36,6 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: dist/kpxhs
-        asset_name: ${{ matrix.asset_name }}
+        asset_name: ${{ matrix.asset_name }}_${{ github.sha }}
         tag: ${{ github.ref }}
+        release_name: master_${{ github.sha }}
