@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - os: [ubuntu-latest]
-            experimental: [false]
+            experimental: false
             asset_name: kpxhs-linux-amd64
           - os: macos-latest
             experimental: true
