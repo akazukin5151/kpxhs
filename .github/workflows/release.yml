@@ -2,9 +2,8 @@ name: master
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    tags:
+    - '*'
 
 jobs:
   build:
@@ -24,3 +23,13 @@ jobs:
       uses: actions/checkout@v2
     - name: Build
       run: stack install
+    - name: Copy binary and rename
+      run: |
+        mkdir dist
+        cp ~/.local/bin/kpxhs dist
+        mv dist/kpxhs dist/${{ matrix.asset_name }}_${{ github.sha }}
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: dist/${{ matrix.asset_name }}_${{ github.sha }}
+        name: master_${{ github.sha }}
+        token: ${{ secrets.GITHUB_TOKEN }}
