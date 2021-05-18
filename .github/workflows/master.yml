@@ -14,10 +14,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        experimental: [false]
-        asset_name: kpxhs-linux-amd64
         include:
+          - os: [ubuntu-latest]
+            experimental: [false]
+            asset_name: kpxhs-linux-amd64
           - os: macos-latest
             experimental: true
             asset_name: kpxhs-macos-amd64
