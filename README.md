@@ -31,13 +31,19 @@
 
 \* If you want non-interactive (for scripting etc), just use keepassxc-cli directly
 
-# Requirements
+
+# Usage requirements
 - A keepass client with `keepassxc-cli` in PATH
     - I recommend [keepassxc](https://github.com/keepassxreboot/keepassxc/)
-- A Haskell compiler
-    - I recommend [Stack](https://docs.haskellstack.org/en/stable/README/)
 
-# Install with Stack
+# Installing
+
+## Install using pre-compiled binary
+
+Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page and grab the latest binary for your OS. Only UNIX (linux and macos) is supported. Binaries are compiled and uploaded using Github actions
+
+## Install from source using [Stack](https://docs.haskellstack.org/en/stable/README/)
+
 1. `git clone https://github.com/twenty5151/kpxhs`
 2. `cd kpxhs`
 3. `stack build` (compile)
