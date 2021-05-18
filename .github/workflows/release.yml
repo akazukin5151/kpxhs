@@ -27,8 +27,9 @@ jobs:
       run: |
         mkdir dist
         cp ~/.local/bin/kpxhs dist
-        mv dist/kpxhs dist/${{ matrix.asset_name }}_${{ github.sha }}
+        mv dist/kpxhs dist/${{ matrix.asset_name }}_${{ github.tag }}
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: dist/${{ matrix.asset_name }}_${{ github.sha }}
+        artifacts: dist/${{ matrix.asset_name }}_${{ github.tag }}
         token: ${{ secrets.GITHUB_TOKEN }}
+        allowUpdates: true
