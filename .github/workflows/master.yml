@@ -32,9 +32,8 @@ jobs:
         mkdir dist
         cp ~/.local/bin/kpxhs dist
         mv dist/kpxhs dist/${{ matrix.asset_name }}_${{ github.sha }}
-    - uses: softprops/action-gh-release@v1
+    - uses: ncipollo/release-action@v1
       with:
-        files: dist/${{ matrix.asset_name }}_${{ github.sha }}
+        artifacts: dist/${{ matrix.asset_name }}_${{ github.sha }}
         name: master_${{ github.sha }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
