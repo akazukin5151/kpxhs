@@ -37,3 +37,4 @@ jobs:
         artifacts: dist/${{ matrix.asset_name }}_${{ github.sha }}
         name: master_${{ github.sha }}
         token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{ github.tag }}
