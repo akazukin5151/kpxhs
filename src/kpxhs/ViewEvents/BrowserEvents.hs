@@ -166,7 +166,7 @@ handleWASD e st_ =
   where
     st = st_ & footer .~ footers st_
     -- Default page up and down functions too fast for me
-    listMovePageUp l = listMoveBy (\x -> x - 5) l
+    listMovePageUp l = listMoveBy (subtract 5) l
     listMovePageDown l = listMoveBy (5 +) l
     listMoveBy f l = L.listMoveTo clamped l
       where
