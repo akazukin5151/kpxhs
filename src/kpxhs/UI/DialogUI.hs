@@ -1,0 +1,38 @@
+module UI.DialogUI (drawDialog) where
+
+import Brick.Types (Widget)
+import qualified Brick.Widgets.Center as C
+import Brick.Widgets.Core
+  ( str,
+    vBox,
+    (<+>),
+    hLimitPercent,
+    vLimitPercent,
+  )
+
+import Types
+import Common
+import UI.Common
+
+
+drawDialog :: State -> [Widget Field]
+drawDialog st = [ui]
+  where
+    e1 = getEditor st dbPathField unlines
+    e2 = getEditor st passwordField hidePassword
+    e3 = getEditor st keyfileField unlines
+    ui =
+      C.vCenter $
+        vBox
+          [
+            C.hCenter $ str "kpxhs (GPLv3)",
+            C.hCenter $ str " ",
+            C.hCenter $ str "File:     " <+> hLimitPercent 75 e1,
+            C.hCenter $ str " ",
+            C.hCenter $ str "Password: " <+> hLimitPercent 75 e2,
+            C.hCenter $ str " ",
+            C.hCenter $ str "Keyfile:  " <+> hLimitPercent 75 e3,
+            C.hCenter $ str " ",
+            C.hCenter $ str (footers st)
+          ]
+
