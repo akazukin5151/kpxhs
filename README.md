@@ -17,6 +17,7 @@
 - Browse entries and navigate directories
 - View entry details
 - Copy entry username and password fields to clipboard
+- Clear clipboard on exit
 
 # Why
 - Keyboard friendly way of accessing your passwords
