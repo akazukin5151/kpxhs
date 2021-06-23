@@ -5,7 +5,6 @@ import System.Exit
 import Lens.Micro
 import Control.Monad.IO.Class
 import qualified Data.Map.Strict as Map
-import Graphics.Vty
 import qualified Graphics.Vty as V
 import qualified Brick.Focus as F
 import qualified Brick.Main as M
@@ -42,7 +41,7 @@ gotoBrowserSuccess st ent =
                  & allEntryNames .~ Map.singleton "." ent
                  & focusRing .~ F.focusRing [SearchField, BrowserField]
 
-handleFieldInput :: State -> Event -> Maybe Field -> T.EventM Field State
+handleFieldInput :: State -> V.Event -> Maybe Field -> T.EventM Field State
 handleFieldInput st e field =
   case field of
     Just PathField -> inner dbPathField

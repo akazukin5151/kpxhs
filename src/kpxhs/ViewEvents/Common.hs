@@ -5,7 +5,6 @@ module ViewEvents.Common where
 import System.Exit
 import Data.Maybe
 import Lens.Micro
-import Graphics.Vty
 import qualified Graphics.Vty as V
 import qualified Brick.Focus as F
 import qualified Brick.Main as M
@@ -50,7 +49,7 @@ copyTypeToStr ctype =
     CopyUsername -> "username"
     _ -> "password"
 
-commonTabEvent :: (State -> Event -> T.EventM Field (T.Next State))
+commonTabEvent :: (State -> V.Event -> T.EventM Field (T.Next State))
                -> State
                -> T.BrickEvent Field e
                -> T.EventM Field (T.Next State)

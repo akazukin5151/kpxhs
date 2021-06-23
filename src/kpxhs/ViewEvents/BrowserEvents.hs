@@ -8,7 +8,6 @@ import Lens.Micro
 import Data.Maybe
 import Data.Map.Strict ((!?))
 import qualified Data.Map.Strict as Map
-import Graphics.Vty
 import qualified Graphics.Vty as V
 import Brick.Util (clamp)
 import qualified Brick.Main as M
@@ -148,21 +147,21 @@ copyEntryFromBrowser st ctype =
       def = pure $ st & footer .~ "No entry selected!"
       f entry = copyEntryCommon st entry ctype
 
-handleWASD :: Event -> State -> State
+handleWASD :: V.Event -> State -> State
 handleWASD e st_ =
   case e of
     -- Keys from handleListEvent
-    EvKey KUp [] -> st & visibleEntries %~ L.listMoveUp
-    EvKey KDown [] -> st & visibleEntries %~ L.listMoveDown
-    EvKey KHome [] -> st & visibleEntries %~ listMoveToBeginning
-    EvKey KEnd [] -> st & visibleEntries %~ listMoveToEnd
-    EvKey KPageDown [] -> st & visibleEntries %~ listMovePageDown
-    EvKey KPageUp [] -> st & visibleEntries %~ listMovePageUp
+    V.EvKey V.KUp [] -> st & visibleEntries %~ L.listMoveUp
+    V.EvKey V.KDown [] -> st & visibleEntries %~ L.listMoveDown
+    V.EvKey V.KHome [] -> st & visibleEntries %~ listMoveToBeginning
+    V.EvKey V.KEnd [] -> st & visibleEntries %~ listMoveToEnd
+    V.EvKey V.KPageDown [] -> st & visibleEntries %~ listMovePageDown
+    V.EvKey V.KPageUp [] -> st & visibleEntries %~ listMovePageUp
     -- WASD
-    EvKey (KChar 'w') [] -> st & visibleEntries %~ L.listMoveUp
-    EvKey (KChar 's') [] -> st & visibleEntries %~ L.listMoveDown
-    EvKey (KChar 'e') [] -> st & visibleEntries %~ listMovePageDown
-    EvKey (KChar 'q') [] -> st & visibleEntries %~ listMovePageUp
+    V.EvKey (V.KChar 'w') [] -> st & visibleEntries %~ L.listMoveUp
+    V.EvKey (V.KChar 's') [] -> st & visibleEntries %~ L.listMoveDown
+    V.EvKey (V.KChar 'e') [] -> st & visibleEntries %~ listMovePageDown
+    V.EvKey (V.KChar 'q') [] -> st & visibleEntries %~ listMovePageUp
     _ -> st
   where
     st = st_ & footer .~ footers st_

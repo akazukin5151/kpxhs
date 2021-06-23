@@ -5,7 +5,6 @@ import Data.List
 import Data.Map.Strict ((!?))
 import Data.Maybe
 import Lens.Micro
-import Graphics.Vty
 import qualified Graphics.Vty as V
 import qualified Brick.Main as M
 import qualified Brick.Types as T
@@ -33,7 +32,7 @@ handleEsc st =
     True -> M.continue $ prepareExit st
     False -> M.halt st
 
-handleSearch :: State -> Event -> T.EventM Field State
+handleSearch :: State -> V.Event -> T.EventM Field State
 handleSearch st e = do
   newB <- E.handleEditorEvent e (st ^. searchField)
   let updatedSt = st & searchField .~ newB
