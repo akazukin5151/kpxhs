@@ -1,41 +1,72 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module ViewEvents.Common where
 
+import Data.List
 import System.Exit
-import Data.Maybe
+import System.Process
 import Lens.Micro
 import qualified Graphics.Vty as V
 import qualified Brick.Focus as F
 import qualified Brick.Main as M
 import qualified Brick.Types as T
-import qualified Data.Text as TT
+import qualified Data.Text.Zipper as Z hiding (textZipper)
+import qualified Brick.Widgets.Edit as E
 
 import Common
 import Types
 
+
+processInput :: String -> [String]
+processInput s = dirs ++ entries_
+  where
+    (dirs, entries_) = partition ("/" `isSuffixOf`) $ sort $ lines s
 
 prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
      & activeView .~ ExitView
 
-copyEntryFromDetails :: State -> CopyType -> IO State
-copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)
+getCreds :: State -> (String, String, String)
+getCreds st = (dir, pw, kf)
   where
-    def = pure $ st & footer .~ "Failed to get entry name or details!"
+    dir = extractTextField $ st ^. dbPathField
+    pw = extractTextField $ st ^. passwordField
+    kf = extractTextField $ st ^. keyfileField
+    extractTextField :: E.Editor String Field -> String
+    extractTextField field =
+      let res = Z.getText $ field ^. E.editContentsL in
+      case res of
+        [] -> ""
+        (x : _) -> x
 
-maybeCopy :: State -> CopyType -> Maybe (IO State)
-maybeCopy st ctype = do
-  entryData <- maybeGetEntryData st
-  -- Assumes that the title is always the first row
-  let [_, entry] = TT.splitOn "Title: " $ TT.pack $ head $ lines entryData
-  pure $ copyEntryCommon st (TT.unpack entry) ctype
+
+runCmd :: Action
+       -> String
+       -> [String]
+       -> String
+       -> String
+       -> IO (ExitCode, String, String)
+runCmd Ls dir args pw kf = _runCmdInner "ls" dir args pw kf
+runCmd Clip dir args pw kf = _runCmdInner "clip" dir args pw kf
+runCmd Show dir args pw kf = _runCmdInner "show" dir args pw kf
+
+_runCmdInner :: String
+            -> String
+            -> [String]
+            -> String
+            -> String
+            -> IO (ExitCode, String, String)
+_runCmdInner action dir extraArgs pw kf =
+  readProcessWithExitCode "keepassxc-cli" args pw
+  where
+    args = [action, dir, "--quiet"] ++ extraArgs_
+    extraArgs_ = case kf of
+                   "" -> extraArgs
+                   _ -> ["-k", kf] ++ extraArgs
 
 copyEntryCommon :: State -> String -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
-  let attr = copyTypeToStr ctype
+  let attr = _copyTypeToStr ctype
   (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
   pure $ case code of
     ExitSuccess -> st
@@ -43,8 +74,8 @@ copyEntryCommon st entry ctype = do
                    & hasCopied .~ True
     _ -> st & footer .~ stderr
 
-copyTypeToStr :: CopyType -> String
-copyTypeToStr ctype =
+_copyTypeToStr :: CopyType -> String
+_copyTypeToStr ctype =
   case ctype of
     CopyUsername -> "username"
     _ -> "password"
@@ -56,15 +87,15 @@ commonTabEvent :: (State -> V.Event -> T.EventM Field (T.Next State))
 commonTabEvent fallback st (T.VtyEvent e) =
   case e of
     V.EvKey (V.KChar '\t') [] ->
-      M.continue $ handleTab st focusNext (st ^. activeView)
+      M.continue $ _handleTab st focusNext (st ^. activeView)
     V.EvKey V.KBackTab [] ->
-      M.continue $ handleTab st focusPrev (st ^. activeView)
+      M.continue $ _handleTab st focusPrev (st ^. activeView)
     _ -> fallback st e
 commonTabEvent _ st _ = M.continue st
 
-handleTab :: State -> (State -> View -> State) -> View -> State
-handleTab st f BrowserView = f st SearchView
-handleTab st f _ = f st BrowserView
+_handleTab :: State -> (State -> View -> State) -> View -> State
+_handleTab st f BrowserView = f st SearchView
+_handleTab st f _ = f st BrowserView
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =

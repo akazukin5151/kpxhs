@@ -7,13 +7,15 @@ import Brick.Widgets.Core
     vBox,
     (<+>),
     hLimitPercent,
-    vLimitPercent,
   )
 
 import Types
 import Common
 import UI.Common
 
+
+hidePassword :: [String] -> String
+hidePassword xs = replicate (length (unlines xs) - 1) '*'
 
 drawDialog :: State -> [Widget Field]
 drawDialog st = [ui]

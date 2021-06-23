@@ -1,5 +1,9 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module ViewEvents.EntryEvents (entryDetailsEvent) where
 
+import Data.Maybe
+import qualified Data.Text as TT
 import Lens.Micro
 import Control.Monad.IO.Class
 import qualified Graphics.Vty as V
@@ -28,3 +32,16 @@ returnToBrowser st =
   newst & footer .~ footers newst
     where
       newst = st & activeView .~ BrowserView
+
+copyEntryFromDetails :: State -> CopyType -> IO State
+copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)
+  where
+    def = pure $ st & footer .~ "Failed to get entry name or details!"
+
+maybeCopy :: State -> CopyType -> Maybe (IO State)
+maybeCopy st ctype = do
+  entryData <- maybeGetEntryData st
+  -- Assumes that the title is always the first row
+  let [_, entry] = TT.splitOn "Title: " $ TT.pack $ head $ lines entryData
+  pure $ copyEntryCommon st (TT.unpack entry) ctype
+

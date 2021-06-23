@@ -13,6 +13,13 @@ import qualified Brick.Widgets.Edit as E
 
 import Common
 import Types
+import ViewEvents.Common
+
+
+valid :: State -> Bool
+valid st = f $ getCreds st
+  where
+    f (a, b, _) = a /= "" && b /= ""
 
 passwordEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 passwordEvent st (T.VtyEvent e) =

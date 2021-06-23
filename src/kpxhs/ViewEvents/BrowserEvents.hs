@@ -110,6 +110,12 @@ maybeGetEntries st =
     newDir = initOrDef ["."] (st ^. currentDir)
     dir = dirsToStr newDir
 
+initOrDef :: [a] -> [a] -> [a]
+initOrDef d [] = d
+initOrDef d [_] = d
+initOrDef _ xs = init xs
+
+
 showEntryTryCache :: State -> String -> IO State
 showEntryTryCache st entryname = fromMaybe def (showEntryWithCache st entryname)
   where
