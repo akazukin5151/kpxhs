@@ -7,15 +7,18 @@ import Lens.Micro.TH (makeLenses)
 import qualified Brick.Focus as F
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
+import qualified Brick.Widgets.Dialog as D
 
 data Action = Ls | Clip | Show
 
-data View = PasswordView | BrowserView | SearchView | EntryView
+data View = PasswordView | BrowserView | SearchView | EntryView | ExitView
 
 data Field = PathField | PasswordField | KeyfileField | BrowserField | SearchField
   deriving (Ord, Eq, Show)
 
 data CopyType = CopyUsername | CopyPassword
+
+data ExitDialog = Clear | Exit | Cancel
 
 data State = State
   { -- | The name of visible entries in the current directory
@@ -28,7 +31,11 @@ data State = State
     -- | All the entry details that has been opened
     -- Mapping between directory name to (entry names and their details)
     _allEntryDetails :: Map.Map String (Map.Map String String),
+    -- | The currently visible View
     _activeView :: View,
+    -- | The previous View
+    _previousView :: View,
+    -- | The string in the bottom of the window
     _footer :: String,
     -- | Determines fields that can be focused and their order
     _focusRing :: F.FocusRing Field,
@@ -41,7 +48,11 @@ data State = State
     -- | Field for the string in the search bar
     _searchField :: E.Editor String Field,
     -- | List of directory names that make up the path of the current directory
-    _currentDir :: [String]
+    _currentDir :: [String],
+    -- | The state container for the exit dialog
+    _exitDialog :: D.Dialog ExitDialog,
+    -- | Whether the user has copied anything
+    _hasCopied :: Bool
   }
 
 makeLenses ''State

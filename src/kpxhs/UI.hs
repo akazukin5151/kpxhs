@@ -27,6 +27,9 @@ import Brick.Widgets.Core
     vLimitPercent,
   )
 
+import qualified Brick.Widgets.Dialog as D
+import Brick.Widgets.Core (padAll)
+
 import Common
 import Types
 
@@ -35,6 +38,7 @@ drawUI :: State -> [Widget Field]
 drawUI st = case st ^. activeView of
   PasswordView -> drawDialog st
   EntryView -> drawEntryDetails st
+  ExitView -> drawExitView st
   _ -> drawBrowser st
 
 drawDialog :: State -> [Widget Field]
@@ -143,3 +147,11 @@ replaceEmpty s =
   case s of
     "" -> "-"
     x -> x
+
+drawExitView :: State -> [Widget Field]
+drawExitView st = [ui]
+  where
+    ui = D.renderDialog (st^.exitDialog)
+         $ C.hCenter
+         $ padAll 1
+         $ str "Do you want to clear the clipboard before exiting?"

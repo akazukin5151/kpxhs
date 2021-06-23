@@ -51,6 +51,7 @@ footers st =
         Just PathField -> "Esc: exit, Tab: focus password field, Enter: submit"
         Just PasswordField -> "Esc: exit, Tab: focus keyfile field, Enter: submit"
         _ -> "Esc: exit, Tab: focus path field, Enter: submit"
+    ExitView -> ""
 
 toBrowserList :: [String] -> L.List Field String
 toBrowserList xs = L.list BrowserField (Vec.fromList xs) 1

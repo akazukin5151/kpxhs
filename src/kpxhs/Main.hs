@@ -9,12 +9,13 @@ import Control.Exception
 import Control.Monad (void)
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
-import Brick.Util (fg, on)
+import Brick.Util (fg, bg, on)
 import qualified Brick.AttrMap as A
 import qualified Brick.Focus as F
 import qualified Brick.Main as M
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
+import qualified Brick.Widgets.Dialog as D
 
 import Common
 import Events
@@ -29,6 +30,7 @@ initialState ring dbdir kfdir =
       _allEntryNames = Map.empty,
       _currentEntryDetailName = Nothing,
       _allEntryDetails = Map.empty,
+      _previousView = PasswordView,  -- doesn't really matter here
       _activeView = PasswordView,
       _footer = "", -- doesn't matter here
       _focusRing = ring,
@@ -36,8 +38,15 @@ initialState ring dbdir kfdir =
       _passwordField = E.editor PasswordField (Just 1) "",
       _keyfileField = E.editor KeyfileField (Just 1) kfdir,
       _searchField = E.editor SearchField (Just 1) "",
-      _currentDir = []
+      _currentDir = [],
+      _exitDialog = D.dialog Nothing (Just (0, choices)) 60,
+      _hasCopied = False
     }
+      where
+        choices = [ ("Clear and exit", Clear)
+                  , ("Just exit", Exit)
+                  , ("Do not exit", Cancel)
+                  ]
 
 theMap :: A.AttrMap
 theMap =
@@ -46,7 +55,10 @@ theMap =
     [ (L.listSelectedAttr, fg V.red),
       (L.listSelectedAttr <> "custom", fg V.cyan),
       (E.editAttr, V.black `on` V.white),
-      (E.editFocusedAttr, V.white `on` V.blue)
+      (E.editFocusedAttr, V.white `on` V.blue),
+      (D.dialogAttr, V.white `on` V.blue),
+      (D.buttonAttr, V.black `on` V.white),
+      (D.buttonSelectedAttr, bg V.yellow)
     ]
 
 theApp :: M.App State e Field

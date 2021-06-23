@@ -39,8 +39,9 @@ browserEvent =
 
 handleEsc :: State -> T.EventM Field (T.Next State)
 handleEsc st =
-  case st^.currentDir of
-    [] -> M.halt st
+  case (st^.currentDir, st^.hasCopied) of
+    ([], True) -> M.continue $ prepareExit st
+    ([], False) -> M.halt st
     _ -> M.continue $ goUpParent st
 
 -- If there is "go up to parent" then check for that first

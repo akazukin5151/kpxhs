@@ -6,6 +6,7 @@ import Data.Map.Strict ((!?))
 import Data.Maybe
 import Lens.Micro
 import Graphics.Vty
+import qualified Graphics.Vty as V
 import qualified Brick.Main as M
 import qualified Brick.Types as T
 import qualified Brick.Widgets.Edit as E
@@ -15,8 +16,22 @@ import Common
 import Types
 import ViewEvents.Common
 
+
 searchEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
-searchEvent = commonTabEventWithEsc (\st e -> M.continue =<< handleSearch st e)
+searchEvent =
+  commonTabEvent
+    ( \st e ->
+        case e of
+          V.EvKey V.KEsc [] -> handleEsc st
+          _ -> M.continue =<< handleSearch st e
+    )
+
+handleEsc :: State -> T.EventM Field (T.Next State)
+handleEsc st =
+  -- Esc on search will attempt an exit, even if Browser is inside dirs
+  case st^.hasCopied of
+    True -> M.continue $ prepareExit st
+    False -> M.halt st
 
 handleSearch :: State -> Event -> T.EventM Field State
 handleSearch st e = do

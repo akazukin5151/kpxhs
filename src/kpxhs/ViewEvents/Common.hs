@@ -15,6 +15,12 @@ import qualified Data.Text as TT
 import Common
 import Types
 
+
+prepareExit :: State -> State
+prepareExit st =
+  st & previousView .~ (st^.activeView)
+     & activeView .~ ExitView
+
 copyEntryFromDetails :: State -> CopyType -> IO State
 copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)
   where
@@ -32,9 +38,11 @@ copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = copyTypeToStr ctype
   (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
-  case code of
-    ExitSuccess -> pure $ st & footer .~ (show attr ++ " copied to clipboard!")
-    _ -> pure $ st & footer .~ stderr
+  pure $ case code of
+    ExitSuccess -> st
+                   & footer .~ (show attr ++ " copied to clipboard!")
+                   & hasCopied .~ True
+    _ -> st & footer .~ stderr
 
 copyTypeToStr :: CopyType -> String
 copyTypeToStr ctype =
@@ -54,18 +62,6 @@ commonTabEvent fallback st (T.VtyEvent e) =
       M.continue $ handleTab st focusPrev (st ^. activeView)
     _ -> fallback st e
 commonTabEvent _ st _ = M.continue st
-
-commonTabEventWithEsc :: (State -> Event -> T.EventM Field (T.Next State))
-                      -> State
-                      -> T.BrickEvent Field e
-                      -> T.EventM Field (T.Next State)
-commonTabEventWithEsc fallback =
-  commonTabEvent
-    ( \st e ->
-        case e of
-          V.EvKey V.KEsc [] -> M.halt st
-          _ -> fallback st e
-    )
 
 handleTab :: State -> (State -> View -> State) -> View -> State
 handleTab st f BrowserView = f st SearchView
