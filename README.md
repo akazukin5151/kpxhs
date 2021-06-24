@@ -12,6 +12,8 @@
 
 ![entry](pics/entry.png)
 
+![clear_clip](pics/clear_clip.png)
+
 # Features
 - Default database path using config file
 - Browse entries and navigate directories
