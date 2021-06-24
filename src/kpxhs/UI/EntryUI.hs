@@ -30,7 +30,7 @@ drawEntryDetailsInner st = do
   entryData <- maybeGetEntryData st
   let tableWidget = drawTable $ TT.pack entryData
   pure [ C.hCenter $ renderTable $ table tableWidget,
-         C.hCenter $ str $ st ^. footer ]
+         C.hCenter $ st ^. footer ]
 
 drawTable :: TT.Text -> [[Widget Field]]
 drawTable text_ = restRows ++ notesRow

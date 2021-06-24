@@ -5,6 +5,7 @@ module Types where
 import qualified Data.Map.Strict as Map
 import Lens.Micro.TH (makeLenses)
 import qualified Brick.Focus as F
+import Brick.Types (Widget)
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 import qualified Brick.Widgets.Dialog as D
@@ -36,7 +37,7 @@ data State = State
     -- | The previous View
     _previousView :: View,
     -- | The string in the bottom of the window
-    _footer :: String,
+    _footer :: Widget Field,
     -- | Determines fields that can be focused and their order
     _focusRing :: F.FocusRing Field,
     -- | Field for the database path

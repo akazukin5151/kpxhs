@@ -1,7 +1,13 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Common where
 
+import Data.Text hiding (foldr1, foldr, map)
 import Data.Map.Strict ((!?))
 import Lens.Micro
+import Brick.Types (Widget)
+import Brick.Markup (markup, (@?), Markup)
+import Brick.AttrMap (AttrName)
 import qualified Data.Vector as Vec
 import qualified Brick.Focus as F
 import qualified Brick.Widgets.List as L
@@ -19,21 +25,36 @@ dirsToStrRoot x =
     "" -> "."
     y -> y
 
-footers :: State -> String
+annotate :: [(Text, Text)] -> Widget Field
+annotate x = markup $ foldr1 (<>) (f <$> x)
+  where
+    f :: (Text, Text) -> Markup AttrName
+    f (key, label) = (key @? "key") <> (label @? "label")
+
+footers :: State -> Widget Field
 footers st =
-  case st^.activeView of
-    SearchView -> "Esc: exit, Tab: focus list"
-    EntryView -> "Esc: back, u: copy username, p: copy password"
+  annotate $ case st^.activeView of
+    SearchView -> [exit, tab " focus list "]
+    EntryView -> [back, username, password]
     BrowserView ->
       case st^.currentDir of
-        [] -> "Esc: exit, Tab: focus search, u: copy username, p: copy password"
-        _ -> "Esc: back, Tab: focus search, u: copy username, p: copy password"
+        [] -> [exit, focus_search, username, password]
+        _ -> [back, focus_search, username, password]
     PasswordView ->
       case F.focusGetCurrent (st ^. focusRing) of
-        Just PathField -> "Esc: exit, Tab: focus password field, Enter: submit"
-        Just PasswordField -> "Esc: exit, Tab: focus keyfile field, Enter: submit"
-        _ -> "Esc: exit, Tab: focus path field, Enter: submit"
-    ExitView -> ""
+        Just PathField -> exit_tab_submit "password"
+        Just PasswordField -> exit_tab_submit "keyfile"
+        _ -> exit_tab_submit "path"
+    ExitView -> [("", "")]
+  where
+    exit = ("Esc", " exit  ")
+    tab label = ("Tab", label)
+    back = ("Esc", " back  ")
+    username = ("u", " copy username  ")
+    password = ("p", " copy password")
+    focus_search = ("Tab", " focus search  ")
+    exit_tab_submit x =
+      [exit, tab (" focus " <> x <> " field  "), ("Enter", " submit")]
 
 toBrowserList :: [String] -> L.List Field String
 toBrowserList xs = L.list BrowserField (Vec.fromList xs) 1

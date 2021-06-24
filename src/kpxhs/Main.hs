@@ -10,6 +10,7 @@ import Control.Monad (void)
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
 import Brick.Util (fg, bg, on)
+import Brick.Widgets.Core (str)
 import qualified Brick.AttrMap as A
 import qualified Brick.Focus as F
 import qualified Brick.Main as M
@@ -32,7 +33,7 @@ initialState ring dbdir kfdir =
       _allEntryDetails = Map.empty,
       _previousView = PasswordView,  -- doesn't really matter here
       _activeView = PasswordView,
-      _footer = "", -- doesn't matter here
+      _footer = str "", -- doesn't matter here
       _focusRing = ring,
       _dbPathField = E.editor PathField (Just 1) dbdir,
       _passwordField = E.editor PasswordField (Just 1) "",
@@ -58,7 +59,9 @@ theMap =
       (E.editFocusedAttr, V.white `on` V.blue),
       (D.dialogAttr, V.white `on` V.blue),
       (D.buttonAttr, V.black `on` V.white),
-      (D.buttonSelectedAttr, bg V.yellow)
+      (D.buttonSelectedAttr, bg V.yellow),
+      ("key", bg V.white),
+      ("label", fg V.black)
     ]
 
 theApp :: M.App State e Field
@@ -103,9 +106,9 @@ parseConfig cfgdir = do
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
 
 isHelp :: String -> Bool
-isHelp str = s == "h" || s == "help"
+isHelp string = s == "h" || s == "help"
   where
-    s = dropWhile (== '-') str
+    s = dropWhile (== '-') string
 
 showHelp :: IO ()
 showHelp =

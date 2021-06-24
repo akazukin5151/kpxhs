@@ -4,6 +4,7 @@ module ViewEvents.PasswordEvents (passwordEvent) where
 import System.Exit
 import Lens.Micro
 import Control.Monad.IO.Class
+import Brick.Widgets.Core (str)
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
 import qualified Brick.Focus as F
@@ -37,7 +38,7 @@ gotoBrowser st = do
   (code, stdout, stderr) <- runCmd Ls dir [] pw kf
   case code of
     ExitSuccess -> pure $ gotoBrowserSuccess st $ processInput stdout
-    _ -> pure $ st & footer .~ stderr
+    _ -> pure $ st & footer .~ str stderr
 
 gotoBrowserSuccess :: State -> [String] -> State
 gotoBrowserSuccess st ent =

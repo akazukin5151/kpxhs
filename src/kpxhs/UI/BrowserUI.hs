@@ -32,7 +32,7 @@ drawBrowser st = [ui]
         vBox
           [  C.hCenter $ drawSearchBox st,
              C.hCenter $ drawBrowserList st,
-             C.hCenter $ str (footers st)
+             C.hCenter $ footers st
           ]
 
 drawSearchBox :: State -> Widget Field

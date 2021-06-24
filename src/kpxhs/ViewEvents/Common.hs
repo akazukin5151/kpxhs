@@ -4,6 +4,7 @@ import Data.List
 import System.Exit
 import System.Process
 import Lens.Micro
+import Brick.Widgets.Core (str)
 import qualified Graphics.Vty as V
 import qualified Brick.Focus as F
 import qualified Brick.Main as M
@@ -70,9 +71,9 @@ copyEntryCommon st entry ctype = do
   (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
   pure $ case code of
     ExitSuccess -> st
-                   & footer .~ (show attr ++ " copied to clipboard!")
+                   & footer .~ str (show attr ++ " copied to clipboard!")
                    & hasCopied .~ True
-    _ -> st & footer .~ stderr
+    _ -> st & footer .~ str stderr
 
 _copyTypeToStr :: CopyType -> String
 _copyTypeToStr ctype =

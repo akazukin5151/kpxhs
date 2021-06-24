@@ -35,6 +35,6 @@ drawDialog st = [ui]
             C.hCenter $ str " ",
             C.hCenter $ str "Keyfile:  " <+> hLimitPercent 75 e3,
             C.hCenter $ str " ",
-            C.hCenter $ str (footers st)
+            C.hCenter $ footers st
           ]
 

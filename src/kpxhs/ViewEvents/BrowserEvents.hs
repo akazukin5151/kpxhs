@@ -10,6 +10,7 @@ import Data.Map.Strict ((!?))
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
 import Brick.Util (clamp)
+import Brick.Widgets.Core (str)
 import qualified Brick.Main as M
 import qualified Brick.Types as T
 import qualified Brick.Widgets.Edit as E
@@ -57,7 +58,7 @@ processSelected f st = do
 enterDir :: State -> IO State
 enterDir st = fromMaybe def (processSelected f st)
   where
-    def = pure $ st & footer .~ "No directory selected!"
+    def = pure $ st & footer .~ str "No directory selected!"
     f entry = enterDirTryCache st entry ((st ^. allEntryNames) !? entry)
 
 enterDirTryCache :: State -> String -> Maybe [String] -> IO State
@@ -72,7 +73,7 @@ enterDirTryCache st rawDir Nothing = do
 enterDirTryCmd :: State -> String -> String -> String -> ExitCode -> State
 enterDirTryCmd st stdout _ rawDir ExitSuccess =
   enterDirSuccess st ("-- (Go up parent) --" : processInput stdout) rawDir
-enterDirTryCmd st _ stderr _ _ = st & footer .~ stderr
+enterDirTryCmd st _ stderr _ _ = st & footer .~ str stderr
 
 -- allEntryNames is updated here only, so that we can search inside the folder
 enterDirSuccess :: State -> [String] -> String -> State
@@ -87,7 +88,7 @@ enterDirSuccess st entries_ rawDir =
 showEntry :: State -> IO State
 showEntry st = fromMaybe def $ processSelected (showEntryInner st) st
   where
-    def = pure $ st & footer .~ "No entry or directory selected!"
+    def = pure $ st & footer .~ str "No entry or directory selected!"
 
 showEntryInner :: State -> String -> IO State
 showEntryInner st entry =
@@ -132,7 +133,7 @@ showEntryCmd st entry = do
   (code, stdout, stderr) <- runCmd Show dir [entry] pw kf
   case code of
     ExitSuccess -> pure $ showEntrySuccess st entry stdout
-    _ -> pure $ st & footer .~ stderr
+    _ -> pure $ st & footer .~ str stderr
 
 showEntrySuccess :: State -> String -> String -> State
 showEntrySuccess st entry details =
@@ -150,7 +151,7 @@ copyEntryFromBrowser :: State -> CopyType -> IO State
 copyEntryFromBrowser st ctype =
   fromMaybe def (processSelected f st)
     where
-      def = pure $ st & footer .~ "No entry selected!"
+      def = pure $ st & footer .~ str "No entry selected!"
       f entry = copyEntryCommon st entry ctype
 
 handleWASD :: V.Event -> State -> State
