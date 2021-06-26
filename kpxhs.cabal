@@ -33,7 +33,16 @@ executable kpxhs
                        ViewEvents.ExitEvents
 
   default-language:    Haskell2010
-  ghc-options:         -threaded -Wall
+  ghc-options:         -threaded
+                       -Weverything
+                       -Wno-missing-exported-signatures
+                       -Wno-missing-import-lists
+                       -Wno-missed-specialisations
+                       -Wno-all-missed-specialisations
+                       -Wno-unsafe
+                       -Wno-safe
+                       -Wno-missing-local-signatures
+                       -Wno-monomorphism-restriction
   build-depends:       base >= 4.7 && < 5,
                        brick >= 0.6 && <= 0.61,
                        vty <= 5.32,
