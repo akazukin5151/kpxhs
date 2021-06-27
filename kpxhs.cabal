@@ -41,7 +41,7 @@ executable kpxhs
                      -Wno-all-missed-specialisations
                      -Wno-unsafe
                      -Wno-safe
-                     -fno-safe-haskell
+                     -Wno-missing-safe-haskell-mode
                      -Wno-missing-local-signatures
                      -Wno-monomorphism-restriction
                      -Wno-implicit-prelude
