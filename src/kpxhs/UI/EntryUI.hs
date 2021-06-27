@@ -33,13 +33,24 @@ drawEntryDetailsInner st = do
          C.hCenter $ st ^. footer ]
 
 drawTable :: TT.Text -> [[Widget Field]]
-drawTable text_ = restRows ++ notesRow
+drawTable raw =
+  case TT.splitOn "Notes: " raw of
+    [rest, notes] -> drawTableWithNotes rest notes
+    _ -> drawTableWithoutNotes raw
+
+drawTableWithNotes :: TT.Text -> TT.Text -> [[Widget Field]]
+drawTableWithNotes rest notes = restRows ++ notesRow
   where
-    -- Do not split by ": " on notes
-    [rest, notes] = TT.splitOn "Notes: " text_
-    xs = TT.splitOn ": " <$> TT.lines rest
-    restRows = (txt . replaceEmpty <$>) <$> xs
+    restRows = drawTableWithoutNotes rest
+    -- To avoid splitting by ": " inside note contents
     notesRow = [[txt "Notes", txt $ replaceEmpty notes]]
+
+-- For some reason the Notes section is missing
+drawTableWithoutNotes :: TT.Text -> [[Widget Field]]
+drawTableWithoutNotes raw = rows
+  where
+    xs = TT.splitOn ": " <$> TT.lines raw
+    rows = (txt . replaceEmpty <$>) <$> xs
 
 replaceEmpty :: TT.Text -> TT.Text
 replaceEmpty s =
