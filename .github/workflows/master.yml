@@ -21,6 +21,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Run hlint
+      continue-on-error: true
       run: |
         curl -sSL https://raw.github.com/ndmitchell/hlint/master/misc/run.sh | sh -s src/kpxhs
     - name: Build
