@@ -43,6 +43,8 @@ maybeCopy :: State -> CopyType -> Maybe (IO State)
 maybeCopy st ctype = do
   entryData <- maybeGetEntryData st
   -- Assumes that the title is always the first row
-  let [_, entry] = TT.splitOn "Title: " $ TT.pack $ head $ lines entryData
-  pure $ copyEntryCommon st (TT.unpack entry) ctype
+  let splitted = TT.splitOn "Title: " $ TT.pack $ head $ lines entryData
+  case splitted of
+    [_, entry] -> Just $ copyEntryCommon st (TT.unpack entry) ctype
+    _ -> Nothing
 
