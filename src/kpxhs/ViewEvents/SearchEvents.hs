@@ -28,9 +28,9 @@ searchEvent =
 handleEsc :: State -> T.EventM Field (T.Next State)
 handleEsc st =
   -- Esc on search will attempt an exit, even if Browser is inside dirs
-  case st^.hasCopied of
-    True -> M.continue $ prepareExit st
-    False -> M.halt st
+  if st^.hasCopied
+    then M.continue $ prepareExit st
+    else M.halt st
 
 handleSearch :: State -> V.Event -> T.EventM Field State
 handleSearch st e = do
@@ -47,6 +47,8 @@ handleSearch st e = do
       newSt = updatedSt & visibleEntries %~ f
   pure newSt
 
+-- Adapted from the definition of last in Prelude
 dirsToCurrent :: [String] -> String
 dirsToCurrent [] = "."
-dirsToCurrent x = last x
+dirsToCurrent [x] = x
+dirsToCurrent (_:xs) = dirsToCurrent xs

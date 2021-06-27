@@ -48,13 +48,14 @@ handleDialogEvent' ev d =
 
 
 -- Copied from Brick.Widgets.Dialog because it's private
+-- The usage of mod is fine because there is always > 1 choices in dialog
 nextButtonBy :: Int -> Bool -> D.Dialog a -> D.Dialog a
 nextButtonBy amt wrapCycle d =
     let numButtons = length $ d^.D.dialogButtonsL
     in if numButtons == 0 then d
        else case d^.D.dialogSelectedIndexL of
-           Nothing -> d & D.dialogSelectedIndexL .~ (Just 0)
-           Just i -> d & D.dialogSelectedIndexL .~ (Just newIndex)
+           Nothing -> d & D.dialogSelectedIndexL ?~ 0
+           Just i -> d & D.dialogSelectedIndexL ?~ newIndex
                where
                    addedIndex = i + amt
                    newIndex = if wrapCycle
