@@ -1,0 +1,27 @@
+name: master
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset_name: kpxhs-linux-amd64
+          - os: macos-latest
+            asset_name: kpxhs-macos-amd64
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Run hlint
+      run: |
+        curl -sSL https://raw.github.com/ndmitchell/hlint/master/misc/run.sh | sh -s src/kpxhs
+    - name: Build
+      run: stack install

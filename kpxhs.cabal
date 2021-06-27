@@ -41,8 +41,11 @@ executable kpxhs
                      -Wno-all-missed-specialisations
                      -Wno-unsafe
                      -Wno-safe
+                     -fno-safe-haskell
                      -Wno-missing-local-signatures
                      -Wno-monomorphism-restriction
+                     -Wno-implicit-prelude
+                     -Wno-prepositive-qualified-module
   build-depends:     base >= 4.7 && < 5,
                      brick >= 0.6 && <= 0.61,
                      vty == 5.*,
