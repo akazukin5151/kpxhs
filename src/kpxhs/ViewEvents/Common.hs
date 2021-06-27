@@ -1,6 +1,6 @@
 module ViewEvents.Common where
 
-import Data.List
+import Data.List (partition, isSuffixOf, sort)
 import System.Exit
 import System.Process
 import Lens.Micro
