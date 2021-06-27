@@ -24,7 +24,8 @@ handleEnter st =
   case D.dialogSelection (st^.exitDialog) of
     Just Clear -> liftIO clearClipboard >> M.halt st
     Just Cancel -> M.continue $ st & activeView .~ (st^.previousView)
-    _ -> M.halt st
+    Just Exit -> M.halt st
+    _ -> M.continue st
 
 clearClipboard :: IO ()
 clearClipboard = callCommand $ "printf '' | " ++ handler where
