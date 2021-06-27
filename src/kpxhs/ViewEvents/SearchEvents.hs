@@ -1,7 +1,7 @@
 module ViewEvents.SearchEvents (searchEvent) where
 
 import Data.Char
-import Data.List
+import Data.List (isInfixOf)
 import Data.Map.Strict ((!?))
 import Data.Maybe
 import Lens.Micro
