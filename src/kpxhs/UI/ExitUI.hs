@@ -5,7 +5,6 @@ import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core   (padAll, str)
 import qualified Brick.Widgets.Dialog as D
 import           Lens.Micro           ((^.))
-
 import           Types                (Field, State, exitDialog)
 
 

@@ -8,6 +8,7 @@ import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Edit   as E
 import qualified Brick.Widgets.List   as L
 import qualified Data.Map.Strict      as Map
+import           Data.Text            (Text)
 import           Lens.Micro.TH        (makeLenses)
 
 data Action = Ls | Clip | Show
@@ -23,15 +24,15 @@ data ExitDialog = Clear | Exit | Cancel
 
 data State = State
   { -- | The name of visible entries in the current directory
-    _visibleEntries         :: L.List Field String,
+    _visibleEntries         :: L.List Field Text,
     -- | All the entries (visible or not) that has been loaded from all directories
     -- Mapping between directory name to list of entry names
-    _allEntryNames          :: Map.Map String [String],
+    _allEntryNames          :: Map.Map Text [Text],
     -- | The name of the entry selected to show details for
-    _currentEntryDetailName :: Maybe String,
+    _currentEntryDetailName :: Maybe Text,
     -- | All the entry details that has been opened
     -- Mapping between directory name to (entry names and their details)
-    _allEntryDetails        :: Map.Map String (Map.Map String String),
+    _allEntryDetails        :: Map.Map Text (Map.Map Text Text),
     -- | The currently visible View
     _activeView             :: View,
     -- | The previous View
@@ -41,15 +42,15 @@ data State = State
     -- | Determines fields that can be focused and their order
     _focusRing              :: F.FocusRing Field,
     -- | Field for the database path
-    _dbPathField            :: E.Editor String Field,
+    _dbPathField            :: E.Editor Text Field,
     -- | Field for the database password
-    _passwordField          :: E.Editor String Field,
+    _passwordField          :: E.Editor Text Field,
     -- | Field for the keyfile path
-    _keyfileField           :: E.Editor String Field,
-    -- | Field for the string in the search bar
-    _searchField            :: E.Editor String Field,
+    _keyfileField           :: E.Editor Text Field,
+    -- | Field for the Text in the search bar
+    _searchField            :: E.Editor Text Field,
     -- | List of directory names that make up the path of the current directory
-    _currentDir             :: [String],
+    _currentDir             :: [Text],
     -- | The state container for the exit dialog
     _exitDialog             :: D.Dialog ExitDialog,
     -- | Whether the user has copied anything

@@ -9,6 +9,7 @@ import           Brick.Types        (Widget)
 import qualified Brick.Widgets.List as L
 import           Data.Map.Strict    ((!?))
 import           Data.Text          (Text)
+import qualified Data.Text          as TT
 import qualified Data.Vector        as Vec
 import           Lens.Micro         ((^.))
 
@@ -27,11 +28,11 @@ import           Types              ( Field (BrowserField, PasswordField, PathFi
                                     )
 
 -- | This should only be used for running the show cmd
-dirsToStr :: [String] -> String
-dirsToStr = concat
+dirsToStr :: [Text] -> Text
+dirsToStr = TT.concat
 
 -- | This should be used for accessing any other mappings in the state
-dirsToStrRoot :: [String] -> String
+dirsToStrRoot :: [Text] -> Text
 dirsToStrRoot x =
   case dirsToStr x of
     "" -> "."
@@ -68,10 +69,10 @@ footers st =
     exit_tab_submit x =
       [exit, tab (" focus " <> x <> " field  "), ("Enter", " submit")]
 
-toBrowserList :: [String] -> L.List Field String
+toBrowserList :: [Text] -> L.List Field Text
 toBrowserList xs = L.list BrowserField (Vec.fromList xs) 1
 
-maybeGetEntryData :: State -> Maybe String
+maybeGetEntryData :: State -> Maybe Text
 maybeGetEntryData st = do
   let dirname = dirsToStrRoot (st^.currentDir)
   entryname <- st^.currentEntryDetailName

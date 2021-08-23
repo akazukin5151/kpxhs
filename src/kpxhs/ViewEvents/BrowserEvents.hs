@@ -5,13 +5,15 @@ module ViewEvents.BrowserEvents (browserEvent) where
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
 import           Brick.Util             (clamp)
-import           Brick.Widgets.Core     (str)
+import           Brick.Widgets.Core     (str, txt)
 import qualified Brick.Widgets.Edit     as E
 import qualified Brick.Widgets.List     as L
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Map.Strict        ((!?))
 import qualified Data.Map.Strict        as Map
 import           Data.Maybe             (fromMaybe)
+import           Data.Text              (Text)
+import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
@@ -73,9 +75,9 @@ handleEnter st = liftIO (f st) >>= M.continue
 isDir :: State -> Bool
 isDir st = fromMaybe False (processSelected f st)
   where
-    f entry = last entry == '/'
+    f entry = TT.last entry == '/'
 
-processSelected :: (String -> a) -> State -> Maybe a
+processSelected :: (Text -> a) -> State -> Maybe a
 processSelected f st = do
   (_, entry) <- L.listSelectedElement $ st ^. visibleEntries
   pure $ f entry
@@ -86,22 +88,22 @@ enterDir st = fromMaybe def (processSelected f st)
     def = pure $ st & footer .~ str "No directory selected!"
     f entry = enterDirTryCache st entry ((st ^. allEntryNames) !? entry)
 
-enterDirTryCache :: State -> String -> Maybe [String] -> IO State
+enterDirTryCache :: State -> Text -> Maybe [Text] -> IO State
 enterDirTryCache st rawDir (Just x) = pure $ enterDirSuccess st x rawDir
 enterDirTryCache st rawDir Nothing = do
   (code, stdout, stderr) <- runCmd Ls dbPathField_ [concatedDir] pw kf
   pure $ enterDirTryCmd st stdout stderr rawDir code
   where
     (dbPathField_, pw, kf) = getCreds st
-    concatedDir = dirsToStr (st ^. currentDir) ++ rawDir
+    concatedDir = dirsToStr (st ^. currentDir) <> rawDir
 
-enterDirTryCmd :: State -> String -> String -> String -> ExitCode -> State
+enterDirTryCmd :: State -> Text -> Text -> Text -> ExitCode -> State
 enterDirTryCmd st stdout _ rawDir ExitSuccess =
   enterDirSuccess st ("-- (Go up parent) --" : processInput stdout) rawDir
-enterDirTryCmd st _ stderr _ _ = st & footer .~ str stderr
+enterDirTryCmd st _ stderr _ _ = st & footer .~ txt stderr
 
 -- allEntryNames is updated here only, so that we can search inside the folder
-enterDirSuccess :: State -> [String] -> String -> State
+enterDirSuccess :: State -> [Text] -> Text -> State
 enterDirSuccess st entries_ rawDir =
   newst & footer .~ footers st
     where
@@ -115,7 +117,7 @@ showEntry st = fromMaybe def $ processSelected (showEntryInner st) st
   where
     def = pure $ st & footer .~ str "No entry or directory selected!"
 
-showEntryInner :: State -> String -> IO State
+showEntryInner :: State -> Text -> IO State
 showEntryInner st entry =
   if entry == "-- (Go up parent) --"
     then pure $ goUpParent st
@@ -129,7 +131,7 @@ goUpParent st =
   where
     entries = fromMaybe ["Failed to get entries!"] $ maybeGetEntries st
 
-maybeGetEntries :: State -> Maybe [String]
+maybeGetEntries :: State -> Maybe [Text]
 maybeGetEntries st =
   (st ^. allEntryNames) !? dir
   where
@@ -142,30 +144,30 @@ initOrDef d [_] = d
 initOrDef _ xs  = init xs
 
 
-showEntryTryCache :: State -> String -> IO State
+showEntryTryCache :: State -> Text -> IO State
 showEntryTryCache st entryname = fromMaybe def (showEntryWithCache st entryname)
   where
     def = showEntryCmd st entryname
 
-showEntryWithCache :: State -> String -> Maybe (IO State)
+showEntryWithCache :: State -> Text -> Maybe (IO State)
 showEntryWithCache st entryname = do
   details <- maybeGetEntryData st
   pure $ pure $ showEntrySuccess st entryname details
 
-showEntryCmd :: State -> String -> IO State
+showEntryCmd :: State -> Text -> IO State
 showEntryCmd st entry = do
   let (dir, pw, kf) = getCreds st
   (code, stdout, stderr) <- runCmd Show dir [entry] pw kf
   case code of
     ExitSuccess -> pure $ showEntrySuccess st entry stdout
-    _           -> pure $ st & footer .~ str stderr
+    _           -> pure $ st & footer .~ txt stderr
 
-showEntrySuccess :: State -> String -> String -> State
+showEntrySuccess :: State -> Text -> Text -> State
 showEntrySuccess st entry details =
   newst & footer .~ footers newst
        where
          dirname = dirsToStrRoot (st^.currentDir)
-         f :: Maybe (Map.Map String String) -> Maybe (Map.Map String String)
+         f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
          f (Just m) = Just $ Map.insertWith (curry snd) entry details m
          f _        = Just $ Map.singleton entry details
          newst = st & activeView .~ EntryView

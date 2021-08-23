@@ -1,17 +1,18 @@
 module UI.Common (getEditor) where
 
+import           Brick              (txt)
 import qualified Brick.Focus        as F
 import           Brick.Types        (Widget)
-import           Brick.Widgets.Core (str)
 import qualified Brick.Widgets.Edit as E
+import           Data.Text          (Text)
 import           Lens.Micro         (Getting, (^.))
 
 import           Types              (Field, State, focusRing)
 
 
 getEditor :: State
-          -> Getting (E.Editor String Field) State (E.Editor String Field)
-          -> ([String] -> String)
+          -> Getting (E.Editor Text Field) State (E.Editor Text Field)
+          -> ([Text] -> Text)
           -> Widget Field
 getEditor st f g =
-  F.withFocusRing (st ^. focusRing) (E.renderEditor (str . g)) (st ^. f)
+  F.withFocusRing (st ^. focusRing) (E.renderEditor (txt . g)) (st ^. f)

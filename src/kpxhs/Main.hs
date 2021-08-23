@@ -13,6 +13,7 @@ import qualified Brick.Widgets.List   as L
 import           Control.Exception    (IOException, catch)
 import           Control.Monad        (void)
 import qualified Data.Map.Strict      as Map
+import           Data.Text            (Text, pack)
 import qualified Graphics.Vty         as V
 import           System.Directory     (getHomeDirectory)
 import           System.Environment   (getArgs)
@@ -31,7 +32,7 @@ import           Types                ( ExitDialog (Cancel, Clear, Exit)
                                       )
 
 
-initialState :: F.FocusRing Field -> String -> String -> State
+initialState :: F.FocusRing Field -> Text -> Text -> State
 initialState ring dbdir kfdir =
   State
     { _visibleEntries = toBrowserList [],
@@ -96,16 +97,17 @@ tui = do
   (dbdir, kfdir, ring) <- parseConfig cfgdir
   void $ M.defaultMain theApp (initialState ring dbdir kfdir)
 
-parseConfig :: String -> IO (String, String, F.FocusRing Field)
+parseConfig :: String -> IO (Text, Text, F.FocusRing Field)
 parseConfig cfgdir = do
   file <- catch (readFile cfgdir) f
-  pure $ case lines file of
+  pure $ g $ case lines file of
     [dbdir, kfdir] | not (null dbdir && null kfdir) -> (dbdir, kfdir, passwordfirst)
     [dbdir]        | not (null dbdir)               -> (dbdir, "",    passwordfirst)
     _                                               -> ("",    "",    pathfirst)
   where
     f :: IOException -> IO String
     f _ = pure ""
+    g (a, b, c) = (pack a, pack b, c)
     pathfirst = F.focusRing [PathField, PasswordField, KeyfileField]
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
 
@@ -133,4 +135,3 @@ showHelp =
             \    G                      Move to bottom\n\
             \    q                      Page up\n\
             \    e                      Page down"
-

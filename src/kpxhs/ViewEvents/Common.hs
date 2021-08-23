@@ -1,12 +1,16 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module ViewEvents.Common where
 
 import qualified Brick.Focus            as F
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
-import           Brick.Widgets.Core     (str)
+import           Brick.Widgets.Core     (str, txt)
 import qualified Brick.Widgets.Edit     as E
 import           Control.Monad.IO.Class (liftIO)
-import           Data.List              (isSuffixOf, partition, sort)
+import           Data.List              (partition, sort)
+import           Data.Text              (Text)
+import qualified Data.Text              as TT
 import qualified Data.Text.Zipper       as Z hiding (textZipper)
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((%~), (&), (.~), (^.))
@@ -33,23 +37,24 @@ import           Types                  ( Action (..)
 liftContinue :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
 liftContinue g st x = liftIO (g st x) >>= M.continue
 
-processInput :: String -> [String]
+processInput :: Text -> [Text]
 processInput s = dirs ++ entries_
   where
-    (dirs, entries_) = partition ("/" `isSuffixOf`) $ sort $ lines s
+    (dirs, entries_) = partition ("/" `TT.isSuffixOf`) x
+    x = sort $ TT.lines s
 
 prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
      & activeView .~ ExitView
 
-getCreds :: State -> (String, String, String)
+getCreds :: State -> (Text, Text, Text)
 getCreds st = (dir, pw, kf)
   where
     dir = extractTextField $ st ^. dbPathField
     pw = extractTextField $ st ^. passwordField
     kf = extractTextField $ st ^. keyfileField
-    extractTextField :: E.Editor String Field -> String
+    extractTextField :: E.Editor Text Field -> Text
     extractTextField field =
       let res = Z.getText $ field ^. E.editContentsL in
       case res of
@@ -58,30 +63,32 @@ getCreds st = (dir, pw, kf)
 
 
 runCmd :: Action
-       -> String
-       -> [String]
-       -> String
-       -> String
-       -> IO (ExitCode, String, String)
+       -> Text
+       -> [Text]
+       -> Text
+       -> Text
+       -> IO (ExitCode, Text, Text)
 runCmd Ls dir args pw kf   = _runCmdInner "ls" dir args pw kf
 runCmd Clip dir args pw kf = _runCmdInner "clip" dir args pw kf
 runCmd Show dir args pw kf = _runCmdInner "show" dir args pw kf
 
-_runCmdInner :: String
-            -> String
-            -> [String]
-            -> String
-            -> String
-            -> IO (ExitCode, String, String)
-_runCmdInner action dir extraArgs pw kf =
-  readProcessWithExitCode "keepassxc-cli" args pw
+_runCmdInner :: Text
+             -> Text
+             -> [Text]
+             -> Text
+             -> Text
+             -> IO (ExitCode, Text, Text)
+_runCmdInner action dir extraArgs pw kf = do
+  (e, a, b) <- readProcessWithExitCode "keepassxc-cli" args (TT.unpack pw)
+  pure (e, TT.pack a, TT.pack b)
   where
-    args = [action, dir, "--quiet"] ++ extraArgs_
+    args :: [String]
+    args = TT.unpack <$> [action, dir, "--quiet"] ++ extraArgs_
     extraArgs_ = case kf of
                    "" -> extraArgs
                    _  -> ["-k", kf] ++ extraArgs
 
-copyEntryCommon :: State -> String -> CopyType -> IO State
+copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
@@ -90,9 +97,9 @@ copyEntryCommon st entry ctype = do
     ExitSuccess -> st
                    & footer .~ str (show attr ++ " copied to clipboard!")
                    & hasCopied .~ True
-    _ -> st & footer .~ str stderr
+    _ -> st & footer .~ txt stderr
 
-_copyTypeToStr :: CopyType -> String
+_copyTypeToStr :: CopyType -> Text
 _copyTypeToStr ctype =
   case ctype of
     CopyUsername -> "username"

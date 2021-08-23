@@ -8,6 +8,7 @@ import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core   (str, txt, vBox)
 import           Brick.Widgets.Table  (renderTable, table)
 import           Data.Maybe           (fromMaybe)
+import           Data.Text            (Text)
 import qualified Data.Text            as TT
 import           Lens.Micro           ((^.))
 
@@ -24,17 +25,17 @@ drawEntryDetails st =
 drawEntryDetailsInner :: State -> Maybe [Widget Field]
 drawEntryDetailsInner st = do
   entryData <- maybeGetEntryData st
-  let tableWidget = drawTable $ TT.pack entryData
+  let tableWidget = drawTable entryData
   pure [ C.hCenter $ renderTable $ table tableWidget,
          C.hCenter $ st ^. footer ]
 
-drawTable :: TT.Text -> [[Widget Field]]
+drawTable :: Text -> [[Widget Field]]
 drawTable raw =
   case TT.splitOn "Notes: " raw of
     [rest, notes] -> drawTableWithNotes rest notes
     _             -> drawTableWithoutNotes raw
 
-drawTableWithNotes :: TT.Text -> TT.Text -> [[Widget Field]]
+drawTableWithNotes :: Text -> Text -> [[Widget Field]]
 drawTableWithNotes rest notes = restRows ++ notesRow
   where
     restRows = drawTableWithoutNotes rest
@@ -42,13 +43,13 @@ drawTableWithNotes rest notes = restRows ++ notesRow
     notesRow = [[ txt "Notes", txt $ replaceEmpty notes ]]
 
 -- For some reason the Notes section is missing
-drawTableWithoutNotes :: TT.Text -> [[Widget Field]]
+drawTableWithoutNotes :: Text -> [[Widget Field]]
 drawTableWithoutNotes raw = rows
   where
     xs = TT.splitOn ": " <$> TT.lines raw
     rows = (txt . replaceEmpty <$>) <$> xs
 
-replaceEmpty :: TT.Text -> TT.Text
+replaceEmpty :: Text -> Text
 replaceEmpty s =
   case s of
     "" -> "-"

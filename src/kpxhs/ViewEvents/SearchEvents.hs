@@ -1,13 +1,14 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module ViewEvents.SearchEvents (searchEvent) where
 
 import qualified Brick.Main         as M
 import qualified Brick.Types        as T
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
-import           Data.Char          (toLower)
-import           Data.List          (isInfixOf)
 import           Data.Map.Strict    ((!?))
 import           Data.Maybe         (fromMaybe, listToMaybe)
+import           Data.Text          (Text, isInfixOf, toLower)
 import qualified Graphics.Vty       as V
 import           Lens.Micro         ((%~), (&), (.~), (^.))
 
@@ -47,15 +48,15 @@ handleSearch st e = do
       newDir = dirsToCurrent $ st ^. currentDir
       maybeEntries = (st ^. allEntryNames) !? newDir
       entries = fromMaybe ["Failed to get entries!"] maybeEntries
-      f :: L.List Field String -> L.List Field String
+      f :: L.List Field Text -> L.List Field Text
       f _ = toBrowserList $ filter g entries
-      g :: String -> Bool
-      g entry = newStr `isInfixOf` (toLower <$> entry)
+      g :: Text -> Bool
+      g entry = newStr `isInfixOf` toLower entry
       newSt = updatedSt & visibleEntries %~ f
   pure newSt
 
 -- Adapted from the definition of last in Prelude
-dirsToCurrent :: [String] -> String
+dirsToCurrent :: [Text] -> Text
 dirsToCurrent []     = "."
 dirsToCurrent [x]    = x
 dirsToCurrent (_:xs) = dirsToCurrent xs

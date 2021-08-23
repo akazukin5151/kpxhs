@@ -1,14 +1,17 @@
 {-# LANGUAGE Rank2Types #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module ViewEvents.PasswordEvents (passwordEvent) where
 
 import qualified Brick.Focus            as F
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
-import           Brick.Widgets.Core     (str)
+import           Brick.Widgets.Core     (txt)
 import qualified Brick.Widgets.Edit     as E
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.Map.Strict        as Map
+import           Data.Text              (Text)
+import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
 import           Lens.Micro             (Lens', (%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
@@ -33,7 +36,7 @@ import           ViewEvents.Common      (getCreds, processInput, runCmd)
 valid :: State -> Bool
 valid st = f $ getCreds st
   where
-    f (a, b, _) = not (null a && null b)
+    f (a, b, _) = not (TT.null a && TT.null b)
 
 passwordEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 passwordEvent st (T.VtyEvent e) =
@@ -51,9 +54,9 @@ gotoBrowser st = do
   (code, stdout, stderr) <- runCmd Ls dir [] pw kf
   case code of
     ExitSuccess -> pure $ gotoBrowserSuccess st $ processInput stdout
-    _           -> pure $ st & footer .~ str stderr
+    _           -> pure $ st & footer .~ txt stderr
 
-gotoBrowserSuccess :: State -> [String] -> State
+gotoBrowserSuccess :: State -> [Text] -> State
 gotoBrowserSuccess st ent =
   newst & footer .~ footers newst
     where
@@ -71,5 +74,5 @@ handleFieldInput st e =
     _                  -> pure st
   where
     field = F.focusGetCurrent (st ^. focusRing)
-    inner :: Lens' State (E.Editor String Field) -> T.EventM Field State
+    inner :: Lens' State (E.Editor Text Field) -> T.EventM Field State
     inner field_ = T.handleEventLensed st field_ E.handleEditorEvent e

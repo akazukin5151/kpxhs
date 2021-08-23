@@ -5,13 +5,13 @@ module ViewEvents.EntryEvents (entryDetailsEvent) where
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (str)
-import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Maybe             (fromMaybe)
 import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~))
 
 import           Common                 (footers, maybeGetEntryData)
+import           ViewEvents.Common      (copyEntryCommon, liftContinue)
 import           Types                  ( CopyType (..)
                                         , Field
                                         , State
@@ -19,7 +19,6 @@ import           Types                  ( CopyType (..)
                                         , activeView
                                         , footer
                                         )
-import           ViewEvents.Common      (copyEntryCommon, liftContinue)
 
 entryDetailsEvent :: State
                   -> T.BrickEvent Field e
@@ -47,7 +46,7 @@ maybeCopy :: State -> CopyType -> Maybe (IO State)
 maybeCopy st ctype = do
   entryData <- maybeGetEntryData st
   -- Assumes that the title is always the first row
-  let splitted = TT.splitOn "Title: " $ TT.pack $ head $ lines entryData
+  let splitted = TT.splitOn "Title: " $ head $ TT.lines entryData
   case splitted of
-    [_, entry] -> Just $ copyEntryCommon st (TT.unpack entry) ctype
+    [_, entry] -> Just $ copyEntryCommon st entry ctype
     _          -> Nothing

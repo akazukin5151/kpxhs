@@ -1,8 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module UI.DialogUI (drawDialog) where
 
 import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core   (hLimitPercent, str, vBox, (<+>))
+import           Data.Text            (Text)
+import qualified Data.Text            as TT
 
 import           Common               (footers)
 import           UI.Common            (getEditor)
@@ -14,15 +18,15 @@ import           Types                ( Field
                                       )
 
 
-hidePassword :: [String] -> String
-hidePassword xs = replicate (length (unlines xs) - 1) '*'
+hidePassword :: [Text] -> Text
+hidePassword xs = TT.replicate (TT.length (TT.unlines xs) - 1) "*"
 
 drawDialog :: State -> [Widget Field]
 drawDialog st = [ui]
   where
-    e1 = getEditor st dbPathField unlines
+    e1 = getEditor st dbPathField TT.unlines
     e2 = getEditor st passwordField hidePassword
-    e3 = getEditor st keyfileField unlines
+    e3 = getEditor st keyfileField TT.unlines
     ui =
       C.vCenter $
         vBox

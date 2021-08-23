@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module UI.BrowserUI (drawBrowser) where
 
 import qualified Brick.AttrMap        as A
@@ -8,12 +10,15 @@ import qualified Brick.Widgets.Border as B
 import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core   ( hLimitPercent
                                       , str
+                                      , txt
                                       , updateAttrMap
                                       , vBox
                                       , vLimitPercent
                                       , (<+>)
                                       )
 import qualified Brick.Widgets.List   as L
+import           Data.Text            (pack)
+import qualified Data.Text            as TT
 import qualified Data.Vector          as Vec
 import qualified Graphics.Vty         as V
 import           Lens.Micro           ((&), (^.))
@@ -43,7 +48,7 @@ drawBrowser st = [ui]
 drawSearchBox :: State -> Widget Field
 drawSearchBox st = str "Search: " <+> hLimitPercent 75 ed
   where
-    ed = getEditor st searchField unlines
+    ed = getEditor st searchField TT.unlines
 
 drawBrowserList :: State -> Widget Field
 drawBrowserList st =
@@ -56,13 +61,13 @@ drawBrowserList st =
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
   where
-    label = foldr1 (<+>) $ str <$> [currentDir_, " ", "(", cur, "/", total, ")"]
+    label = foldr1 (<+>) $ txt <$> [currentDir_, " ", "(", cur, "/", total, ")"]
     currentDir_ =
       case dirsToStr $ st^.currentDir of
         "" -> "(Root)"
-        x  -> init x
-    cur = maybe "-" (show . (+1)) (st^.visibleEntries.L.listSelectedL)
-    total = show $ Vec.length $ st^.visibleEntries.L.listElementsL
+        x  -> TT.init x
+    cur = maybe "-" (pack . show . (+1)) (st^.visibleEntries.L.listSelectedL)
+    total = pack $ show $ Vec.length $ st^.visibleEntries.L.listElementsL
 
 drawBorderColor :: State -> Widget Field -> Widget Field
 drawBorderColor st = res
