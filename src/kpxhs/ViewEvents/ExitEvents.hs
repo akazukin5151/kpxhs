@@ -32,10 +32,10 @@ exitEvent st _ = M.continue st
 -- (EventM f (Dialog a)) to (EventM f State)
 handleDialog :: State -> V.Event -> T.EventM Field (T.Next State)
 handleDialog st e =
-  handleDialogEvent e (st ^. exitDialog) >>= setDialog st >>= M.continue
+  handleDialogEvent e (st ^. exitDialog) >>= modifyDialog st >>= M.continue
     where
-      setDialog :: State -> D.Dialog ExitDialog -> T.EventM Field State
-      setDialog st' x = pure $ st' & exitDialog .~ x
+      modifyDialog :: State -> D.Dialog ExitDialog -> T.EventM Field State
+      modifyDialog st' x = pure $ st' & exitDialog .~ x
 
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st =

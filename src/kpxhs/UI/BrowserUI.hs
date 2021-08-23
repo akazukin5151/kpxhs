@@ -6,14 +6,13 @@ import           Brick.Types          (Widget)
 import           Brick.Util           (fg)
 import qualified Brick.Widgets.Border as B
 import qualified Brick.Widgets.Center as C
-import           Brick.Widgets.Core
-    ( hLimitPercent
-    , str
-    , updateAttrMap
-    , vBox
-    , vLimitPercent
-    , (<+>)
-    )
+import           Brick.Widgets.Core   ( hLimitPercent
+                                      , str
+                                      , updateAttrMap
+                                      , vBox
+                                      , vLimitPercent
+                                      , (<+>)
+                                      )
 import qualified Brick.Widgets.List   as L
 import qualified Data.Vector          as Vec
 import qualified Graphics.Vty         as V
@@ -57,11 +56,12 @@ drawBrowserList st =
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
   where
-    label = foldr1 (<+>) $ str <$> [currentDir_, "(", cur, "/", total, ")"]
-    currentDir_ = case dirsToStr $ st^.currentDir of
-      "" -> "(Root) "
-      x  -> init x ++ " "
-    cur = maybe "-" (\x -> show (x+1)) (st^.visibleEntries.L.listSelectedL)
+    label = foldr1 (<+>) $ str <$> [currentDir_, " ", "(", cur, "/", total, ")"]
+    currentDir_ =
+      case dirsToStr $ st^.currentDir of
+        "" -> "(Root)"
+        x  -> init x
+    cur = maybe "-" (show . (+1)) (st^.visibleEntries.L.listSelectedL)
     total = show $ Vec.length $ st^.visibleEntries.L.listElementsL
 
 drawBorderColor :: State -> Widget Field -> Widget Field

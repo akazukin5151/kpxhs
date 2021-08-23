@@ -1,33 +1,37 @@
 module ViewEvents.Common where
 
-import qualified Brick.Focus        as F
-import qualified Brick.Main         as M
-import qualified Brick.Types        as T
-import           Brick.Widgets.Core (str)
-import qualified Brick.Widgets.Edit as E
-import           Data.List          (isSuffixOf, partition, sort)
-import qualified Data.Text.Zipper   as Z hiding (textZipper)
-import qualified Graphics.Vty       as V
-import           Lens.Micro         ((%~), (&), (.~), (^.))
-import           System.Exit        (ExitCode (ExitSuccess))
-import           System.Process     (readProcessWithExitCode)
+import qualified Brick.Focus            as F
+import qualified Brick.Main             as M
+import qualified Brick.Types            as T
+import           Brick.Widgets.Core     (str)
+import qualified Brick.Widgets.Edit     as E
+import           Control.Monad.IO.Class (liftIO)
+import           Data.List              (isSuffixOf, partition, sort)
+import qualified Data.Text.Zipper       as Z hiding (textZipper)
+import qualified Graphics.Vty           as V
+import           Lens.Micro             ((%~), (&), (.~), (^.))
+import           System.Exit            (ExitCode (ExitSuccess))
+import           System.Process         (readProcessWithExitCode)
 
-import           Common             (footers)
-import           Types              ( Action (..)
-                                    , CopyType (CopyUsername)
-                                    , Field
-                                    , State
-                                    , View (BrowserView, ExitView, SearchView)
-                                    , activeView
-                                    , dbPathField
-                                    , focusRing
-                                    , footer
-                                    , hasCopied
-                                    , keyfileField
-                                    , passwordField
-                                    , previousView
-                                    )
+import           Common                 (footers)
+import           Types                  ( Action (..)
+                                        , CopyType (CopyUsername)
+                                        , Field
+                                        , State
+                                        , View (BrowserView, ExitView, SearchView)
+                                        , activeView
+                                        , dbPathField
+                                        , focusRing
+                                        , footer
+                                        , hasCopied
+                                        , keyfileField
+                                        , passwordField
+                                        , previousView
+                                        )
 
+
+liftContinue :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
+liftContinue g st x = liftIO (g st x) >>= M.continue
 
 processInput :: String -> [String]
 processInput s = dirs ++ entries_
@@ -100,11 +104,11 @@ commonTabEvent :: (State -> V.Event -> T.EventM Field (T.Next State))
                -> T.EventM Field (T.Next State)
 commonTabEvent fallback st (T.VtyEvent e) =
   case e of
-    V.EvKey (V.KChar '\t') [] ->
-      M.continue $ _handleTab st focusNext (st ^. activeView)
-    V.EvKey V.KBackTab [] ->
-      M.continue $ _handleTab st focusPrev (st ^. activeView)
-    _ -> fallback st e
+    V.EvKey (V.KChar '\t') [] -> f focusNext
+    V.EvKey V.KBackTab []     -> f focusPrev
+    _                         -> fallback st e
+  where
+    f x = M.continue $ _handleTab st x (st ^. activeView)
 commonTabEvent _ st _ = M.continue st
 
 _handleTab :: State -> (State -> View -> State) -> View -> State

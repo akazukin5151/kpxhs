@@ -19,7 +19,7 @@ drawEntryDetails :: State -> [Widget Field]
 drawEntryDetails st =
   [ C.center $ vBox $ fromMaybe def (drawEntryDetailsInner st) ]
   where
-    def = [C.hCenter $ str "Failed to get entry!"]
+    def = [ C.hCenter $ str "Failed to get entry!" ]
 
 drawEntryDetailsInner :: State -> Maybe [Widget Field]
 drawEntryDetailsInner st = do

@@ -19,19 +19,17 @@ import           Types                  ( CopyType (..)
                                         , activeView
                                         , footer
                                         )
-import           ViewEvents.Common      (copyEntryCommon)
+import           ViewEvents.Common      (copyEntryCommon, liftContinue)
 
 entryDetailsEvent :: State
                   -> T.BrickEvent Field e
                   -> T.EventM Field (T.Next State)
 entryDetailsEvent st (T.VtyEvent e) =
   case e of
-    V.EvKey V.KEsc [] -> M.continue $ returnToBrowser st
-    V.EvKey (V.KChar 'p') [] ->
-      liftIO (copyEntryFromDetails st CopyPassword) >>= M.continue
-    V.EvKey (V.KChar 'u') [] ->
-      liftIO (copyEntryFromDetails st CopyUsername) >>= M.continue
-    _ -> M.continue st
+    V.EvKey V.KEsc []        -> M.continue $ returnToBrowser st
+    V.EvKey (V.KChar 'p') [] -> liftContinue copyEntryFromDetails st CopyPassword
+    V.EvKey (V.KChar 'u') [] -> liftContinue copyEntryFromDetails st CopyUsername
+    _                        -> M.continue st
 entryDetailsEvent st _ = M.continue st
 
 returnToBrowser :: State -> State

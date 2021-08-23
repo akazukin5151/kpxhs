@@ -42,7 +42,7 @@ import           ViewEvents.Common      ( commonTabEvent
                                         , getCreds
                                         , prepareExit
                                         , processInput
-                                        , runCmd
+                                        , runCmd, liftContinue
                                         )
 
 browserEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
@@ -50,16 +50,11 @@ browserEvent =
   commonTabEvent
     ( \st e ->
         case e of
-          V.EvKey V.KEsc [] -> handleEsc st
-          V.EvKey V.KEnter [] ->
-            if isDir st
-              then liftIO (enterDir st) >>= M.continue
-              else liftIO (showEntry st) >>= M.continue
-          V.EvKey (V.KChar 'p') [] ->
-            liftIO (copyEntryFromBrowser st CopyPassword) >>= M.continue
-          V.EvKey (V.KChar 'u') [] ->
-            liftIO (copyEntryFromBrowser st CopyUsername) >>= M.continue
-          ev -> M.continue $ handleNav ev st
+          V.EvKey V.KEsc []        -> handleEsc st
+          V.EvKey V.KEnter []      -> handleEnter st
+          V.EvKey (V.KChar 'p') [] -> liftContinue copyEntryFromBrowser st CopyPassword
+          V.EvKey (V.KChar 'u') [] -> liftContinue copyEntryFromBrowser st CopyUsername
+          ev                       -> M.continue $ handleNav ev st
     )
 
 handleEsc :: State -> T.EventM Field (T.Next State)
@@ -68,6 +63,11 @@ handleEsc st =
     ([], True)  -> M.continue $ prepareExit st
     ([], False) -> M.halt st
     _           -> M.continue $ goUpParent st
+
+handleEnter :: State -> T.EventM Field (T.Next State)
+handleEnter st = liftIO (f st) >>= M.continue
+  where
+    f = if isDir st then enterDir else showEntry
 
 -- If there is "go up to parent" then check for that first
 isDir :: State -> Bool
@@ -93,7 +93,7 @@ enterDirTryCache st rawDir Nothing = do
   pure $ enterDirTryCmd st stdout stderr rawDir code
   where
     (dbPathField_, pw, kf) = getCreds st
-    concatedDir = (dirsToStr (st ^. currentDir)) ++ rawDir
+    concatedDir = dirsToStr (st ^. currentDir) ++ rawDir
 
 enterDirTryCmd :: State -> String -> String -> String -> ExitCode -> State
 enterDirTryCmd st stdout _ rawDir ExitSuccess =

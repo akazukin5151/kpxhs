@@ -33,16 +33,16 @@ import           ViewEvents.Common      (getCreds, processInput, runCmd)
 valid :: State -> Bool
 valid st = f $ getCreds st
   where
-    f (a, b, _) = a /= "" && b /= ""
+    f (a, b, _) = not (null a && null b)
 
 passwordEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 passwordEvent st (T.VtyEvent e) =
   case e of
-    V.EvKey V.KEsc [] -> M.halt st
-    V.EvKey (V.KChar '\t') [] -> M.continue $ st & focusRing %~ F.focusNext
-    V.EvKey V.KBackTab [] -> M.continue $ st & focusRing %~ F.focusPrev
-    V.EvKey V.KEnter [] | valid st -> liftIO (gotoBrowser st) >>= M.continue
-    _ -> M.continue =<< handleFieldInput st e (F.focusGetCurrent (st ^. focusRing))
+    V.EvKey V.KEsc []              -> M.halt st
+    V.EvKey (V.KChar '\t') []      -> M.continue $ st & focusRing %~ F.focusNext
+    V.EvKey V.KBackTab []          -> M.continue $ st & focusRing %~ F.focusPrev
+    V.EvKey V.KEnter [] | valid st -> M.continue =<< liftIO (gotoBrowser st)
+    _                              -> M.continue =<< handleFieldInput st e
 passwordEvent st _ = M.continue st
 
 gotoBrowser :: State -> IO State
@@ -62,13 +62,14 @@ gotoBrowserSuccess st ent =
                  & allEntryNames .~ Map.singleton "." ent
                  & focusRing .~ F.focusRing [SearchField, BrowserField]
 
-handleFieldInput :: State -> V.Event -> Maybe Field -> T.EventM Field State
-handleFieldInput st e field =
+handleFieldInput :: State -> V.Event -> T.EventM Field State
+handleFieldInput st e =
   case field of
     Just PathField     -> inner dbPathField
     Just PasswordField -> inner passwordField
     Just KeyfileField  -> inner keyfileField
     _                  -> pure st
   where
+    field = F.focusGetCurrent (st ^. focusRing)
     inner :: Lens' State (E.Editor String Field) -> T.EventM Field State
     inner field_ = T.handleEventLensed st field_ E.handleEditorEvent e
