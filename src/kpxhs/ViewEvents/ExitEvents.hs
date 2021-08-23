@@ -2,10 +2,11 @@ module ViewEvents.ExitEvents (exitEvent) where
 
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
+import           Brick.Widgets.Dialog   (handleDialogEvent)
 import qualified Brick.Widgets.Dialog   as D
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Graphics.Vty           as V
-import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
+import           Lens.Micro             ((&), (.~), (^.))
 import           System.Info            (os)
 import           System.Process         (callCommand)
 
@@ -22,8 +23,19 @@ exitEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 exitEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEnter [] -> handleEnter st
-    _                   -> M.continue $ handleDialog st e
+    _                   -> handleDialog st e
 exitEvent st _ = M.continue st
+
+-- | handleDialogEvent returns (EventM Field Dialog),
+-- but (>>= M.continue) needs (EventM Field State),
+-- so a function is needed to transform
+-- (EventM Field Dialog) to (EventM Field State)
+handleDialog :: State -> V.Event -> T.EventM Field (T.Next State)
+handleDialog st e =
+  handleDialogEvent e (st ^. exitDialog) >>= setDialog st >>= M.continue
+    where
+      setDialog :: State -> D.Dialog ExitDialog -> T.EventM Field State
+      setDialog st' x = pure $ st' & exitDialog .~ x
 
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st =
@@ -38,33 +50,3 @@ clearClipboard = callCommand $ "printf '' | " ++ handler where
   handler = case os of
     "linux" -> "xclip -selection clipboard"
     _       -> "pbcopy"
-
-handleDialog :: State -> V.Event -> State
-handleDialog st e = st & exitDialog %~ handleDialogEvent' e
-
-
--- Adapted from Brick.Widgets.Dialog
-handleDialogEvent' :: V.Event -> D.Dialog a -> D.Dialog a
-handleDialogEvent' ev d =
-    case ev of
-        V.EvKey (V.KChar '\t') [] -> nextButtonBy 1 True d
-        V.EvKey V.KBackTab []     -> nextButtonBy (-1) True d
-        V.EvKey V.KRight []       -> nextButtonBy 1 False d
-        V.EvKey V.KLeft []        -> nextButtonBy (-1) False d
-        _                         -> d
-
-
--- Copied from Brick.Widgets.Dialog because it's private
--- The usage of mod is fine because there is always > 1 choices in dialog
-nextButtonBy :: Int -> Bool -> D.Dialog a -> D.Dialog a
-nextButtonBy amt wrapCycle d =
-    let numButtons = length $ d^.D.dialogButtonsL
-    in if numButtons == 0 then d
-       else case d^.D.dialogSelectedIndexL of
-           Nothing -> d & D.dialogSelectedIndexL ?~ 0
-           Just i -> d & D.dialogSelectedIndexL ?~ newIndex
-               where
-                   addedIndex = i + amt
-                   newIndex = if wrapCycle
-                              then addedIndex `mod` numButtons
-                              else max 0 $ min addedIndex $ numButtons - 1
