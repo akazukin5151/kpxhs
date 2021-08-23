@@ -2,30 +2,33 @@
 
 module Main where
 
-import System.Exit ( ExitCode(ExitFailure), exitWith )
-import System.Environment ( getArgs )
-import System.Directory ( getHomeDirectory )
-import Control.Exception ( IOException, catch )
-import Control.Monad (void)
-import qualified Data.Map.Strict as Map
-import qualified Graphics.Vty as V
-import Brick.Util (fg, bg, on)
-import Brick.Widgets.Core (str)
-import qualified Brick.AttrMap as A
-import qualified Brick.Focus as F
-import qualified Brick.Main as M
-import qualified Brick.Widgets.Edit as E
-import qualified Brick.Widgets.List as L
+import qualified Brick.AttrMap        as A
+import qualified Brick.Focus          as F
+import qualified Brick.Main           as M
+import           Brick.Util           (bg, fg, on)
+import           Brick.Widgets.Core   (str)
 import qualified Brick.Widgets.Dialog as D
+import qualified Brick.Widgets.Edit   as E
+import qualified Brick.Widgets.List   as L
+import           Control.Exception    (IOException, catch)
+import           Control.Monad        (void)
+import qualified Data.Map.Strict      as Map
+import qualified Graphics.Vty         as V
+import           System.Directory     (getHomeDirectory)
+import           System.Environment   (getArgs)
+import           System.Exit          (ExitCode (ExitFailure), exitWith)
 
-import Common ( toBrowserList )
-import Events ( appEvent )
-import Types
-    ( ExitDialog(Cancel, Clear, Exit),
-      Field(PathField, SearchField, PasswordField, KeyfileField),
-      State(..),
-      View(PasswordView) )
-import UI ( drawUI )
+import           UI                   (drawUI)
+import           Common               (toBrowserList)
+import           Events               (appEvent)
+import           Types                ( ExitDialog (Cancel, Clear, Exit)
+                                      , Field ( KeyfileField
+                                              , PasswordField
+                                              , PathField
+                                              , SearchField )
+                                      , State (..)
+                                      , View (PasswordView)
+                                      )
 
 
 initialState :: F.FocusRing Field -> String -> String -> State
@@ -82,9 +85,9 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    [] -> tui
+    []             -> tui
     [x] | isHelp x -> showHelp
-    _ -> showHelp >> exitWith (ExitFailure 1)
+    _              -> showHelp >> exitWith (ExitFailure 1)
 
 tui :: IO ()
 tui = do

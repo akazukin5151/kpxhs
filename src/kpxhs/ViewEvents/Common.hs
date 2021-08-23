@@ -1,32 +1,32 @@
 module ViewEvents.Common where
 
-import Data.List (partition, isSuffixOf, sort)
-import System.Exit ( ExitCode(ExitSuccess) )
-import System.Process ( readProcessWithExitCode )
-import Lens.Micro ( (&), (%~), (.~), (^.) )
-import Brick.Widgets.Core (str)
-import qualified Graphics.Vty as V
-import qualified Brick.Focus as F
-import qualified Brick.Main as M
-import qualified Brick.Types as T
-import qualified Data.Text.Zipper as Z hiding (textZipper)
+import qualified Brick.Focus        as F
+import qualified Brick.Main         as M
+import qualified Brick.Types        as T
+import           Brick.Widgets.Core (str)
 import qualified Brick.Widgets.Edit as E
+import           Data.List          (isSuffixOf, partition, sort)
+import qualified Data.Text.Zipper   as Z hiding (textZipper)
+import qualified Graphics.Vty       as V
+import           Lens.Micro         ((%~), (&), (.~), (^.))
+import           System.Exit        (ExitCode (ExitSuccess))
+import           System.Process     (readProcessWithExitCode)
 
-import Common ( footers )
-import Types
-    ( activeView,
-      dbPathField,
-      focusRing,
-      footer,
-      hasCopied,
-      keyfileField,
-      passwordField,
-      previousView,
-      Action(..),
-      CopyType(CopyUsername),
-      Field,
-      State,
-      View(BrowserView, ExitView, SearchView) )
+import           Common             (footers)
+import           Types              ( Action (..)
+                                    , CopyType (CopyUsername)
+                                    , Field
+                                    , State
+                                    , View (BrowserView, ExitView, SearchView)
+                                    , activeView
+                                    , dbPathField
+                                    , focusRing
+                                    , footer
+                                    , hasCopied
+                                    , keyfileField
+                                    , passwordField
+                                    , previousView
+                                    )
 
 
 processInput :: String -> [String]
@@ -49,7 +49,7 @@ getCreds st = (dir, pw, kf)
     extractTextField field =
       let res = Z.getText $ field ^. E.editContentsL in
       case res of
-        [] -> ""
+        []      -> ""
         (x : _) -> x
 
 
@@ -59,7 +59,7 @@ runCmd :: Action
        -> String
        -> String
        -> IO (ExitCode, String, String)
-runCmd Ls dir args pw kf = _runCmdInner "ls" dir args pw kf
+runCmd Ls dir args pw kf   = _runCmdInner "ls" dir args pw kf
 runCmd Clip dir args pw kf = _runCmdInner "clip" dir args pw kf
 runCmd Show dir args pw kf = _runCmdInner "show" dir args pw kf
 
@@ -75,7 +75,7 @@ _runCmdInner action dir extraArgs pw kf =
     args = [action, dir, "--quiet"] ++ extraArgs_
     extraArgs_ = case kf of
                    "" -> extraArgs
-                   _ -> ["-k", kf] ++ extraArgs
+                   _  -> ["-k", kf] ++ extraArgs
 
 copyEntryCommon :: State -> String -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
@@ -92,7 +92,7 @@ _copyTypeToStr :: CopyType -> String
 _copyTypeToStr ctype =
   case ctype of
     CopyUsername -> "username"
-    _ -> "password"
+    _            -> "password"
 
 commonTabEvent :: (State -> V.Event -> T.EventM Field (T.Next State))
                -> State
@@ -109,7 +109,7 @@ commonTabEvent _ st _ = M.continue st
 
 _handleTab :: State -> (State -> View -> State) -> View -> State
 _handleTab st f BrowserView = f st SearchView
-_handleTab st f _ = f st BrowserView
+_handleTab st f _           = f st BrowserView
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =

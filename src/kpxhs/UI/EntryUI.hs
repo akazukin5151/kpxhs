@@ -1,22 +1,18 @@
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module UI.EntryUI (drawEntryDetails) where
 
-import Data.Maybe ( fromMaybe )
-import qualified Data.Text as TT
-import Lens.Micro ( (^.) )
-import Brick.Types (Widget)
+import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C
-import Brick.Widgets.Table ( renderTable, table )
-import Brick.Widgets.Core
-  ( str,
-    txt,
-    vBox,
-  )
+import           Brick.Widgets.Core   (str, txt, vBox)
+import           Brick.Widgets.Table  (renderTable, table)
+import           Data.Maybe           (fromMaybe)
+import qualified Data.Text            as TT
+import           Lens.Micro           ((^.))
 
-import Types ( footer, Field, State )
-import Common ( maybeGetEntryData )
+import           Common               (maybeGetEntryData)
+import           Types                (Field, State, footer)
 
 
 drawEntryDetails :: State -> [Widget Field]
@@ -36,14 +32,14 @@ drawTable :: TT.Text -> [[Widget Field]]
 drawTable raw =
   case TT.splitOn "Notes: " raw of
     [rest, notes] -> drawTableWithNotes rest notes
-    _ -> drawTableWithoutNotes raw
+    _             -> drawTableWithoutNotes raw
 
 drawTableWithNotes :: TT.Text -> TT.Text -> [[Widget Field]]
 drawTableWithNotes rest notes = restRows ++ notesRow
   where
     restRows = drawTableWithoutNotes rest
     -- To avoid splitting by ": " inside note contents
-    notesRow = [[txt "Notes", txt $ replaceEmpty notes]]
+    notesRow = [[ txt "Notes", txt $ replaceEmpty notes ]]
 
 -- For some reason the Notes section is missing
 drawTableWithoutNotes :: TT.Text -> [[Widget Field]]
@@ -56,4 +52,4 @@ replaceEmpty :: TT.Text -> TT.Text
 replaceEmpty s =
   case s of
     "" -> "-"
-    x -> x
+    x  -> x

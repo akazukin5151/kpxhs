@@ -2,48 +2,48 @@
 
 module ViewEvents.BrowserEvents (browserEvent) where
 
-import System.Exit ( ExitCode(ExitSuccess) )
-import Control.Monad.IO.Class ( MonadIO(liftIO) )
-import Lens.Micro ( (&), (%~), (.~), (?~), (^.) )
-import Data.Maybe ( fromMaybe )
-import Data.Map.Strict ((!?))
-import qualified Data.Map.Strict as Map
-import qualified Graphics.Vty as V
-import Brick.Util (clamp)
-import Brick.Widgets.Core (str)
-import qualified Brick.Main as M
-import qualified Brick.Types as T
-import qualified Brick.Widgets.Edit as E
-import qualified Brick.Widgets.List as L
+import qualified Brick.Main             as M
+import qualified Brick.Types            as T
+import           Brick.Util             (clamp)
+import           Brick.Widgets.Core     (str)
+import qualified Brick.Widgets.Edit     as E
+import qualified Brick.Widgets.List     as L
+import           Control.Monad.IO.Class (MonadIO (liftIO))
+import           Data.Map.Strict        ((!?))
+import qualified Data.Map.Strict        as Map
+import           Data.Maybe             (fromMaybe)
+import qualified Graphics.Vty           as V
+import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
+import           System.Exit            (ExitCode (ExitSuccess))
 
-import Common
-    ( dirsToStr,
-      dirsToStrRoot,
-      footers,
-      maybeGetEntryData,
-      toBrowserList )
-import Types
-    ( activeView,
-      allEntryDetails,
-      allEntryNames,
-      currentDir,
-      currentEntryDetailName,
-      footer,
-      hasCopied,
-      searchField,
-      visibleEntries,
-      Action(Show, Ls),
-      CopyType(..),
-      Field(SearchField),
-      State,
-      View(EntryView) )
-import ViewEvents.Common
-    ( commonTabEvent,
-      copyEntryCommon,
-      getCreds,
-      prepareExit,
-      processInput,
-      runCmd )
+import           Common                 ( dirsToStr
+                                        , dirsToStrRoot
+                                        , footers
+                                        , maybeGetEntryData
+                                        , toBrowserList
+                                        )
+import           Types                  ( Action (Ls, Show)
+                                        , CopyType (..)
+                                        , Field (SearchField)
+                                        , State
+                                        , View (EntryView)
+                                        , activeView
+                                        , allEntryDetails
+                                        , allEntryNames
+                                        , currentDir
+                                        , currentEntryDetailName
+                                        , footer
+                                        , hasCopied
+                                        , searchField
+                                        , visibleEntries
+                                        )
+import           ViewEvents.Common      ( commonTabEvent
+                                        , copyEntryCommon
+                                        , getCreds
+                                        , prepareExit
+                                        , processInput
+                                        , runCmd
+                                        )
 
 browserEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 browserEvent =
@@ -65,9 +65,9 @@ browserEvent =
 handleEsc :: State -> T.EventM Field (T.Next State)
 handleEsc st =
   case (st^.currentDir, st^.hasCopied) of
-    ([], True) -> M.continue $ prepareExit st
+    ([], True)  -> M.continue $ prepareExit st
     ([], False) -> M.halt st
-    _ -> M.continue $ goUpParent st
+    _           -> M.continue $ goUpParent st
 
 -- If there is "go up to parent" then check for that first
 isDir :: State -> Bool
@@ -137,9 +137,9 @@ maybeGetEntries st =
     dir = dirsToStr newDir
 
 initOrDef :: [a] -> [a] -> [a]
-initOrDef d [] = d
+initOrDef d []  = d
 initOrDef d [_] = d
-initOrDef _ xs = init xs
+initOrDef _ xs  = init xs
 
 
 showEntryTryCache :: State -> String -> IO State
@@ -158,7 +158,7 @@ showEntryCmd st entry = do
   (code, stdout, stderr) <- runCmd Show dir [entry] pw kf
   case code of
     ExitSuccess -> pure $ showEntrySuccess st entry stdout
-    _ -> pure $ st & footer .~ str stderr
+    _           -> pure $ st & footer .~ str stderr
 
 showEntrySuccess :: State -> String -> String -> State
 showEntrySuccess st entry details =
@@ -167,7 +167,7 @@ showEntrySuccess st entry details =
          dirname = dirsToStrRoot (st^.currentDir)
          f :: Maybe (Map.Map String String) -> Maybe (Map.Map String String)
          f (Just m) = Just $ Map.insertWith (curry snd) entry details m
-         f _ = Just $ Map.singleton entry details
+         f _        = Just $ Map.singleton entry details
          newst = st & activeView .~ EntryView
                     & currentEntryDetailName ?~ entry
                     & allEntryDetails %~ Map.alter f dirname

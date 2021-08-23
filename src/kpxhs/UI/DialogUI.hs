@@ -1,18 +1,17 @@
 module UI.DialogUI (drawDialog) where
 
-import Brick.Types (Widget)
+import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C
-import Brick.Widgets.Core
-  ( str,
-    vBox,
-    (<+>),
-    hLimitPercent,
-  )
+import           Brick.Widgets.Core   (hLimitPercent, str, vBox, (<+>))
 
-import Types
-    ( dbPathField, keyfileField, passwordField, Field, State )
-import Common ( footers )
-import UI.Common ( getEditor )
+import           Common               (footers)
+import           UI.Common            (getEditor)
+import           Types                ( Field
+                                      , State
+                                      , dbPathField
+                                      , keyfileField
+                                      , passwordField
+                                      )
 
 
 hidePassword :: [String] -> String

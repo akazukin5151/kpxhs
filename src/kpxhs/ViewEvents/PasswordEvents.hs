@@ -2,32 +2,32 @@
 
 module ViewEvents.PasswordEvents (passwordEvent) where
 
-import System.Exit ( ExitCode(ExitSuccess) )
-import Lens.Micro ( Lens', (&), (%~), (.~), (^.) )
-import Control.Monad.IO.Class ( MonadIO(liftIO) )
-import Brick.Widgets.Core (str)
-import qualified Data.Map.Strict as Map
-import qualified Graphics.Vty as V
-import qualified Brick.Focus as F
-import qualified Brick.Main as M
-import qualified Brick.Types as T
-import qualified Brick.Widgets.Edit as E
+import qualified Brick.Focus            as F
+import qualified Brick.Main             as M
+import qualified Brick.Types            as T
+import           Brick.Widgets.Core     (str)
+import qualified Brick.Widgets.Edit     as E
+import           Control.Monad.IO.Class (MonadIO (liftIO))
+import qualified Data.Map.Strict        as Map
+import qualified Graphics.Vty           as V
+import           Lens.Micro             (Lens', (%~), (&), (.~), (^.))
+import           System.Exit            (ExitCode (ExitSuccess))
 
-import Common ( footers, toBrowserList )
-import Types
-    ( activeView,
-      allEntryNames,
-      dbPathField,
-      focusRing,
-      footer,
-      keyfileField,
-      passwordField,
-      visibleEntries,
-      Action(Ls),
-      Field(..),
-      State,
-      View(SearchView) )
-import ViewEvents.Common ( getCreds, processInput, runCmd )
+import           Common                 (footers, toBrowserList)
+import           Types                  ( Action (Ls)
+                                        , Field (..)
+                                        , State
+                                        , View (SearchView)
+                                        , activeView
+                                        , allEntryNames
+                                        , dbPathField
+                                        , focusRing
+                                        , footer
+                                        , keyfileField
+                                        , passwordField
+                                        , visibleEntries
+                                        )
+import           ViewEvents.Common      (getCreds, processInput, runCmd)
 
 
 valid :: State -> Bool
@@ -51,7 +51,7 @@ gotoBrowser st = do
   (code, stdout, stderr) <- runCmd Ls dir [] pw kf
   case code of
     ExitSuccess -> pure $ gotoBrowserSuccess st $ processInput stdout
-    _ -> pure $ st & footer .~ str stderr
+    _           -> pure $ st & footer .~ str stderr
 
 gotoBrowserSuccess :: State -> [String] -> State
 gotoBrowserSuccess st ent =
@@ -65,10 +65,10 @@ gotoBrowserSuccess st ent =
 handleFieldInput :: State -> V.Event -> Maybe Field -> T.EventM Field State
 handleFieldInput st e field =
   case field of
-    Just PathField -> inner dbPathField
+    Just PathField     -> inner dbPathField
     Just PasswordField -> inner passwordField
-    Just KeyfileField -> inner keyfileField
-    _ -> pure st
+    Just KeyfileField  -> inner keyfileField
+    _                  -> pure st
   where
     inner :: Lens' State (E.Editor String Field) -> T.EventM Field State
     inner field_ = T.handleEventLensed st field_ E.handleEditorEvent e

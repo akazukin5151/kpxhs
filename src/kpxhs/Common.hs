@@ -2,25 +2,29 @@
 
 module Common where
 
-import Data.Text ( Text )
-import Data.Map.Strict ((!?))
-import Lens.Micro ( (^.) )
-import Brick.Types (Widget)
-import Brick.Markup (markup, (@?), Markup)
-import Brick.AttrMap (AttrName)
-import qualified Data.Vector as Vec
-import qualified Brick.Focus as F
+import           Brick.AttrMap      (AttrName)
+import qualified Brick.Focus        as F
+import           Brick.Markup       (Markup, markup, (@?))
+import           Brick.Types        (Widget)
 import qualified Brick.Widgets.List as L
+import           Data.Map.Strict    ((!?))
+import           Data.Text          (Text)
+import qualified Data.Vector        as Vec
+import           Lens.Micro         ((^.))
 
-import Types
-    ( activeView,
-      allEntryDetails,
-      currentDir,
-      currentEntryDetailName,
-      focusRing,
-      Field(BrowserField, PathField, PasswordField),
-      State,
-      View(ExitView, SearchView, EntryView, BrowserView, PasswordView) )
+import           Types              ( Field (BrowserField, PasswordField, PathField)
+                                    , State
+                                    , View ( BrowserView
+                                           , EntryView
+                                           , ExitView
+                                           , PasswordView
+                                           , SearchView )
+                                    , activeView
+                                    , allEntryDetails
+                                    , currentDir
+                                    , currentEntryDetailName
+                                    , focusRing
+                                    )
 
 -- | This should only be used for running the show cmd
 dirsToStr :: [String] -> String
@@ -31,7 +35,7 @@ dirsToStrRoot :: [String] -> String
 dirsToStrRoot x =
   case dirsToStr x of
     "" -> "."
-    y -> y
+    y  -> y
 
 annotate :: [(Text, Text)] -> Widget Field
 annotate x = markup $ foldr1 (<>) (f <$> x)
@@ -47,12 +51,12 @@ footers st =
     BrowserView ->
       case st^.currentDir of
         [] -> [exit, focus_search, username, password]
-        _ -> [back, focus_search, username, password]
+        _  -> [back, focus_search, username, password]
     PasswordView ->
       case F.focusGetCurrent (st ^. focusRing) of
-        Just PathField -> exit_tab_submit "password"
+        Just PathField     -> exit_tab_submit "password"
         Just PasswordField -> exit_tab_submit "keyfile"
-        _ -> exit_tab_submit "path"
+        _                  -> exit_tab_submit "path"
     ExitView -> [("", "")]
   where
     exit = ("Esc", " exit  ")

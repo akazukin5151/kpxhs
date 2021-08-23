@@ -1,43 +1,43 @@
 module ViewEvents.ExitEvents (exitEvent) where
 
-import Lens.Micro ( (&), (%~), (.~), (?~), (^.) )
-import qualified Brick.Types as T
-import qualified Brick.Main as M
-import qualified Brick.Widgets.Dialog as D
-import qualified Graphics.Vty as V
-import Control.Monad.IO.Class ( MonadIO(liftIO) )
-import System.Process ( callCommand )
-import System.Info ( os )
+import qualified Brick.Main             as M
+import qualified Brick.Types            as T
+import qualified Brick.Widgets.Dialog   as D
+import           Control.Monad.IO.Class (MonadIO (liftIO))
+import qualified Graphics.Vty           as V
+import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
+import           System.Info            (os)
+import           System.Process         (callCommand)
 
-import Types
-    ( activeView,
-      exitDialog,
-      previousView,
-      ExitDialog(Exit, Clear, Cancel),
-      Field,
-      State )
+import           Types                  ( ExitDialog (Cancel, Clear, Exit)
+                                        , Field
+                                        , State
+                                        , activeView
+                                        , exitDialog
+                                        , previousView
+                                        )
 
 
 exitEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 exitEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEnter [] -> handleEnter st
-    _ -> M.continue $ handleDialog st e
+    _                   -> M.continue $ handleDialog st e
 exitEvent st _ = M.continue st
 
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st =
   case D.dialogSelection (st^.exitDialog) of
-    Just Clear -> liftIO clearClipboard >> M.halt st
+    Just Clear  -> liftIO clearClipboard >> M.halt st
     Just Cancel -> M.continue $ st & activeView .~ (st^.previousView)
-    Just Exit -> M.halt st
-    _ -> M.continue st
+    Just Exit   -> M.halt st
+    _           -> M.continue st
 
 clearClipboard :: IO ()
 clearClipboard = callCommand $ "printf '' | " ++ handler where
   handler = case os of
     "linux" -> "xclip -selection clipboard"
-    _ -> "pbcopy"
+    _       -> "pbcopy"
 
 handleDialog :: State -> V.Event -> State
 handleDialog st e = st & exitDialog %~ handleDialogEvent' e
@@ -48,10 +48,10 @@ handleDialogEvent' :: V.Event -> D.Dialog a -> D.Dialog a
 handleDialogEvent' ev d =
     case ev of
         V.EvKey (V.KChar '\t') [] -> nextButtonBy 1 True d
-        V.EvKey V.KBackTab [] -> nextButtonBy (-1) True d
-        V.EvKey V.KRight [] -> nextButtonBy 1 False d
-        V.EvKey V.KLeft [] -> nextButtonBy (-1) False d
-        _ -> d
+        V.EvKey V.KBackTab []     -> nextButtonBy (-1) True d
+        V.EvKey V.KRight []       -> nextButtonBy 1 False d
+        V.EvKey V.KLeft []        -> nextButtonBy (-1) False d
+        _                         -> d
 
 
 -- Copied from Brick.Widgets.Dialog because it's private

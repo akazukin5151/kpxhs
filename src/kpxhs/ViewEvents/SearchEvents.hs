@@ -1,26 +1,26 @@
 module ViewEvents.SearchEvents (searchEvent) where
 
-import Data.Char ( toLower )
-import Data.List (isInfixOf)
-import Data.Map.Strict ((!?))
-import Data.Maybe ( fromMaybe, listToMaybe )
-import Lens.Micro ( (&), (%~), (.~), (^.) )
-import qualified Graphics.Vty as V
-import qualified Brick.Main as M
-import qualified Brick.Types as T
+import qualified Brick.Main         as M
+import qualified Brick.Types        as T
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
+import           Data.Char          (toLower)
+import           Data.List          (isInfixOf)
+import           Data.Map.Strict    ((!?))
+import           Data.Maybe         (fromMaybe, listToMaybe)
+import qualified Graphics.Vty       as V
+import           Lens.Micro         ((%~), (&), (.~), (^.))
 
-import Common ( toBrowserList )
-import Types
-    ( allEntryNames,
-      currentDir,
-      hasCopied,
-      searchField,
-      visibleEntries,
-      Field,
-      State )
-import ViewEvents.Common ( commonTabEvent, prepareExit )
+import           Common             (toBrowserList)
+import           Types              ( Field
+                                    , State
+                                    , allEntryNames
+                                    , currentDir
+                                    , hasCopied
+                                    , searchField
+                                    , visibleEntries
+                                    )
+import           ViewEvents.Common  (commonTabEvent, prepareExit)
 
 
 searchEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
@@ -29,7 +29,7 @@ searchEvent =
     ( \st e ->
         case e of
           V.EvKey V.KEsc [] -> handleEsc st
-          _ -> M.continue =<< handleSearch st e
+          _                 -> M.continue =<< handleSearch st e
     )
 
 handleEsc :: State -> T.EventM Field (T.Next State)
@@ -56,6 +56,6 @@ handleSearch st e = do
 
 -- Adapted from the definition of last in Prelude
 dirsToCurrent :: [String] -> String
-dirsToCurrent [] = "."
-dirsToCurrent [x] = x
+dirsToCurrent []     = "."
+dirsToCurrent [x]    = x
 dirsToCurrent (_:xs) = dirsToCurrent xs

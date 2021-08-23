@@ -2,24 +2,24 @@
 
 module ViewEvents.EntryEvents (entryDetailsEvent) where
 
-import Data.Maybe ( fromMaybe )
-import qualified Data.Text as TT
-import Lens.Micro ( (&), (.~) )
-import Control.Monad.IO.Class ( MonadIO(liftIO) )
-import Brick.Widgets.Core (str)
-import qualified Graphics.Vty as V
-import qualified Brick.Main as M
-import qualified Brick.Types as T
+import qualified Brick.Main             as M
+import qualified Brick.Types            as T
+import           Brick.Widgets.Core     (str)
+import           Control.Monad.IO.Class (MonadIO (liftIO))
+import           Data.Maybe             (fromMaybe)
+import qualified Data.Text              as TT
+import qualified Graphics.Vty           as V
+import           Lens.Micro             ((&), (.~))
 
-import Common ( footers, maybeGetEntryData )
-import Types
-    ( activeView,
-      footer,
-      CopyType(..),
-      Field,
-      State,
-      View(BrowserView) )
-import ViewEvents.Common ( copyEntryCommon )
+import           Common                 (footers, maybeGetEntryData)
+import           Types                  ( CopyType (..)
+                                        , Field
+                                        , State
+                                        , View (BrowserView)
+                                        , activeView
+                                        , footer
+                                        )
+import           ViewEvents.Common      (copyEntryCommon)
 
 entryDetailsEvent :: State
                   -> T.BrickEvent Field e
@@ -52,4 +52,4 @@ maybeCopy st ctype = do
   let splitted = TT.splitOn "Title: " $ TT.pack $ head $ lines entryData
   case splitted of
     [_, entry] -> Just $ copyEntryCommon st (TT.unpack entry) ctype
-    _ -> Nothing
+    _          -> Nothing
