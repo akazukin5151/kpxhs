@@ -17,10 +17,11 @@ import ViewEvents.SearchEvents   (searchEvent)
 
 
 appEvent :: State -> BrickEvent Field e -> EventM Field (Next State)
-appEvent st e =
-  case st ^. activeView of
-    PasswordView -> passwordEvent st e
-    EntryView    -> entryDetailsEvent st e
-    SearchView   -> searchEvent st e
-    BrowserView  -> browserEvent st e
-    ExitView     -> exitEvent st e
+appEvent st e = f st e
+  where
+    f = case st ^. activeView of
+          PasswordView -> passwordEvent
+          EntryView    -> entryDetailsEvent
+          SearchView   -> searchEvent
+          BrowserView  -> browserEvent
+          ExitView     -> exitEvent
