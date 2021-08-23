@@ -26,10 +26,10 @@ exitEvent st (T.VtyEvent e) =
     _                   -> handleDialog st e
 exitEvent st _ = M.continue st
 
--- | handleDialogEvent returns (EventM Field Dialog),
--- but (>>= M.continue) needs (EventM Field State),
+-- | handleDialogEvent returns (EventM f (Dialog a)),
+-- but (>>= M.continue) needs (EventM f State),
 -- so a function is needed to transform
--- (EventM Field Dialog) to (EventM Field State)
+-- (EventM f (Dialog a)) to (EventM f State)
 handleDialog :: State -> V.Event -> T.EventM Field (T.Next State)
 handleDialog st e =
   handleDialogEvent e (st ^. exitDialog) >>= setDialog st >>= M.continue
