@@ -156,25 +156,25 @@ copyEntryFromBrowser st ctype =
 
 handleNav :: V.Event -> State -> State
 handleNav e st =
-  case e of
+  st & visibleEntries %~ case e of
     -- Keys from handleListEvent
-    V.EvKey V.KUp [] -> st & visibleEntries %~ L.listMoveUp
-    V.EvKey V.KDown [] -> st & visibleEntries %~ L.listMoveDown
-    V.EvKey V.KHome [] -> st & visibleEntries %~ listMoveToBeginning
-    V.EvKey V.KEnd [] -> st & visibleEntries %~ listMoveToEnd
-    V.EvKey V.KPageDown [] -> st & visibleEntries %~ listMovePageDown
-    V.EvKey V.KPageUp [] -> st & visibleEntries %~ listMovePageUp
+    V.EvKey V.KUp []         -> L.listMoveUp
+    V.EvKey V.KDown []       -> L.listMoveDown
+    V.EvKey V.KHome []       -> listMoveToBeginning
+    V.EvKey V.KEnd []        -> listMoveToEnd
+    V.EvKey V.KPageDown []   -> listMovePageDown
+    V.EvKey V.KPageUp []     -> listMovePageUp
     -- WASD
-    V.EvKey (V.KChar 'w') [] -> st & visibleEntries %~ L.listMoveUp
-    V.EvKey (V.KChar 's') [] -> st & visibleEntries %~ L.listMoveDown
-    V.EvKey (V.KChar 'e') [] -> st & visibleEntries %~ listMovePageDown
-    V.EvKey (V.KChar 'q') [] -> st & visibleEntries %~ listMovePageUp
+    V.EvKey (V.KChar 'w') [] -> L.listMoveUp
+    V.EvKey (V.KChar 's') [] -> L.listMoveDown
+    V.EvKey (V.KChar 'e') [] -> listMovePageDown
+    V.EvKey (V.KChar 'q') [] -> listMovePageUp
     -- Vi
-    V.EvKey (V.KChar 'k') [] -> st & visibleEntries %~ L.listMoveUp
-    V.EvKey (V.KChar 'j') [] -> st & visibleEntries %~ L.listMoveDown
-    V.EvKey (V.KChar 'g') [] -> st & visibleEntries %~ listMoveToBeginning
-    V.EvKey (V.KChar 'G') [] -> st & visibleEntries %~ listMoveToEnd
-    _ -> st
+    V.EvKey (V.KChar 'k') [] -> L.listMoveUp
+    V.EvKey (V.KChar 'j') [] -> L.listMoveDown
+    V.EvKey (V.KChar 'g') [] -> listMoveToBeginning
+    V.EvKey (V.KChar 'G') [] -> listMoveToEnd
+    _                        -> id
   where
     -- Default page up and down functions too fast for me
     listMovePageUp l = listMoveBy (subtract 5) l
