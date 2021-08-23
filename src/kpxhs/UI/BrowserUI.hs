@@ -2,7 +2,7 @@ module UI.BrowserUI (drawBrowser) where
 
 import qualified Data.Vector as Vec
 import qualified Graphics.Vty as V
-import Lens.Micro
+import Lens.Micro ( (&), (^.) )
 import qualified Brick.AttrMap as A
 import qualified Brick.Focus as F
 import Brick.Types (Widget)
@@ -19,9 +19,15 @@ import Brick.Widgets.Core
     vLimitPercent,
   )
 
-import Common
+import Common ( dirsToStr, footers )
 import Types
-import UI.Common
+    ( currentDir,
+      focusRing,
+      searchField,
+      visibleEntries,
+      Field(BrowserField),
+      State )
+import UI.Common ( getEditor )
 
 
 drawBrowser :: State -> [Widget Field]
@@ -72,4 +78,3 @@ listDrawElement _ a = str $ show a
 drawBrowserListInner :: State -> Widget Field
 drawBrowserListInner st =
   L.renderList listDrawElement True (st^.visibleEntries)
-

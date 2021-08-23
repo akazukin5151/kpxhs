@@ -1,19 +1,26 @@
 module ViewEvents.SearchEvents (searchEvent) where
 
-import Data.Char
+import Data.Char ( toLower )
 import Data.List (isInfixOf)
 import Data.Map.Strict ((!?))
-import Data.Maybe
-import Lens.Micro
+import Data.Maybe ( fromMaybe, listToMaybe )
+import Lens.Micro ( (&), (%~), (.~), (^.) )
 import qualified Graphics.Vty as V
 import qualified Brick.Main as M
 import qualified Brick.Types as T
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 
-import Common
+import Common ( toBrowserList )
 import Types
-import ViewEvents.Common
+    ( allEntryNames,
+      currentDir,
+      hasCopied,
+      searchField,
+      visibleEntries,
+      Field,
+      State )
+import ViewEvents.Common ( commonTabEvent, prepareExit )
 
 
 searchEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)

@@ -1,14 +1,18 @@
 module Events (appEvent) where
 
-import Lens.Micro
+import Lens.Micro ( (^.) )
 import qualified Brick.Types as T
 
 import Types
-import ViewEvents.BrowserEvents
-import ViewEvents.EntryEvents
-import ViewEvents.PasswordEvents
-import ViewEvents.SearchEvents
-import ViewEvents.ExitEvents
+    ( activeView,
+      Field,
+      State,
+      View(ExitView, PasswordView, EntryView, SearchView, BrowserView) )
+import ViewEvents.BrowserEvents ( browserEvent )
+import ViewEvents.EntryEvents ( entryDetailsEvent )
+import ViewEvents.PasswordEvents ( passwordEvent )
+import ViewEvents.SearchEvents ( searchEvent )
+import ViewEvents.ExitEvents ( exitEvent )
 
 
 appEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)

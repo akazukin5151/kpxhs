@@ -1,9 +1,10 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE Rank2Types #-}
+
 module ViewEvents.PasswordEvents (passwordEvent) where
 
-import System.Exit
-import Lens.Micro
-import Control.Monad.IO.Class
+import System.Exit ( ExitCode(ExitSuccess) )
+import Lens.Micro ( Lens', (&), (%~), (.~), (^.) )
+import Control.Monad.IO.Class ( MonadIO(liftIO) )
 import Brick.Widgets.Core (str)
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
@@ -12,9 +13,21 @@ import qualified Brick.Main as M
 import qualified Brick.Types as T
 import qualified Brick.Widgets.Edit as E
 
-import Common
+import Common ( footers, toBrowserList )
 import Types
-import ViewEvents.Common
+    ( activeView,
+      allEntryNames,
+      dbPathField,
+      focusRing,
+      footer,
+      keyfileField,
+      passwordField,
+      visibleEntries,
+      Action(Ls),
+      Field(..),
+      State,
+      View(SearchView) )
+import ViewEvents.Common ( getCreds, processInput, runCmd )
 
 
 valid :: State -> Bool

@@ -1,15 +1,21 @@
 module ViewEvents.ExitEvents (exitEvent) where
 
-import Lens.Micro
+import Lens.Micro ( (&), (%~), (.~), (?~), (^.) )
 import qualified Brick.Types as T
 import qualified Brick.Main as M
 import qualified Brick.Widgets.Dialog as D
 import qualified Graphics.Vty as V
-import Control.Monad.IO.Class
-import System.Process
-import System.Info
+import Control.Monad.IO.Class ( MonadIO(liftIO) )
+import System.Process ( callCommand )
+import System.Info ( os )
 
 import Types
+    ( activeView,
+      exitDialog,
+      previousView,
+      ExitDialog(Exit, Clear, Cancel),
+      Field,
+      State )
 
 
 exitEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
@@ -34,7 +40,7 @@ clearClipboard = callCommand $ "printf '' | " ++ handler where
     _ -> "pbcopy"
 
 handleDialog :: State -> V.Event -> State
-handleDialog st e = st & exitDialog %~ (handleDialogEvent' e)
+handleDialog st e = st & exitDialog %~ handleDialogEvent' e
 
 
 -- Adapted from Brick.Widgets.Dialog

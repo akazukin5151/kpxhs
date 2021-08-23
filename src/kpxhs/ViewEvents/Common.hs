@@ -1,9 +1,9 @@
 module ViewEvents.Common where
 
 import Data.List (partition, isSuffixOf, sort)
-import System.Exit
-import System.Process
-import Lens.Micro
+import System.Exit ( ExitCode(ExitSuccess) )
+import System.Process ( readProcessWithExitCode )
+import Lens.Micro ( (&), (%~), (.~), (^.) )
 import Brick.Widgets.Core (str)
 import qualified Graphics.Vty as V
 import qualified Brick.Focus as F
@@ -12,8 +12,21 @@ import qualified Brick.Types as T
 import qualified Data.Text.Zipper as Z hiding (textZipper)
 import qualified Brick.Widgets.Edit as E
 
-import Common
+import Common ( footers )
 import Types
+    ( activeView,
+      dbPathField,
+      focusRing,
+      footer,
+      hasCopied,
+      keyfileField,
+      passwordField,
+      previousView,
+      Action(..),
+      CopyType(CopyUsername),
+      Field,
+      State,
+      View(BrowserView, ExitView, SearchView) )
 
 
 processInput :: String -> [String]

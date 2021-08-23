@@ -2,9 +2,9 @@
 
 module Common where
 
-import Data.Text hiding (foldr1, foldr, map)
+import Data.Text ( Text )
 import Data.Map.Strict ((!?))
-import Lens.Micro
+import Lens.Micro ( (^.) )
 import Brick.Types (Widget)
 import Brick.Markup (markup, (@?), Markup)
 import Brick.AttrMap (AttrName)
@@ -13,6 +13,14 @@ import qualified Brick.Focus as F
 import qualified Brick.Widgets.List as L
 
 import Types
+    ( activeView,
+      allEntryDetails,
+      currentDir,
+      currentEntryDetailName,
+      focusRing,
+      Field(BrowserField, PathField, PasswordField),
+      State,
+      View(ExitView, SearchView, EntryView, BrowserView, PasswordView) )
 
 -- | This should only be used for running the show cmd
 dirsToStr :: [String] -> String
@@ -65,4 +73,3 @@ maybeGetEntryData st = do
   entryname <- st^.currentEntryDetailName
   entriesInThisDir <- (st^.allEntryDetails) !? dirname
   entriesInThisDir !? entryname
-

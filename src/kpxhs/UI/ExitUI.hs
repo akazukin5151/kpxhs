@@ -1,12 +1,12 @@
 module UI.ExitUI (drawExitView) where
 
-import Lens.Micro
+import Lens.Micro ( (^.) )
 import Brick.Types (Widget)
 import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Center as C
 import Brick.Widgets.Core (str, padAll)
 
-import Types
+import Types ( exitDialog, Field, State )
 
 
 drawExitView :: State -> [Widget Field]

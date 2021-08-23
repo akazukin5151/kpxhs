@@ -2,10 +2,10 @@
 
 module ViewEvents.BrowserEvents (browserEvent) where
 
-import System.Exit
-import Control.Monad.IO.Class
-import Lens.Micro
-import Data.Maybe
+import System.Exit ( ExitCode(ExitSuccess) )
+import Control.Monad.IO.Class ( MonadIO(liftIO) )
+import Lens.Micro ( (&), (%~), (.~), (?~), (^.) )
+import Data.Maybe ( fromMaybe )
 import Data.Map.Strict ((!?))
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
@@ -17,8 +17,33 @@ import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 
 import Common
+    ( dirsToStr,
+      dirsToStrRoot,
+      footers,
+      maybeGetEntryData,
+      toBrowserList )
 import Types
+    ( activeView,
+      allEntryDetails,
+      allEntryNames,
+      currentDir,
+      currentEntryDetailName,
+      footer,
+      hasCopied,
+      searchField,
+      visibleEntries,
+      Action(Show, Ls),
+      CopyType(..),
+      Field(SearchField),
+      State,
+      View(EntryView) )
 import ViewEvents.Common
+    ( commonTabEvent,
+      copyEntryCommon,
+      getCreds,
+      prepareExit,
+      processInput,
+      runCmd )
 
 browserEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 browserEvent =

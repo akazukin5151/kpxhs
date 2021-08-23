@@ -2,10 +2,10 @@
 
 module Main where
 
-import System.Exit
-import System.Environment
-import System.Directory
-import Control.Exception
+import System.Exit ( ExitCode(ExitFailure), exitWith )
+import System.Environment ( getArgs )
+import System.Directory ( getHomeDirectory )
+import Control.Exception ( IOException, catch )
 import Control.Monad (void)
 import qualified Data.Map.Strict as Map
 import qualified Graphics.Vty as V
@@ -18,10 +18,14 @@ import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 import qualified Brick.Widgets.Dialog as D
 
-import Common
-import Events
+import Common ( toBrowserList )
+import Events ( appEvent )
 import Types
-import UI
+    ( ExitDialog(Cancel, Clear, Exit),
+      Field(PathField, SearchField, PasswordField, KeyfileField),
+      State(..),
+      View(PasswordView) )
+import UI ( drawUI )
 
 
 initialState :: F.FocusRing Field -> String -> String -> State
@@ -122,4 +126,3 @@ showHelp =
             \    Enter                  Show entry details\n\
             \    u                      Copy username\n\
             \    p                      Copy password"
-

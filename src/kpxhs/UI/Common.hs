@@ -1,12 +1,12 @@
-module UI.Common where
+module UI.Common (getEditor) where
 
-import Lens.Micro
+import Lens.Micro ( Getting, (^.) )
 import qualified Brick.Widgets.Edit as E
 import Brick.Types (Widget)
 import qualified Brick.Focus as F
 import Brick.Widgets.Core (str)
 
-import Types
+import Types ( focusRing, Field, State )
 
 
 getEditor :: State

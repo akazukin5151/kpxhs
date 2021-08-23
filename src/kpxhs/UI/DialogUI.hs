@@ -10,8 +10,9 @@ import Brick.Widgets.Core
   )
 
 import Types
-import Common
-import UI.Common
+    ( dbPathField, keyfileField, passwordField, Field, State )
+import Common ( footers )
+import UI.Common ( getEditor )
 
 
 hidePassword :: [String] -> String
@@ -37,4 +38,3 @@ drawDialog st = [ui]
             C.hCenter $ str " ",
             C.hCenter $ footers st
           ]
-

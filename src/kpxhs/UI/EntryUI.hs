@@ -3,25 +3,25 @@
 
 module UI.EntryUI (drawEntryDetails) where
 
-import Data.Maybe
+import Data.Maybe ( fromMaybe )
 import qualified Data.Text as TT
-import Lens.Micro
+import Lens.Micro ( (^.) )
 import Brick.Types (Widget)
 import qualified Brick.Widgets.Center as C
-import Brick.Widgets.Table
+import Brick.Widgets.Table ( renderTable, table )
 import Brick.Widgets.Core
   ( str,
     txt,
     vBox,
   )
 
-import Types
-import Common
+import Types ( footer, Field, State )
+import Common ( maybeGetEntryData )
 
 
 drawEntryDetails :: State -> [Widget Field]
 drawEntryDetails st =
-  [C.center $ vBox $ fromMaybe def (drawEntryDetailsInner st)]
+  [ C.center $ vBox $ fromMaybe def (drawEntryDetailsInner st) ]
   where
     def = [C.hCenter $ str "Failed to get entry!"]
 
@@ -57,4 +57,3 @@ replaceEmpty s =
   case s of
     "" -> "-"
     x -> x
-

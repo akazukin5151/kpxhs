@@ -2,18 +2,24 @@
 
 module ViewEvents.EntryEvents (entryDetailsEvent) where
 
-import Data.Maybe
+import Data.Maybe ( fromMaybe )
 import qualified Data.Text as TT
-import Lens.Micro
-import Control.Monad.IO.Class
+import Lens.Micro ( (&), (.~) )
+import Control.Monad.IO.Class ( MonadIO(liftIO) )
 import Brick.Widgets.Core (str)
 import qualified Graphics.Vty as V
 import qualified Brick.Main as M
 import qualified Brick.Types as T
 
-import Common
+import Common ( footers, maybeGetEntryData )
 import Types
-import ViewEvents.Common
+    ( activeView,
+      footer,
+      CopyType(..),
+      Field,
+      State,
+      View(BrowserView) )
+import ViewEvents.Common ( copyEntryCommon )
 
 entryDetailsEvent :: State
                   -> T.BrickEvent Field e
@@ -47,4 +53,3 @@ maybeCopy st ctype = do
   case splitted of
     [_, entry] -> Just $ copyEntryCommon st (TT.unpack entry) ctype
     _ -> Nothing
-
