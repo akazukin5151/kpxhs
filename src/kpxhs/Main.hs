@@ -128,4 +128,12 @@ showHelp =
             \    Tab                    Cycle focus\n\
             \    Enter                  Show entry details\n\
             \    u                      Copy username\n\
-            \    p                      Copy password"
+            \    p                      Copy password\n\
+            \  Navigation\n\
+            \    j, s                   Move down\n\
+            \    k, w                   Move up\n\
+            \    g                      Move to top\n\
+            \    G                      Move to bottom\n\
+            \    q                      Page up\n\
+            \    e                      Page down"
+
