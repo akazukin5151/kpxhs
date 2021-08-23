@@ -34,7 +34,7 @@ browserEvent =
             liftIO (copyEntryFromBrowser st CopyPassword) >>= M.continue
           V.EvKey (V.KChar 'u') [] ->
             liftIO (copyEntryFromBrowser st CopyUsername) >>= M.continue
-          ev -> M.continue $ handleWASD ev st
+          ev -> M.continue $ handleNav ev st
     )
 
 handleEsc :: State -> T.EventM Field (T.Next State)
@@ -154,8 +154,8 @@ copyEntryFromBrowser st ctype =
       def = pure $ st & footer .~ str "No entry selected!"
       f entry = copyEntryCommon st entry ctype
 
-handleWASD :: V.Event -> State -> State
-handleWASD e st_ =
+handleNav :: V.Event -> State -> State
+handleNav e st =
   case e of
     -- Keys from handleListEvent
     V.EvKey V.KUp [] -> st & visibleEntries %~ L.listMoveUp
@@ -169,9 +169,13 @@ handleWASD e st_ =
     V.EvKey (V.KChar 's') [] -> st & visibleEntries %~ L.listMoveDown
     V.EvKey (V.KChar 'e') [] -> st & visibleEntries %~ listMovePageDown
     V.EvKey (V.KChar 'q') [] -> st & visibleEntries %~ listMovePageUp
+    -- Vi
+    V.EvKey (V.KChar 'k') [] -> st & visibleEntries %~ L.listMoveUp
+    V.EvKey (V.KChar 'j') [] -> st & visibleEntries %~ L.listMoveDown
+    V.EvKey (V.KChar 'g') [] -> st & visibleEntries %~ listMoveToBeginning
+    V.EvKey (V.KChar 'G') [] -> st & visibleEntries %~ listMoveToEnd
     _ -> st
   where
-    st = st_ & footer .~ footers st_
     -- Default page up and down functions too fast for me
     listMovePageUp l = listMoveBy (subtract 5) l
     listMovePageDown l = listMoveBy (5 +) l
