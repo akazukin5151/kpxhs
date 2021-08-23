@@ -100,12 +100,9 @@ parseConfig :: String -> IO (String, String, F.FocusRing Field)
 parseConfig cfgdir = do
   file <- catch (readFile cfgdir) f
   pure $ case lines file of
-    [dbdir, kfdir] | dbdir /= "" && kfdir /= "" ->
-      (dbdir, kfdir, passwordfirst)
-    [dbdir] | dbdir /= "" ->
-      (dbdir, "", passwordfirst)
-    _ ->
-      ("", "", pathfirst)
+    [dbdir, kfdir] | not (null dbdir && null kfdir) -> (dbdir, kfdir, passwordfirst)
+    [dbdir]        | not (null dbdir)               -> (dbdir, "",    passwordfirst)
+    _                                               -> ("",    "",    pathfirst)
   where
     f :: IOException -> IO String
     f _ = pure ""
