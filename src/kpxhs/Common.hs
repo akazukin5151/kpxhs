@@ -24,7 +24,7 @@ import Types
 
 -- | This should only be used for running the show cmd
 dirsToStr :: [String] -> String
-dirsToStr = foldr (++) []
+dirsToStr = concat
 
 -- | This should be used for accessing any other mappings in the state
 dirsToStrRoot :: [String] -> String
