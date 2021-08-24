@@ -4,6 +4,7 @@ module ViewEvents.Common where
 
 import qualified Brick.Focus            as F
 import qualified Brick.Main             as M
+import           Brick.Types            (Widget)
 import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (str, txt)
 import qualified Brick.Widgets.Edit     as E
@@ -16,13 +17,18 @@ import qualified Graphics.Vty           as V
 import           Lens.Micro             ((%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
 import           System.Process         (readProcessWithExitCode)
+import           Util                   (capitalise)
 
-import           Common                 (footers)
+import           Common                 ( annotate, exit, tab, initialFooter )
 import           Types                  ( Action (..)
                                         , CopyType (CopyUsername)
                                         , Field
                                         , State
-                                        , View (BrowserView, ExitView, SearchView)
+                                        , View ( BrowserView
+                                               , ExitView
+                                               , SearchView
+                                               , EntryView
+                                               , PasswordView )
                                         , activeView
                                         , dbPathField
                                         , focusRing
@@ -30,7 +36,7 @@ import           Types                  ( Action (..)
                                         , hasCopied
                                         , keyfileField
                                         , passwordField
-                                        , previousView
+                                        , previousView, currentDir
                                         )
 
 
@@ -83,7 +89,7 @@ _runCmdInner action dir extraArgs pw kf = do
   pure (e, TT.pack a, TT.pack b)
   where
     args :: [String]
-    args = TT.unpack <$> [action, dir, "--quiet"] ++ extraArgs_
+    args = TT.unpack <$> [action, dir] ++ extraArgs_
     extraArgs_ = case kf of
                    "" -> extraArgs
                    _  -> ["-k", kf] ++ extraArgs
@@ -92,11 +98,12 @@ copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
+  let attr_repr = attr & show & drop 1 & init & capitalise
+  let notif = attr_repr <> " for \"" <> TT.unpack entry <> "\" copied to clipboard!"
   (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
   pure $ case code of
-    ExitSuccess -> st
-                   & footer .~ str (show attr ++ " copied to clipboard!")
-                   & hasCopied .~ True
+    ExitSuccess -> st & footer .~ str notif
+                      & hasCopied .~ True
     _ -> st & footer .~ txt stderr
 
 _copyTypeToStr :: CopyType -> Text
@@ -124,13 +131,34 @@ _handleTab st f _           = f st BrowserView
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =
-  newst & footer .~ footers newst
-    where
-      newst = st & focusRing %~ f
-                 & activeView .~ view
+  st & focusRing %~ f
+     & activeView .~ view
+     & updateFooter
 
 focusNext :: State -> View -> State
 focusNext = focus F.focusNext
 
 focusPrev :: State -> View -> State
 focusPrev = focus F.focusPrev
+
+-- | Restores the default footer for the current view
+--  Should be only used when transitioning to a new view or field
+updateFooter :: State -> State
+updateFooter st = st & footer .~ viewDefaultFooter st
+
+viewDefaultFooter :: State -> Widget Field
+viewDefaultFooter st =
+  annotate $ case st^.activeView of
+    SearchView -> [exit, tab " focus list "]
+    EntryView -> [back, username, password]
+    BrowserView ->
+      case st^.currentDir of
+        [] -> [exit, focus_search, username, password]
+        _  -> [back, focus_search, username, password]
+    PasswordView -> initialFooter $ st ^. focusRing
+    ExitView -> [("", "")]
+  where
+    back = ("Esc", " back  ")
+    username = ("u", " copy username  ")
+    password = ("p", " copy password")
+    focus_search = ("Tab", " focus search  ")

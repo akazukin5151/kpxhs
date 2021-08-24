@@ -13,6 +13,7 @@ import qualified Graphics.Vty       as V
 import           Lens.Micro         ((%~), (&), (.~), (^.))
 
 import           Common             (toBrowserList)
+import           ViewEvents.Common  (commonTabEvent, prepareExit)
 import           Types              ( Field
                                     , State
                                     , allEntryNames
@@ -21,7 +22,6 @@ import           Types              ( Field
                                     , searchField
                                     , visibleEntries
                                     )
-import           ViewEvents.Common  (commonTabEvent, prepareExit)
 
 
 searchEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)

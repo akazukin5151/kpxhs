@@ -23,14 +23,14 @@ import qualified Data.Vector          as Vec
 import qualified Graphics.Vty         as V
 import           Lens.Micro           ((&), (^.))
 
-import           Common               (dirsToStr, footers)
+import           Common               (dirsToStr)
 import           UI.Common            (getEditor)
 import           Types                ( Field (BrowserField)
                                       , State
                                       , currentDir
                                       , focusRing
                                       , searchField
-                                      , visibleEntries
+                                      , visibleEntries, footer
                                       )
 
 
@@ -42,7 +42,7 @@ drawBrowser st = [ui]
         vBox
           [  C.hCenter $ drawSearchBox st,
              C.hCenter $ drawBrowserList st,
-             C.hCenter $ footers st
+             C.hCenter $ st ^. footer
           ]
 
 drawSearchBox :: State -> Widget Field

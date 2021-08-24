@@ -20,7 +20,6 @@ import           System.Exit            (ExitCode (ExitSuccess))
 
 import           Common                 ( dirsToStr
                                         , dirsToStrRoot
-                                        , footers
                                         , maybeGetEntryData
                                         , toBrowserList
                                         )
@@ -44,7 +43,7 @@ import           ViewEvents.Common      ( commonTabEvent
                                         , getCreds
                                         , prepareExit
                                         , processInput
-                                        , runCmd, liftContinue
+                                        , runCmd, liftContinue, updateFooter
                                         )
 
 browserEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
@@ -105,12 +104,11 @@ enterDirTryCmd st _ stderr _ _ = st & footer .~ txt stderr
 -- allEntryNames is updated here only, so that we can search inside the folder
 enterDirSuccess :: State -> [Text] -> Text -> State
 enterDirSuccess st entries_ rawDir =
-  newst & footer .~ footers st
-    where
-      newst = st & visibleEntries .~ toBrowserList entries_
-                 & allEntryNames %~ Map.insert rawDir entries_
-                 & searchField .~ E.editor SearchField (Just 1) ""
-                 & currentDir %~ (++ [rawDir])
+  st & visibleEntries .~ toBrowserList entries_
+     & allEntryNames %~ Map.insert rawDir entries_
+     & searchField .~ E.editor SearchField (Just 1) ""
+     & currentDir %~ (++ [rawDir])
+     & updateFooter  -- clears any footers set when entering dir
 
 showEntry :: State -> IO State
 showEntry st = fromMaybe def $ processSelected (showEntryInner st) st
@@ -163,16 +161,16 @@ showEntryCmd st entry = do
     _           -> pure $ st & footer .~ txt stderr
 
 showEntrySuccess :: State -> Text -> Text -> State
-showEntrySuccess st entry details =
-  newst & footer .~ footers newst
-       where
-         dirname = dirsToStrRoot (st^.currentDir)
-         f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
-         f (Just m) = Just $ Map.insertWith (curry snd) entry details m
-         f _        = Just $ Map.singleton entry details
-         newst = st & activeView .~ EntryView
-                    & currentEntryDetailName ?~ entry
-                    & allEntryDetails %~ Map.alter f dirname
+showEntrySuccess st entry details = newst
+  where
+    dirname = dirsToStrRoot (st^.currentDir)
+    f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
+    f (Just m) = Just $ Map.insertWith (curry snd) entry details m
+    f _        = Just $ Map.singleton entry details
+    newst = st & activeView .~ EntryView
+               & currentEntryDetailName ?~ entry
+               & allEntryDetails %~ Map.alter f dirname
+               & updateFooter
 
 copyEntryFromBrowser :: State -> CopyType -> IO State
 copyEntryFromBrowser st ctype =

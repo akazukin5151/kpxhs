@@ -16,7 +16,8 @@ import qualified Graphics.Vty           as V
 import           Lens.Micro             (Lens', (%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
 
-import           Common                 (footers, toBrowserList)
+import           Common                 (toBrowserList)
+import           ViewEvents.Common      (getCreds, processInput, runCmd, updateFooter)
 import           Types                  ( Action (Ls)
                                         , Field (..)
                                         , State
@@ -30,7 +31,6 @@ import           Types                  ( Action (Ls)
                                         , passwordField
                                         , visibleEntries
                                         )
-import           ViewEvents.Common      (getCreds, processInput, runCmd)
 
 
 valid :: State -> Bool
@@ -42,11 +42,17 @@ passwordEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
 passwordEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEsc []              -> M.halt st
-    V.EvKey (V.KChar '\t') []      -> M.continue $ st & focusRing %~ F.focusNext
-    V.EvKey V.KBackTab []          -> M.continue $ st & focusRing %~ F.focusPrev
+    V.EvKey (V.KChar '\t') []      -> focus F.focusNext st
+    V.EvKey V.KBackTab []          -> focus F.focusPrev st
     V.EvKey V.KEnter [] | valid st -> M.continue =<< liftIO (gotoBrowser st)
     _                              -> M.continue =<< handleFieldInput st e
 passwordEvent st _ = M.continue st
+
+focus :: (F.FocusRing Field -> F.FocusRing Field)
+      -> State
+      -> T.EventM Field (T.Next State)
+focus f st = M.continue $ st & focusRing %~ f
+                             & updateFooter
 
 gotoBrowser :: State -> IO State
 gotoBrowser st = do
@@ -58,12 +64,11 @@ gotoBrowser st = do
 
 gotoBrowserSuccess :: State -> [Text] -> State
 gotoBrowserSuccess st ent =
-  newst & footer .~ footers newst
-    where
-      newst = st & activeView .~ SearchView
-                 & visibleEntries .~ toBrowserList ent
-                 & allEntryNames .~ Map.singleton "." ent
-                 & focusRing .~ F.focusRing [SearchField, BrowserField]
+  st & activeView .~ SearchView
+     & visibleEntries .~ toBrowserList ent
+     & allEntryNames .~ Map.singleton "." ent
+     & focusRing .~ F.focusRing [SearchField, BrowserField]
+     & updateFooter
 
 handleFieldInput :: State -> V.Event -> T.EventM Field State
 handleFieldInput st e =

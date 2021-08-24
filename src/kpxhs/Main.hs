@@ -6,7 +6,6 @@ import qualified Brick.AttrMap        as A
 import qualified Brick.Focus          as F
 import qualified Brick.Main           as M
 import           Brick.Util           (bg, fg, on)
-import           Brick.Widgets.Core   (str)
 import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Edit   as E
 import qualified Brick.Widgets.List   as L
@@ -20,7 +19,7 @@ import           System.Environment   (getArgs)
 import           System.Exit          (ExitCode (ExitFailure), exitWith)
 
 import           UI                   (drawUI)
-import           Common               (toBrowserList)
+import           Common               (toBrowserList, initialFooter, annotate)
 import           Events               (appEvent)
 import           Types                ( ExitDialog (Cancel, Clear, Exit)
                                       , Field ( KeyfileField
@@ -41,7 +40,7 @@ initialState ring dbdir kfdir =
       _allEntryDetails = Map.empty,
       _previousView = PasswordView,  -- doesn't really matter here
       _activeView = PasswordView,
-      _footer = str "", -- doesn't matter here
+      _footer = annotate $ initialFooter ring,
       _focusRing = ring,
       _dbPathField = E.editor PathField (Just 1) dbdir,
       _passwordField = E.editor PasswordField (Just 1) "",

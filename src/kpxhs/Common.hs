@@ -15,16 +15,9 @@ import           Lens.Micro         ((^.))
 
 import           Types              ( Field (BrowserField, PasswordField, PathField)
                                     , State
-                                    , View ( BrowserView
-                                           , EntryView
-                                           , ExitView
-                                           , PasswordView
-                                           , SearchView )
-                                    , activeView
                                     , allEntryDetails
                                     , currentDir
                                     , currentEntryDetailName
-                                    , focusRing
                                     )
 
 -- | This should only be used for running the show cmd
@@ -44,28 +37,19 @@ annotate x = markup $ foldr1 (<>) (f <$> x)
     f :: (Text, Text) -> Markup AttrName
     f (key, label) = (key @? "key") <> (label @? "label")
 
-footers :: State -> Widget Field
-footers st =
-  annotate $ case st^.activeView of
-    SearchView -> [exit, tab " focus list "]
-    EntryView -> [back, username, password]
-    BrowserView ->
-      case st^.currentDir of
-        [] -> [exit, focus_search, username, password]
-        _  -> [back, focus_search, username, password]
-    PasswordView ->
-      case F.focusGetCurrent (st ^. focusRing) of
-        Just PathField     -> exit_tab_submit "password"
-        Just PasswordField -> exit_tab_submit "keyfile"
-        _                  -> exit_tab_submit "path"
-    ExitView -> [("", "")]
+exit :: (Text, Text)
+exit = ("Esc", " exit  ")
+
+tab :: Text -> (Text, Text)
+tab label = ("Tab", label)
+
+initialFooter :: F.FocusRing Field -> [(Text, Text)]
+initialFooter fr =
+  case F.focusGetCurrent fr of
+    Just PathField     -> exit_tab_submit "password"
+    Just PasswordField -> exit_tab_submit "keyfile"
+    _                  -> exit_tab_submit "path"
   where
-    exit = ("Esc", " exit  ")
-    tab label = ("Tab", label)
-    back = ("Esc", " back  ")
-    username = ("u", " copy username  ")
-    password = ("p", " copy password")
-    focus_search = ("Tab", " focus search  ")
     exit_tab_submit x =
       [exit, tab (" focus " <> x <> " field  "), ("Enter", " submit")]
 

@@ -8,14 +8,14 @@ import           Brick.Widgets.Core   (hLimitPercent, str, vBox, (<+>))
 import           Data.Text            (Text)
 import qualified Data.Text            as TT
 
-import           Common               (footers)
 import           UI.Common            (getEditor)
 import           Types                ( Field
                                       , State
                                       , dbPathField
                                       , keyfileField
-                                      , passwordField
+                                      , passwordField, footer
                                       )
+import Lens.Micro ((^.))
 
 
 hidePassword :: [Text] -> Text
@@ -39,5 +39,5 @@ drawDialog st = [ui]
             C.hCenter $ str " ",
             C.hCenter $ str "Keyfile:  " <+> hLimitPercent 75 e3,
             C.hCenter $ str " ",
-            C.hCenter $ footers st
+            C.hCenter $ st ^. footer
           ]

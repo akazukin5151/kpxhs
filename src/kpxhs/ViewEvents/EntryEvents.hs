@@ -10,8 +10,8 @@ import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~))
 
-import           Common                 (footers, maybeGetEntryData)
-import           ViewEvents.Common      (copyEntryCommon, liftContinue)
+import           Common                 (maybeGetEntryData)
+import           ViewEvents.Common      (copyEntryCommon, liftContinue, updateFooter)
 import           Types                  ( CopyType (..)
                                         , Field
                                         , State
@@ -33,9 +33,8 @@ entryDetailsEvent st _ = M.continue st
 
 returnToBrowser :: State -> State
 returnToBrowser st =
-  newst & footer .~ footers newst
-    where
-      newst = st & activeView .~ BrowserView
+  st & activeView .~ BrowserView
+     & updateFooter
 
 copyEntryFromDetails :: State -> CopyType -> IO State
 copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)
