@@ -123,8 +123,3 @@ kpxhs - Interactive Keepass database TUI viewer
 # License
 
 GPLv3 or later
-
-# Todo
-- "please wait" indicator on login/enter dir/show entry
-    - Difficulty is in the requirement to handle two events without user intervention in between
-    - 1) Launch background IO task; 2) Set footer to "please wait"; 3) Wait for task to finish; 4) Return the task's result.
