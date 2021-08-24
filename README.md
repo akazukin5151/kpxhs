@@ -15,11 +15,13 @@
 ![clear_clip](pics/clear_clip.png)
 
 # Features
-- Default database path using config file
+- Configurable database and keyfile path
 - Browse entries and navigate directories
 - View entry details
 - Copy entry username and password fields to clipboard
 - Clear clipboard on exit
+- Clear clipboard after a configurable timeout
+- Responsive messages in the footer
 
 # Why
 - Keyboard friendly way of accessing your passwords
@@ -45,23 +47,39 @@
 
 Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page and grab the latest binary for your OS. Only UNIX (linux and macos) is supported. Binaries are compiled and uploaded using Github actions
 
-## Install from source using [Stack](https://docs.haskellstack.org/en/stable/README/)
+## Build from source using [Stack](https://docs.haskellstack.org/en/stable/README/)
 
 1. `git clone https://github.com/twenty5151/kpxhs`
 2. `cd kpxhs`
 3. `stack build` (compile)
 4. `stack install` (move binary to `~/.local/bin/`)
 
-# Setup (optional)
-- If you usually only use one database, you can add it into a config file so it's filled in by default, so you only need to enter your password. This is how keepassxc works by default.
+# Configure (optional)
+
+- You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default.
+    - Default: ""
 - You can also have `kpxhs` auto-fill a path to the keyfile
+    - Default: ""
+- You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
+    - Default: 10 (seconds)
 - See also `test/example_config`
 
 1. `mkdir ~/.config/kpxhs`
-2. `vim ~/.config/kpxhs/config`
-3. On the first line, add in the full path of your keepass database file
-4. On the second line, add in the full path of your keyfile path
-5. If there is only one line in the file, it will be interpreted as the keepass database file
+2. `nvim ~/.config/kpxhs/config`
+3. Write something like this:
+
+```
+timeout = 10
+db_path = /home/me/kpxhs/test/kpxhs_test.kdbx
+keyfile_path = /home/me/kpxhs/test/keyfile.key
+```
+
+- The keys must be exact and verbatim
+- Equal sign is required, but whitespace around the sign is insignificant
+- The timeout must be an integer
+- The two paths can be any string, but any number of leading whitespace is stripped
+- Any other (invalid) text is ignored, so they act like comments
+- Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it
 
 # Usage
 

@@ -18,29 +18,31 @@ import           Lens.Micro             ((%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
 import           System.Process         (readProcessWithExitCode, callCommand)
 
-import           Common                 ( annotate, exit, tab, initialFooter )
-import           Types                  ( Action (..)
-                                        , CopyType (CopyUsername)
-                                        , Field
-                                        , State
-                                        , View ( BrowserView
-                                               , ExitView
-                                               , SearchView
-                                               , EntryView
-                                               , PasswordView )
-                                        , activeView
-                                        , dbPathField
-                                        , focusRing
-                                        , footer
-                                        , hasCopied
-                                        , keyfileField
-                                        , passwordField
-                                        , previousView, currentDir, CmdOutput, chan, Event (ClearClipCount)
-                                        )
+import Brick.BChan        (writeBChan)
+import Common             (annotate, exit, initialFooter, tab)
 import Control.Concurrent (forkIO, threadDelay)
-import Brick.BChan (writeBChan)
-import System.Info (os)
-import Control.Monad (void)
+import Control.Monad      (void)
+import System.Info        (os)
+import Types
+    ( Action (..)
+    , CmdOutput
+    , CopyType (CopyUsername)
+    , Event (ClearClipCount)
+    , Field
+    , State
+    , View (BrowserView, EntryView, ExitView, PasswordView, SearchView)
+    , activeView
+    , chan
+    , clearTimeout
+    , currentDir
+    , dbPathField
+    , focusRing
+    , footer
+    , hasCopied
+    , keyfileField
+    , passwordField
+    , previousView
+    )
 
 
 liftContinue :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
@@ -108,7 +110,7 @@ copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
   (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
-  void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount 10
+  void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
   pure $ case code of
     ExitSuccess -> st & hasCopied .~ True
     _ -> st & footer .~ txt stderr

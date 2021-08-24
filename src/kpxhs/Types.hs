@@ -13,6 +13,12 @@ import           Data.Text            (Text)
 import           GHC.IO.Exception     (ExitCode)
 import           Lens.Micro.TH        (makeLenses)
 
+
+data Setting = Setting { timeout     :: Maybe Int
+                       , dbPath      :: Maybe Text
+                       , keyfilePath :: Maybe Text
+                       }
+
 data Action = Ls | Clip | Show
 
 data View = PasswordView | BrowserView | SearchView | EntryView | ExitView
@@ -66,7 +72,9 @@ data State = State
     _hasCopied              :: Bool,
     -- | The app event channel; contains all the info that needs to be passed from
     -- a background thread to the AppEvent handler
-    _chan                   :: BChan Event
+    _chan                   :: BChan Event,
+    -- | Number of seconds to wait before clearing the clipboard
+    _clearTimeout           :: Int
   }
 
 makeLenses ''State

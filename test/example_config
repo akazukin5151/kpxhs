@@ -1,2 +1,3 @@
-/home/me/kpxhs/test/kpxhs_test.kdbx
-/home/me/kpxhs/test/keyfile.key
+timeout = 10
+db_path = /home/me/kpxhs/test/kpxhs_test.kdbx
+keyfile_path = /home/me/kpxhs/test/keyfile.key
