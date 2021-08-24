@@ -36,7 +36,7 @@ import           Types                  ( Action (..)
                                         , hasCopied
                                         , keyfileField
                                         , passwordField
-                                        , previousView, currentDir
+                                        , previousView, currentDir, CmdOutput
                                         )
 
 
@@ -58,8 +58,8 @@ getCreds :: State -> (Text, Text, Text)
 getCreds st = (dir, pw, kf)
   where
     dir = extractTextField $ st ^. dbPathField
-    pw = extractTextField $ st ^. passwordField
-    kf = extractTextField $ st ^. keyfileField
+    pw = extractTextField  $ st ^. passwordField
+    kf = extractTextField  $ st ^. keyfileField
     extractTextField :: E.Editor Text Field -> Text
     extractTextField field =
       let res = Z.getText $ field ^. E.editContentsL in
@@ -73,7 +73,7 @@ runCmd :: Action
        -> [Text]
        -> Text
        -> Text
-       -> IO (ExitCode, Text, Text)
+       -> IO CmdOutput
 runCmd Ls dir args pw kf   = _runCmdInner "ls" dir args pw kf
 runCmd Clip dir args pw kf = _runCmdInner "clip" dir args pw kf
 runCmd Show dir args pw kf = _runCmdInner "show" dir args pw kf
@@ -83,7 +83,7 @@ _runCmdInner :: Text
              -> [Text]
              -> Text
              -> Text
-             -> IO (ExitCode, Text, Text)
+             -> IO CmdOutput
 _runCmdInner action dir extraArgs pw kf = do
   (e, a, b) <- readProcessWithExitCode "keepassxc-cli" args (TT.unpack pw)
   pure (e, TT.pack a, TT.pack b)
@@ -107,23 +107,20 @@ copyEntryCommon st entry ctype = do
     _ -> st & footer .~ txt stderr
 
 _copyTypeToStr :: CopyType -> Text
-_copyTypeToStr ctype =
-  case ctype of
-    CopyUsername -> "username"
-    _            -> "password"
+_copyTypeToStr CopyUsername = "username"
+_copyTypeToStr _            = "password"
 
-commonTabEvent :: (State -> V.Event -> T.EventM Field (T.Next State))
+commonTabEvent :: (State -> T.BrickEvent Field e -> T.EventM Field (T.Next State))
                -> State
                -> T.BrickEvent Field e
                -> T.EventM Field (T.Next State)
-commonTabEvent fallback st (T.VtyEvent e) =
+commonTabEvent fallback st e =
   case e of
-    V.EvKey (V.KChar '\t') [] -> f focusNext
-    V.EvKey V.KBackTab []     -> f focusPrev
-    _                         -> fallback st e
+    T.VtyEvent (V.EvKey (V.KChar '\t') []) -> f focusNext
+    T.VtyEvent (V.EvKey V.KBackTab [])     -> f focusPrev
+    _                                      -> fallback st e
   where
     f x = M.continue $ _handleTab st x (st ^. activeView)
-commonTabEvent _ st _ = M.continue st
 
 _handleTab :: State -> (State -> View -> State) -> View -> State
 _handleTab st f BrowserView = f st SearchView

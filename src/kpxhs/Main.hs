@@ -3,6 +3,7 @@
 module Main where
 
 import qualified Brick.AttrMap        as A
+import           Brick.BChan          (BChan, newBChan)
 import qualified Brick.Focus          as F
 import qualified Brick.Main           as M
 import           Brick.Util           (bg, fg, on)
@@ -27,12 +28,12 @@ import           Types                ( ExitDialog (Cancel, Clear, Exit)
                                               , PathField
                                               , SearchField )
                                       , State (..)
-                                      , View (PasswordView)
+                                      , View (PasswordView), Event
                                       )
 
 
-initialState :: F.FocusRing Field -> Text -> Text -> State
-initialState ring dbdir kfdir =
+initialState :: F.FocusRing Field -> Text -> Text -> BChan Event -> State
+initialState ring dbdir kfdir chan =
   State
     { _visibleEntries = toBrowserList [],
       _allEntryNames = Map.empty,
@@ -48,7 +49,8 @@ initialState ring dbdir kfdir =
       _searchField = E.editor SearchField (Just 1) "",
       _currentDir = [],
       _exitDialog = D.dialog Nothing (Just (0, choices)) 60,
-      _hasCopied = False
+      _hasCopied = False,
+      _chan = chan
     }
       where
         choices = [ ("Clear and exit", Clear)
@@ -71,7 +73,7 @@ theMap =
       ("label", fg V.black)
     ]
 
-theApp :: M.App State e Field
+theApp :: M.App State Event Field
 theApp =
   M.App
     { M.appDraw = drawUI,
@@ -94,7 +96,14 @@ tui = do
   home <- getHomeDirectory
   let cfgdir = home ++ "/.config/kpxhs/config"
   (dbdir, kfdir, ring) <- parseConfig cfgdir
-  void $ M.defaultMain theApp (initialState ring dbdir kfdir)
+
+  chan <- newBChan 10
+  let buildVty = V.mkVty V.defaultConfig
+  initialVty <- buildVty
+
+  void $
+    M.customMain initialVty buildVty (Just chan) theApp
+      (initialState ring dbdir kfdir chan)
 
 parseConfig :: String -> IO (Text, Text, F.FocusRing Field)
 parseConfig cfgdir = do

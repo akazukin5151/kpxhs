@@ -29,8 +29,9 @@ searchEvent =
   commonTabEvent
     ( \st e ->
         case e of
-          V.EvKey V.KEsc [] -> handleEsc st
-          _                 -> M.continue =<< handleSearch st e
+          T.VtyEvent (V.EvKey V.KEsc []) -> handleEsc st
+          T.VtyEvent ev                  -> M.continue =<< handleSearch st ev
+          _                              -> M.continue st
     )
 
 handleEsc :: State -> T.EventM Field (T.Next State)

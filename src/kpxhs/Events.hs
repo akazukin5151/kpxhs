@@ -12,11 +12,11 @@ import Types
     ( Field
     , State
     , View (BrowserView, EntryView, ExitView, PasswordView, SearchView)
-    , activeView
+    , activeView, Event
     )
 
 
-appEvent :: State -> BrickEvent Field e -> EventM Field (Next State)
+appEvent :: State -> BrickEvent Field Event -> EventM Field (Next State)
 appEvent st e = f st e
   where
     f = case st ^. activeView of

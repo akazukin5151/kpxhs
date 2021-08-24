@@ -2,6 +2,7 @@
 
 module Types where
 
+import           Brick.BChan          (BChan)
 import qualified Brick.Focus          as F
 import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Dialog as D
@@ -9,6 +10,7 @@ import qualified Brick.Widgets.Edit   as E
 import qualified Brick.Widgets.List   as L
 import qualified Data.Map.Strict      as Map
 import           Data.Text            (Text)
+import           GHC.IO.Exception     (ExitCode)
 import           Lens.Micro.TH        (makeLenses)
 
 data Action = Ls | Clip | Show
@@ -21,6 +23,12 @@ data Field = PathField | PasswordField | KeyfileField | BrowserField | SearchFie
 data CopyType = CopyUsername | CopyPassword
 
 data ExitDialog = Clear | Exit | Cancel
+
+type CmdOutput = (ExitCode, Text, Text)
+
+data Event = Login CmdOutput
+           | EnterDir Text CmdOutput   -- ^ Text is the currently selected entry
+           | ShowEntry Text CmdOutput  -- ^ Text is the currently selected entry
 
 data State = State
   { -- | The name of visible entries in the current directory
@@ -54,7 +62,10 @@ data State = State
     -- | The state container for the exit dialog
     _exitDialog             :: D.Dialog ExitDialog,
     -- | Whether the user has copied anything
-    _hasCopied              :: Bool
+    _hasCopied              :: Bool,
+    -- | The app event channel; contains all the info that needs to be passed from
+    -- a background thread to the AppEvent handler
+    _chan                   :: BChan Event
   }
 
 makeLenses ''State

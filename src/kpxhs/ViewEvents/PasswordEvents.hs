@@ -3,11 +3,14 @@
 
 module ViewEvents.PasswordEvents (passwordEvent) where
 
+import           Brick.BChan            (writeBChan)
 import qualified Brick.Focus            as F
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (txt)
 import qualified Brick.Widgets.Edit     as E
+import           Control.Concurrent     (forkIO)
+import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.Map.Strict        as Map
 import           Data.Text              (Text)
@@ -29,7 +32,7 @@ import           Types                  ( Action (Ls)
                                         , footer
                                         , keyfileField
                                         , passwordField
-                                        , visibleEntries
+                                        , visibleEntries, chan, Event (Login)
                                         )
 
 
@@ -38,14 +41,15 @@ valid st = f $ getCreds st
   where
     f (a, b, _) = not (TT.null a && TT.null b)
 
-passwordEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
+passwordEvent :: State -> T.BrickEvent n Event -> T.EventM Field (T.Next State)
 passwordEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEsc []              -> M.halt st
     V.EvKey (V.KChar '\t') []      -> focus F.focusNext st
     V.EvKey V.KBackTab []          -> focus F.focusPrev st
-    V.EvKey V.KEnter [] | valid st -> M.continue =<< liftIO (gotoBrowser st)
+    V.EvKey V.KEnter [] | valid st -> M.continue =<< liftIO (loginInBackground st)
     _                              -> M.continue =<< handleFieldInput st e
+passwordEvent st (T.AppEvent e) = M.continue $ gotoBrowser st e
 passwordEvent st _ = M.continue st
 
 focus :: (F.FocusRing Field -> F.FocusRing Field)
@@ -54,13 +58,19 @@ focus :: (F.FocusRing Field -> F.FocusRing Field)
 focus f st = M.continue $ st & focusRing %~ f
                              & updateFooter
 
-gotoBrowser :: State -> IO State
-gotoBrowser st = do
+loginInBackground :: State -> IO State
+loginInBackground st = do
   let (dir, pw, kf) = getCreds st
-  (code, stdout, stderr) <- runCmd Ls dir [] pw kf
-  case code of
-    ExitSuccess -> pure $ gotoBrowserSuccess st $ processInput stdout
-    _           -> pure $ st & footer .~ txt stderr
+  _ <- forkIO $ do
+      (code, stdout, stderr) <- runCmd Ls dir [] pw kf
+      void $ writeBChan (st^.chan) $ Login (code, stdout, stderr)
+  pure $ st & footer .~ txt "Logging in..."
+
+gotoBrowser :: State -> Event -> State
+gotoBrowser st (Login (ExitSuccess, stdout, _)) = gotoBrowserSuccess st
+                                                    $ processInput stdout
+gotoBrowser st (Login (_, _, stderr))           = st & footer .~ txt stderr
+gotoBrowser st _                                = st
 
 gotoBrowserSuccess :: State -> [Text] -> State
 gotoBrowserSuccess st ent =

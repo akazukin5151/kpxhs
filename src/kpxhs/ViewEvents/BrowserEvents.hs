@@ -2,12 +2,15 @@
 
 module ViewEvents.BrowserEvents (browserEvent) where
 
+import           Brick.BChan            (writeBChan)
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
 import           Brick.Util             (clamp)
 import           Brick.Widgets.Core     (str, txt)
 import qualified Brick.Widgets.Edit     as E
 import qualified Brick.Widgets.List     as L
+import           Control.Concurrent     (forkIO)
+import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Map.Strict        ((!?))
 import qualified Data.Map.Strict        as Map
@@ -36,7 +39,8 @@ import           Types                  ( Action (Ls, Show)
                                         , footer
                                         , hasCopied
                                         , searchField
-                                        , visibleEntries
+                                        , visibleEntries, chan, Event ( EnterDir
+                                                                      , ShowEntry ), CmdOutput
                                         )
 import           ViewEvents.Common      ( commonTabEvent
                                         , copyEntryCommon
@@ -46,16 +50,22 @@ import           ViewEvents.Common      ( commonTabEvent
                                         , runCmd, liftContinue, updateFooter
                                         )
 
-browserEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
+browserEvent :: State
+             -> T.BrickEvent Field Event
+             -> T.EventM Field (T.Next State)
 browserEvent =
   commonTabEvent
     ( \st e ->
         case e of
-          V.EvKey V.KEsc []        -> handleEsc st
-          V.EvKey V.KEnter []      -> handleEnter st
-          V.EvKey (V.KChar 'p') [] -> liftContinue copyEntryFromBrowser st CopyPassword
-          V.EvKey (V.KChar 'u') [] -> liftContinue copyEntryFromBrowser st CopyUsername
-          ev                       -> M.continue $ handleNav ev st
+          T.VtyEvent (V.EvKey V.KEsc [])        -> handleEsc st
+          T.VtyEvent (V.EvKey V.KEnter [])      -> handleEnter st
+          T.VtyEvent (V.EvKey (V.KChar 'p') []) ->
+            liftContinue copyEntryFromBrowser st CopyPassword
+          T.VtyEvent (V.EvKey (V.KChar 'u') []) ->
+            liftContinue copyEntryFromBrowser st CopyUsername
+          T.VtyEvent ev                         -> M.continue $ handleNav ev st
+          T.AppEvent ev                         -> M.continue $ handleAppEvent st ev
+          _                                     -> M.continue st
     )
 
 handleEsc :: State -> T.EventM Field (T.Next State)
@@ -65,10 +75,6 @@ handleEsc st =
     ([], False) -> M.halt st
     _           -> M.continue $ goUpParent st
 
-handleEnter :: State -> T.EventM Field (T.Next State)
-handleEnter st = liftIO (f st) >>= M.continue
-  where
-    f = if isDir st then enterDir else showEntry
 
 -- If there is "go up to parent" then check for that first
 isDir :: State -> Bool
@@ -81,25 +87,77 @@ processSelected f st = do
   (_, entry) <- L.listSelectedElement $ st ^. visibleEntries
   pure $ f entry
 
-enterDir :: State -> IO State
-enterDir st = fromMaybe def (processSelected f st)
+
+-- | This tree of functions will run a shell command in the background
+-- (After trying the cache first)
+-- The output of the shell command will be handled later,
+-- asynchronously, by handleAppEvent
+handleEnter :: State -> T.EventM Field (T.Next State)
+handleEnter st = M.continue =<< liftIO (f st)
+  where
+    f = if isDir st then enterDirFork else showEntryFork
+
+showEntryFork :: State -> IO State
+showEntryFork st = fromMaybe def (processSelected f st)
+  where
+    def = pure $ st & footer .~ str "No entry selected!"
+    f "-- (Go up parent) --" = pure $ goUpParent st
+    f entry                  = fetchEntryInBackground st entry
+
+fetchEntryInBackground :: State -> Text -> IO State
+fetchEntryInBackground st entry = fromMaybe def (showEntryWithCache newst entry)
+  where
+    newst = st & currentEntryDetailName ?~ entry
+    (dir, pw, kf) = getCreds newst
+    bg_cmd = do
+      (code, stdout, stderr) <- runCmd Show dir [entry] pw kf
+      void $ writeBChan (newst^.chan) $ ShowEntry entry (code, stdout, stderr)
+    def = do
+      _ <- forkIO bg_cmd
+      pure $ newst & footer .~ txt "Fetching..."
+
+
+enterDirFork :: State -> IO State
+enterDirFork st = fromMaybe def (processSelected f st)
   where
     def = pure $ st & footer .~ str "No directory selected!"
-    f entry = enterDirTryCache st entry ((st ^. allEntryNames) !? entry)
+    f = fetchDirInBackground st
 
-enterDirTryCache :: State -> Text -> Maybe [Text] -> IO State
-enterDirTryCache st rawDir (Just x) = pure $ enterDirSuccess st x rawDir
-enterDirTryCache st rawDir Nothing = do
-  (code, stdout, stderr) <- runCmd Ls dbPathField_ [concatedDir] pw kf
-  pure $ enterDirTryCmd st stdout stderr rawDir code
+fetchDirInBackground :: State -> Text -> IO State
+fetchDirInBackground st entry  =
+  case (st ^. allEntryNames) !? entry of
+    Just x -> pure $ enterDirSuccess st x entry
+    Nothing -> do
+      _ <- forkIO bg_cmd
+      pure $ st & footer .~ txt "Fetching..."
   where
     (dbPathField_, pw, kf) = getCreds st
-    concatedDir = dirsToStr (st ^. currentDir) <> rawDir
+    concatedDir = dirsToStr (st ^. currentDir) <> entry
+    bg_cmd = do
+      (code, stdout, stderr) <- runCmd Ls dbPathField_ [concatedDir] pw kf
+      void $ writeBChan (st^.chan) $ EnterDir entry (code, stdout, stderr)
 
-enterDirTryCmd :: State -> Text -> Text -> Text -> ExitCode -> State
-enterDirTryCmd st stdout _ rawDir ExitSuccess =
-  enterDirSuccess st ("-- (Go up parent) --" : processInput stdout) rawDir
-enterDirTryCmd st _ stderr _ _ = st & footer .~ txt stderr
+-- | This tree of functions handles the completion of a shell command
+handleAppEvent :: State -> Event -> State
+handleAppEvent st (ShowEntry entry out) = handleShowEntryEvent st entry out
+handleAppEvent st (EnterDir entry out)  = handleEnterDirEvent st entry out
+handleAppEvent st _                     = st
+
+handleEnterDirEvent :: State -> Text -> CmdOutput -> State
+handleEnterDirEvent st entry (ExitSuccess, stdout, _) =
+  enterDirSuccess st ("-- (Go up parent) --" : processInput stdout) entry
+handleEnterDirEvent st _ (_, _, stderr) =
+  st & footer .~ txt stderr
+
+handleShowEntryEvent :: State -> Text -> CmdOutput -> State
+handleShowEntryEvent st entry (ExitSuccess, stdout, _) = showEntrySuccess st entry stdout
+handleShowEntryEvent st _     (_, _, stderr)           = st & footer .~ txt stderr
+
+showEntrySuccess :: State -> Text -> Text -> State
+showEntrySuccess st entry stdout =
+  case maybeGetEntryData st of
+    Just x  -> showEntryInner st entry x
+    Nothing -> showEntryInner st entry stdout
 
 -- allEntryNames is updated here only, so that we can search inside the folder
 enterDirSuccess :: State -> [Text] -> Text -> State
@@ -109,17 +167,6 @@ enterDirSuccess st entries_ rawDir =
      & searchField .~ E.editor SearchField (Just 1) ""
      & currentDir %~ (++ [rawDir])
      & updateFooter  -- clears any footers set when entering dir
-
-showEntry :: State -> IO State
-showEntry st = fromMaybe def $ processSelected (showEntryInner st) st
-  where
-    def = pure $ st & footer .~ str "No entry or directory selected!"
-
-showEntryInner :: State -> Text -> IO State
-showEntryInner st entry =
-  if entry == "-- (Go up parent) --"
-    then pure $ goUpParent st
-    else showEntryTryCache st entry
 
 goUpParent :: State -> State
 goUpParent st =
@@ -142,26 +189,13 @@ initOrDef d [_] = d
 initOrDef _ xs  = init xs
 
 
-showEntryTryCache :: State -> Text -> IO State
-showEntryTryCache st entryname = fromMaybe def (showEntryWithCache st entryname)
-  where
-    def = showEntryCmd st entryname
-
 showEntryWithCache :: State -> Text -> Maybe (IO State)
 showEntryWithCache st entryname = do
   details <- maybeGetEntryData st
-  pure $ pure $ showEntrySuccess st entryname details
+  pure $ pure $ showEntryInner st entryname details
 
-showEntryCmd :: State -> Text -> IO State
-showEntryCmd st entry = do
-  let (dir, pw, kf) = getCreds st
-  (code, stdout, stderr) <- runCmd Show dir [entry] pw kf
-  case code of
-    ExitSuccess -> pure $ showEntrySuccess st entry stdout
-    _           -> pure $ st & footer .~ txt stderr
-
-showEntrySuccess :: State -> Text -> Text -> State
-showEntrySuccess st entry details = newst
+showEntryInner :: State -> Text -> Text -> State
+showEntryInner st entry details = newst
   where
     dirname = dirsToStrRoot (st^.currentDir)
     f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
