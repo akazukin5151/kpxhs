@@ -27,27 +27,32 @@ import           Common                 ( dirsToStr
                                         , toBrowserList
                                         )
 import           Types                  ( Action (Ls, Show)
+                                        , CmdOutput
                                         , CopyType (..)
+                                        , Event (ClearClipCount, EnterDir, ShowEntry)
                                         , Field (SearchField)
                                         , State
                                         , View (EntryView)
                                         , activeView
                                         , allEntryDetails
                                         , allEntryNames
+                                        , chan
                                         , currentDir
                                         , currentEntryDetailName
                                         , footer
                                         , hasCopied
                                         , searchField
-                                        , visibleEntries, chan, Event ( EnterDir
-                                                                      , ShowEntry ), CmdOutput
+                                        , visibleEntries
                                         )
 import           ViewEvents.Common      ( commonTabEvent
                                         , copyEntryCommon
                                         , getCreds
+                                        , handleClipCount
+                                        , liftContinue
                                         , prepareExit
                                         , processInput
-                                        , runCmd, liftContinue, updateFooter
+                                        , runCmd
+                                        , updateFooter
                                         )
 
 browserEvent :: State
@@ -64,7 +69,7 @@ browserEvent =
           T.VtyEvent (V.EvKey (V.KChar 'u') []) ->
             liftContinue copyEntryFromBrowser st CopyUsername
           T.VtyEvent ev                         -> M.continue $ handleNav ev st
-          T.AppEvent ev                         -> M.continue $ handleAppEvent st ev
+          T.AppEvent ev                         -> liftContinue handleAppEvent st ev
           _                                     -> M.continue st
     )
 
@@ -111,9 +116,9 @@ fetchEntryInBackground st entry = fromMaybe def (showEntryWithCache newst entry)
     (dir, pw, kf) = getCreds newst
     bg_cmd = do
       (code, stdout, stderr) <- runCmd Show dir [entry] pw kf
-      void $ writeBChan (newst^.chan) $ ShowEntry entry (code, stdout, stderr)
+      writeBChan (newst^.chan) $ ShowEntry entry (code, stdout, stderr)
     def = do
-      _ <- forkIO bg_cmd
+      void $ forkIO bg_cmd
       pure $ newst & footer .~ txt "Fetching..."
 
 
@@ -128,20 +133,21 @@ fetchDirInBackground st entry  =
   case (st ^. allEntryNames) !? entry of
     Just x -> pure $ enterDirSuccess st x entry
     Nothing -> do
-      _ <- forkIO bg_cmd
+      void $ forkIO bg_cmd
       pure $ st & footer .~ txt "Fetching..."
   where
     (dbPathField_, pw, kf) = getCreds st
     concatedDir = dirsToStr (st ^. currentDir) <> entry
     bg_cmd = do
       (code, stdout, stderr) <- runCmd Ls dbPathField_ [concatedDir] pw kf
-      void $ writeBChan (st^.chan) $ EnterDir entry (code, stdout, stderr)
+      writeBChan (st^.chan) $ EnterDir entry (code, stdout, stderr)
 
 -- | This tree of functions handles the completion of a shell command
-handleAppEvent :: State -> Event -> State
-handleAppEvent st (ShowEntry entry out) = handleShowEntryEvent st entry out
-handleAppEvent st (EnterDir entry out)  = handleEnterDirEvent st entry out
-handleAppEvent st _                     = st
+handleAppEvent :: State -> Event -> IO State
+handleAppEvent st (ShowEntry entry out)  = pure $ handleShowEntryEvent st entry out
+handleAppEvent st (EnterDir entry out)   = pure $ handleEnterDirEvent st entry out
+handleAppEvent st (ClearClipCount count) = handleClipCount st count
+handleAppEvent st _                      = pure st
 
 handleEnterDirEvent :: State -> Text -> CmdOutput -> State
 handleEnterDirEvent st entry (ExitSuccess, stdout, _) =

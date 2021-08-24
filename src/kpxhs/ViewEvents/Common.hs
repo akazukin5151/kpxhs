@@ -16,8 +16,7 @@ import qualified Data.Text.Zipper       as Z hiding (textZipper)
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
-import           System.Process         (readProcessWithExitCode)
-import           Util                   (capitalise)
+import           System.Process         (readProcessWithExitCode, callCommand)
 
 import           Common                 ( annotate, exit, tab, initialFooter )
 import           Types                  ( Action (..)
@@ -36,8 +35,12 @@ import           Types                  ( Action (..)
                                         , hasCopied
                                         , keyfileField
                                         , passwordField
-                                        , previousView, currentDir, CmdOutput
+                                        , previousView, currentDir, CmdOutput, chan, Event (ClearClipCount)
                                         )
+import Control.Concurrent (forkIO, threadDelay)
+import Brick.BChan (writeBChan)
+import System.Info (os)
+import Control.Monad (void)
 
 
 liftContinue :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
@@ -94,21 +97,31 @@ _runCmdInner action dir extraArgs pw kf = do
                    "" -> extraArgs
                    _  -> ["-k", kf] ++ extraArgs
 
+-- No longer used as the countdown overrides it
+-- I think the countdown is more important anyway, no need to allocate new space
+-- or integrate countdown with notif
+--let attr_repr = attr & show & drop 1 & init & capitalise
+--let notif = attr_repr <> " for \"" <> TT.unpack entry <> "\" copied to clipboard!"
+--st & footer .~ str notif
 copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
-  let attr_repr = attr & show & drop 1 & init & capitalise
-  let notif = attr_repr <> " for \"" <> TT.unpack entry <> "\" copied to clipboard!"
   (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
+  void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount 10
   pure $ case code of
-    ExitSuccess -> st & footer .~ str notif
-                      & hasCopied .~ True
+    ExitSuccess -> st & hasCopied .~ True
     _ -> st & footer .~ txt stderr
 
 _copyTypeToStr :: CopyType -> Text
 _copyTypeToStr CopyUsername = "username"
 _copyTypeToStr _            = "password"
+
+clearClipboard :: IO ()
+clearClipboard = callCommand $ "printf '' | " ++ handler where
+  handler = case os of
+    "linux" -> "xclip -selection clipboard"
+    _       -> "pbcopy"
 
 commonTabEvent :: (State -> T.BrickEvent Field e -> T.EventM Field (T.Next State))
                -> State
@@ -125,6 +138,19 @@ commonTabEvent fallback st e =
 _handleTab :: State -> (State -> View -> State) -> View -> State
 _handleTab st f BrowserView = f st SearchView
 _handleTab st f _           = f st BrowserView
+
+handleClipCount :: State -> Int -> IO State
+handleClipCount st 0     =
+  clearClipboard >> pure new_st
+    where
+      new_st = st & footer .~ txt "Clipboard cleared"
+                  & hasCopied .~ False
+handleClipCount st count =
+  void (forkIO bg_cmd) >> pure new_st
+    where
+      bg_cmd = threadDelay 1000000
+                >> writeBChan (st^.chan) (ClearClipCount (count - 1))
+      new_st = st & footer .~ str ("Clearing clipboard in " <> show count <> " seconds")
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =

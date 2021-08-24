@@ -29,6 +29,7 @@ type CmdOutput = (ExitCode, Text, Text)
 data Event = Login CmdOutput
            | EnterDir Text CmdOutput   -- ^ Text is the currently selected entry
            | ShowEntry Text CmdOutput  -- ^ Text is the currently selected entry
+           | ClearClipCount Int
 
 data State = State
   { -- | The name of visible entries in the current directory

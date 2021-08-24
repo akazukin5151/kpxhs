@@ -7,9 +7,8 @@ import qualified Brick.Widgets.Dialog   as D
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~), (^.))
-import           System.Info            (os)
-import           System.Process         (callCommand)
 
+import           ViewEvents.Common      (clearClipboard, updateFooter)
 import           Types                  ( ExitDialog (Cancel, Clear, Exit)
                                         , Field
                                         , State
@@ -42,11 +41,6 @@ handleEnter st =
   case D.dialogSelection (st^.exitDialog) of
     Just Clear  -> liftIO clearClipboard >> M.halt st
     Just Cancel -> M.continue $ st & activeView .~ (st^.previousView)
+                                   & updateFooter
     Just Exit   -> M.halt st
     _           -> M.continue st
-
-clearClipboard :: IO ()
-clearClipboard = callCommand $ "printf '' | " ++ handler where
-  handler = case os of
-    "linux" -> "xclip -selection clipboard"
-    _       -> "pbcopy"

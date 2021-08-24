@@ -9,26 +9,27 @@ import           Data.Maybe             (fromMaybe)
 import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~))
+import           Control.Monad.IO.Class (MonadIO (liftIO))
 
 import           Common                 (maybeGetEntryData)
-import           ViewEvents.Common      (copyEntryCommon, liftContinue, updateFooter)
+import           ViewEvents.Common      (copyEntryCommon, liftContinue, updateFooter, handleClipCount)
 import           Types                  ( CopyType (..)
                                         , Field
                                         , State
                                         , View (BrowserView)
                                         , activeView
-                                        , footer
+                                        , footer, Event (ClearClipCount)
                                         )
 
-entryDetailsEvent :: State
-                  -> T.BrickEvent Field e
-                  -> T.EventM Field (T.Next State)
+entryDetailsEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
 entryDetailsEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEsc []        -> M.continue $ returnToBrowser st
     V.EvKey (V.KChar 'p') [] -> liftContinue copyEntryFromDetails st CopyPassword
     V.EvKey (V.KChar 'u') [] -> liftContinue copyEntryFromDetails st CopyUsername
     _                        -> M.continue st
+entryDetailsEvent st (T.AppEvent (ClearClipCount count)) =
+  M.continue =<< liftIO (handleClipCount st count)
 entryDetailsEvent st _ = M.continue st
 
 returnToBrowser :: State -> State

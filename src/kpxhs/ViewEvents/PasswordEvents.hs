@@ -10,7 +10,6 @@ import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (txt)
 import qualified Brick.Widgets.Edit     as E
 import           Control.Concurrent     (forkIO)
-import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.Map.Strict        as Map
 import           Data.Text              (Text)
@@ -34,6 +33,7 @@ import           Types                  ( Action (Ls)
                                         , passwordField
                                         , visibleEntries, chan, Event (Login)
                                         )
+import Control.Monad (void)
 
 
 valid :: State -> Bool
@@ -61,9 +61,9 @@ focus f st = M.continue $ st & focusRing %~ f
 loginInBackground :: State -> IO State
 loginInBackground st = do
   let (dir, pw, kf) = getCreds st
-  _ <- forkIO $ do
+  void $ forkIO $ do
       (code, stdout, stderr) <- runCmd Ls dir [] pw kf
-      void $ writeBChan (st^.chan) $ Login (code, stdout, stderr)
+      writeBChan (st^.chan) $ Login (code, stdout, stderr)
   pure $ st & footer .~ txt "Logging in..."
 
 gotoBrowser :: State -> Event -> State
