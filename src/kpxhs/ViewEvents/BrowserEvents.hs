@@ -13,7 +13,7 @@ import           Control.Concurrent (forkIO)
 import           Control.Monad      (void)
 import           Data.Map.Strict    ((!?))
 import qualified Data.Map.Strict    as Map
-import           Data.Maybe         (fromMaybe)
+import           Data.Maybe         (fromMaybe, isJust)
 import           Data.Text          (Text)
 import qualified Graphics.Vty       as V
 import           Lens.Micro         ((%~), (&), (.~), (?~), (^.))
@@ -37,6 +37,7 @@ import Types
     , allEntryDetails
     , allEntryNames
     , chan
+    , countdownThreadId
     , currentDir
     , currentEntryDetailName
     , footer
@@ -214,7 +215,9 @@ copyEntryFromBrowser st ctype =
       f entry = copyEntryCommon st entry ctype
 
 handleNav :: V.Event -> State -> State
-handleNav e st = new_st & updateFooter
+handleNav e st = if isJust $ st ^. countdownThreadId
+                    then new_st
+                    else new_st & updateFooter
   where
     new_st = st & visibleEntries %~
       case e of
