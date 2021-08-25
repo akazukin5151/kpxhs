@@ -18,6 +18,7 @@ executable kpxhs
   main-is:           Main.hs
   other-modules:     Types,
                      Common,
+                     Config,
                      UI,
                      UI.Common,
                      UI.BrowserUI,
