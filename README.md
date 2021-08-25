@@ -6,11 +6,15 @@
 
 ![browser1](pics/browser1.png)
 
-![browser2](pics/browser2.png)
+![countdown](pics/countdown.png)
+
+![footer](pics/responsive_footer.png)
+
+![entry](pics/entry.png)
 
 ![searching](pics/searching.png)
 
-![entry](pics/entry.png)
+![browser2](pics/browser2.png)
 
 ![clear_clip](pics/clear_clip.png)
 
