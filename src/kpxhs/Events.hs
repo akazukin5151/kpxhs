@@ -10,11 +10,11 @@ import Types
     , View (BrowserView, EntryView, ExitView, PasswordView, SearchView)
     , activeView
     )
-import ViewEvents.BrowserEvents  (browserEvent)
-import ViewEvents.EntryEvents    (entryDetailsEvent)
-import ViewEvents.ExitEvents     (exitEvent)
-import ViewEvents.LoginEvents (passwordEvent)
-import ViewEvents.SearchEvents   (searchEvent)
+import ViewEvents.BrowserEvents.BrowserEvents (browserEvent)
+import ViewEvents.EntryEvents                 (entryDetailsEvent)
+import ViewEvents.ExitEvents                  (exitEvent)
+import ViewEvents.LoginEvents                 (passwordEvent)
+import ViewEvents.SearchEvents                (searchEvent)
 
 
 appEvent :: State -> BrickEvent Field Event -> EventM Field (Next State)

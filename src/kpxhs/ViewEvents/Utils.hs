@@ -48,8 +48,6 @@ getCreds st = (dir, pw, kf)
         []      -> ""
         (x : _) -> x
 
--- The next three functions are actually only used in BrowserEvents
--- but moved here to reduce the module size
 isDir :: State -> Bool
 isDir st = fromMaybe False (getSelectedEntry f st)
   where
