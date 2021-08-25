@@ -16,7 +16,8 @@ import Types
     , exitDialog
     , previousView
     )
-import ViewEvents.Common (clearClipboard, updateFooter)
+import ViewEvents.Common (updateFooter)
+import ViewEvents.Copy   (clearClipboard)
 
 
 exitEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)

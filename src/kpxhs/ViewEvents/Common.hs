@@ -1,59 +1,34 @@
+-- Functions for further composition and combining
 {-# LANGUAGE OverloadedStrings #-}
 
 module ViewEvents.Common where
 
-import           Brick.BChan               (writeBChan)
-import qualified Brick.Focus               as F
-import qualified Brick.Main                as M
-import           Brick.Types               (Widget)
-import qualified Brick.Types               as T
-import           Brick.Widgets.Core        (txt)
-import qualified Brick.Widgets.Edit        as E
-import qualified Brick.Widgets.List        as L
-import qualified Brick.Widgets.ProgressBar as P
-import           Control.Concurrent        (forkIO, threadDelay)
-import           Control.Monad             (void)
-import           Control.Monad.IO.Class    (liftIO)
-import           Data.List                 (partition, sort)
-import           Data.Maybe                (fromMaybe, isJust)
-import           Data.Text                 (Text)
-import qualified Data.Text                 as TT
-import qualified Data.Text.Zipper          as Z hiding (textZipper)
-import           GHC.Conc                  (killThread)
-import qualified Graphics.Vty              as V
-import           Lens.Micro                ((%~), (&), (.~), (?~), (^.))
-import           System.Exit               (ExitCode (ExitSuccess))
-import           System.Info               (os)
-import           System.Process
-    ( callCommand
-    , readProcessWithExitCode
-    )
+import qualified Brick.Focus            as F
+import qualified Brick.Main             as M
+import           Brick.Types            (Widget)
+import qualified Brick.Types            as T
+import           Control.Monad.IO.Class (liftIO)
+import           Data.Maybe             (isJust)
+import           Data.Text              (Text)
+import qualified Graphics.Vty           as V
+import           Lens.Micro             ((%~), (&), (.~), (^.))
 
-import Common (annotate, defaultDialog, exit, initialFooter, tab)
+import Common           (annotate, defaultDialog, exit, initialFooter, tab)
 import Types
-    ( Action (Clip, Ls, Show)
-    , CmdOutput
-    , CopyType (CopyUsername)
-    , Event (ClearClipCount, Copying)
+    ( Event (ClearClipCount)
     , Field
     , State
     , View (BrowserView, EntryView, ExitView, PasswordView, SearchView)
     , activeView
-    , chan
-    , clearTimeout
     , countdownThreadId
-    , currentCountdown
     , currentDir
-    , dbPathField
     , exitDialog
     , focusRing
     , footer
-    , hasCopied
-    , keyfileField
-    , passwordField
     , previousView
-    , visibleEntries
     )
+import ViewEvents.Copy  (handleClipCount)
+import ViewEvents.Utils (isCopyable)
 
 
 liftContinue1 :: (a -> IO b) -> a -> T.EventM n (T.Next b)
@@ -62,117 +37,11 @@ liftContinue1 g st = liftIO (g st) >>= M.continue
 liftContinue2 :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
 liftContinue2 g st x = liftIO (g st x) >>= M.continue
 
-processStdout :: Text -> [Text]
-processStdout s = dirs ++ entries_
-  where
-    (dirs, entries_) = partition ("/" `TT.isSuffixOf`) x
-    x = sort $ TT.lines s
-
 prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
      & exitDialog .~ defaultDialog
      & activeView .~ ExitView
-
-getCreds :: State -> (Text, Text, Text)
-getCreds st = (dir, pw, kf)
-  where
-    dir = extractTextField $ st ^. dbPathField
-    pw = extractTextField  $ st ^. passwordField
-    kf = extractTextField  $ st ^. keyfileField
-    extractTextField :: E.Editor Text Field -> Text
-    extractTextField field =
-      let res = Z.getText $ field ^. E.editContentsL in
-      case res of
-        []      -> ""
-        (x : _) -> x
-
-
-runCmd :: Action
-       -> Text
-       -> [Text]
-       -> Text
-       -> Text
-       -> IO CmdOutput
-runCmd Ls dir args pw kf   = _runCmdInner "ls" dir args pw kf
-runCmd Clip dir args pw kf = _runCmdInner "clip" dir args pw kf
-runCmd Show dir args pw kf = _runCmdInner "show" dir args pw kf
-
-_runCmdInner :: Text
-             -> Text
-             -> [Text]
-             -> Text
-             -> Text
-             -> IO CmdOutput
-_runCmdInner action dir extraArgs pw kf = do
-  (e, a, b) <- readProcessWithExitCode "keepassxc-cli" args (TT.unpack pw)
-  pure (e, TT.pack a, TT.pack b)
-  where
-    args :: [String]
-    args = TT.unpack <$> [action, dir] ++ extraArgs_
-    extraArgs_ = case kf of
-                   "" -> extraArgs
-                   _  -> ["-k", kf] ++ extraArgs
-
-_copyTypeToStr :: CopyType -> Text
-_copyTypeToStr CopyUsername = "username"
-_copyTypeToStr _            = "password"
-
-copyEntryCommon :: State -> Text -> CopyType -> IO State
-copyEntryCommon st entry ctype = do
-  let (dir, pw, kf) = getCreds st
-  let attr = _copyTypeToStr ctype
-  let bg_cmd = do
-        (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
-        writeBChan (st^.chan) $ Copying (code, stderr)
-  void $ forkIO bg_cmd
-  pure $ st & footer .~ txt "Copying..."
-
-handleCopy :: State -> (ExitCode, Text) -> IO State
-handleCopy st (ExitSuccess, _) = do
-  -- If there already exists a countdown thread, kill it first to prevent interference
-  case st ^. countdownThreadId of
-    Just x  -> killThread x
-    Nothing -> pure ()
-  -- Save the tid in case if it needs to be cancelled later
-  tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
-  pure $ st & hasCopied .~ True
-            & countdownThreadId ?~ tid
-handleCopy st (_, stderr)      = pure $ st & footer .~ txt stderr
-
-handleClipCount :: State -> Int -> IO State
-handleClipCount st 0     =
-  clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
-                             & hasCopied .~ False
-                             & countdownThreadId .~ Nothing)
-handleClipCount st count = do
-  -- Even if the footer shouldn't be changed, the countdown should proceed
-  let changeFooter = case st^.activeView of
-                       BrowserView -> True
-                       SearchView  -> True
-                       _           -> False
-  let bg_cmd = threadDelay 1000000
-              >> writeBChan (st^.chan) (ClearClipCount (count - 1))
-  -- Save the tid in case if it needs to be cancelled later
-  tid <- forkIO bg_cmd
-  let label = mkCountdownLabel count
-  let v = fromIntegral count / fromIntegral (st ^. clearTimeout)
-  let f = if changeFooter
-             then footer .~ P.progressBar label v
-             else id
-  pure $ st & f
-            & countdownThreadId ?~ tid
-            & currentCountdown ?~ v
-
-mkCountdownLabel :: Show a => a -> Maybe String
-mkCountdownLabel count =
-  Just $ "Clearing clipboard in " <> show count <> " seconds"
-
-clearClipboard :: IO ()
-clearClipboard = callCommand $ "printf '' | " ++ handler where
-  handler = case os of
-    "linux" -> "xclip -selection clipboard"
-    _       -> "pbcopy"
 
 commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State))
                -> State
@@ -233,21 +102,3 @@ viewDefaultFooter st =
 
 focus_search :: (Text, Text)
 focus_search = ("Tab", " focus search  ")
-
-isDir :: State -> Bool
-isDir st = fromMaybe False (getSelectedEntry f st)
-  where
-    f entry = TT.last entry == '/'
-
-isGoUpToParent :: State -> Bool
-isGoUpToParent st = fromMaybe False (getSelectedEntry f st)
-  where
-    f entry = entry == "-- (Go up parent) --"
-
-isCopyable :: State -> Bool
-isCopyable st = not (isDir st || isGoUpToParent st)
-
-getSelectedEntry :: (Text -> a) -> State -> Maybe a
-getSelectedEntry f st = do
-  (_, entry) <- L.listSelectedElement $ st ^. visibleEntries
-  pure $ f entry

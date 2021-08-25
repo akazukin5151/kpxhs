@@ -35,13 +35,8 @@ import Types
     , passwordField
     , visibleEntries
     )
-import ViewEvents.Common
-    ( getCreds
-    , liftContinue1
-    , processStdout
-    , runCmd
-    , updateFooter
-    )
+import ViewEvents.Common (liftContinue1, updateFooter)
+import ViewEvents.Utils  (getCreds, processStdout, runCmd)
 
 
 valid :: State -> Bool

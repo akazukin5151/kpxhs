@@ -23,13 +23,12 @@ import Types
     , currentCountdown
     , footer
     )
-import ViewEvents.Common
+import ViewEvents.Common (liftContinue2, updateFooterGuarded)
+import ViewEvents.Copy
     ( copyEntryCommon
     , handleClipCount
     , handleCopy
-    , liftContinue2
     , mkCountdownLabel
-    , updateFooterGuarded
     )
 
 entryDetailsEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)

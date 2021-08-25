@@ -46,19 +46,20 @@ import Types
     )
 import ViewEvents.Common
     ( commonTabEvent
-    , copyEntryCommon
-    , getCreds
-    , handleCopy
-    , isCopyable
-    , isDir
     , liftContinue1
     , liftContinue2
     , prepareExit
-    , processStdout
-    , getSelectedEntry
-    , runCmd
     , updateFooter
     , updateFooterGuarded
+    )
+import ViewEvents.Copy   (copyEntryCommon, handleCopy)
+import ViewEvents.Utils
+    ( getCreds
+    , getSelectedEntry
+    , isCopyable
+    , isDir
+    , processStdout
+    , runCmd
     )
 
 browserEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)

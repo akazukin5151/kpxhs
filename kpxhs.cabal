@@ -31,7 +31,9 @@ executable kpxhs
                      ViewEvents.SearchEvents,
                      ViewEvents.EntryEvents,
                      ViewEvents.LoginEvents,
-                     ViewEvents.ExitEvents
+                     ViewEvents.ExitEvents,
+                     ViewEvents.Copy,
+                     ViewEvents.Utils
 
   default-language:  Haskell2010
   ghc-options:       -threaded
