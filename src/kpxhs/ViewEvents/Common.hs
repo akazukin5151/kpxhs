@@ -27,7 +27,7 @@ import Types
     ( Action (Clip, Ls, Show)
     , CmdOutput
     , CopyType (CopyUsername)
-    , Event (ClearClipCount)
+    , Event (ClearClipCount, Copying)
     , Field
     , State
     , View (BrowserView, EntryView, ExitView, PasswordView, SearchView)
@@ -112,11 +112,17 @@ copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
-  (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
-  void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
-  pure $ case code of
-    ExitSuccess -> st & hasCopied .~ True
-    _           -> st & footer .~ txt stderr
+  let bg_cmd = do
+        (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
+        writeBChan (st^.chan) $ Copying (code, stderr)
+  void $ forkIO bg_cmd
+  pure $ st & footer .~ txt "Copying..."
+
+handleCopy :: State -> (ExitCode, Text) -> IO State
+handleCopy st (ExitSuccess, _) = do
+    void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
+    pure $ st & hasCopied .~ True
+handleCopy st (_, stderr)      = pure $ st & footer .~ txt stderr
 
 _copyTypeToStr :: CopyType -> Text
 _copyTypeToStr CopyUsername = "username"

@@ -13,7 +13,7 @@ import           Lens.Micro             ((&), (.~))
 import Common            (maybeGetEntryData)
 import Types
     ( CopyType (CopyPassword, CopyUsername)
-    , Event (ClearClipCount)
+    , Event (ClearClipCount, Copying)
     , Field
     , State
     , View (BrowserView)
@@ -23,6 +23,7 @@ import Types
 import ViewEvents.Common
     ( copyEntryCommon
     , handleClipCount
+    , handleCopy
     , liftContinue2
     , updateFooter
     )
@@ -36,6 +37,7 @@ entryDetailsEvent st (T.VtyEvent e) =
     _                        -> M.continue st
 entryDetailsEvent st (T.AppEvent (ClearClipCount count)) =
   liftContinue2 handleClipCount st count
+entryDetailsEvent st (T.AppEvent (Copying ev)) = liftContinue2 handleCopy st ev
 entryDetailsEvent st _ = M.continue st
 
 returnToBrowser :: State -> State

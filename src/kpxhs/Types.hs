@@ -30,12 +30,14 @@ data CopyType = CopyUsername | CopyPassword
 
 data ExitDialog = Clear | Exit | Cancel
 
+-- | (exitcode, stdout, stderr)
 type CmdOutput = (ExitCode, Text, Text)
 
 data Event = Login CmdOutput
            | EnterDir Text CmdOutput   -- ^ Text is the currently selected entry
            | ShowEntry Text CmdOutput  -- ^ Text is the currently selected entry
            | ClearClipCount Int
+           | Copying (ExitCode, Text)  -- ^ Excludes stdout
 
 data State = State
   { -- | The name of visible entries in the current directory

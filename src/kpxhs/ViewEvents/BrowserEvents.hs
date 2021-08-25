@@ -30,7 +30,7 @@ import Types
     ( Action (Ls, Show)
     , CmdOutput
     , CopyType (CopyPassword, CopyUsername)
-    , Event (ClearClipCount, EnterDir, ShowEntry)
+    , Event (ClearClipCount, Copying, EnterDir, ShowEntry)
     , Field (SearchField)
     , State
     , View (EntryView)
@@ -50,6 +50,7 @@ import ViewEvents.Common
     , copyEntryCommon
     , getCreds
     , handleClipCount
+    , handleCopy
     , liftContinue1
     , liftContinue2
     , prepareExit
@@ -58,9 +59,7 @@ import ViewEvents.Common
     , updateFooter
     )
 
-browserEvent :: State
-             -> T.BrickEvent Field Event
-             -> T.EventM Field (T.Next State)
+browserEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
 browserEvent =
   commonTabEvent
     ( \st e ->
@@ -150,6 +149,7 @@ handleAppEvent :: State -> Event -> IO State
 handleAppEvent st (ShowEntry entry out)  = pure $ handleShowEntryEvent st entry out
 handleAppEvent st (EnterDir entry out)   = pure $ handleEnterDirEvent st entry out
 handleAppEvent st (ClearClipCount count) = handleClipCount st count
+handleAppEvent st (Copying e)            = handleCopy st e
 handleAppEvent st _                      = pure st
 
 handleEnterDirEvent :: State -> Text -> CmdOutput -> State
