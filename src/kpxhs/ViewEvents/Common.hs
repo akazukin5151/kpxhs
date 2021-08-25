@@ -113,7 +113,7 @@ copyEntryCommon st entry ctype = do
   void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
   pure $ case code of
     ExitSuccess -> st & hasCopied .~ True
-    _ -> st & footer .~ txt stderr
+    _           -> st & footer .~ txt stderr
 
 _copyTypeToStr :: CopyType -> Text
 _copyTypeToStr CopyUsername = "username"

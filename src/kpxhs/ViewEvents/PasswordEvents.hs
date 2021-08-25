@@ -1,5 +1,5 @@
-{-# LANGUAGE Rank2Types #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE Rank2Types        #-}
 
 module ViewEvents.PasswordEvents (passwordEvent) where
 
