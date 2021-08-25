@@ -38,7 +38,7 @@ import Types
 import ViewEvents.Common
     ( getCreds
     , liftContinue1
-    , processInput
+    , processStdout
     , runCmd
     , updateFooter
     )
@@ -76,7 +76,7 @@ loginInBackground st = do
 
 gotoBrowser :: State -> Event -> State
 gotoBrowser st (Login (ExitSuccess, stdout, _)) = gotoBrowserSuccess st
-                                                    $ processInput stdout
+                                                    $ processStdout stdout
 gotoBrowser st (Login (_, _, stderr))           = st & footer .~ txt stderr
 gotoBrowser st _                                = st
 

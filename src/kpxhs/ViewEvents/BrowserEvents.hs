@@ -54,7 +54,7 @@ import ViewEvents.Common
     , liftContinue1
     , liftContinue2
     , prepareExit
-    , processInput
+    , processStdout
     , processSelected
     , runCmd
     , updateFooter
@@ -143,7 +143,7 @@ handleAppEvent st _                      = pure st
 
 handleEnterDirEvent :: State -> Text -> CmdOutput -> State
 handleEnterDirEvent st entry (ExitSuccess, stdout, _) =
-  enterDirSuccess st ("-- (Go up parent) --" : processInput stdout) entry
+  enterDirSuccess st ("-- (Go up parent) --" : processStdout stdout) entry
 handleEnterDirEvent st _ (_, _, stderr) =
   st & footer .~ txt stderr
 

@@ -62,8 +62,8 @@ liftContinue1 g st = liftIO (g st) >>= M.continue
 liftContinue2 :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
 liftContinue2 g st x = liftIO (g st x) >>= M.continue
 
-processInput :: Text -> [Text]
-processInput s = dirs ++ entries_
+processStdout :: Text -> [Text]
+processStdout s = dirs ++ entries_
   where
     (dirs, entries_) = partition ("/" `TT.isSuffixOf`) x
     x = sort $ TT.lines s
