@@ -2,31 +2,35 @@
 
 module ViewEvents.Common where
 
-import           Brick.BChan            (writeBChan)
-import qualified Brick.Focus            as F
-import qualified Brick.Main             as M
-import           Brick.Types            (Widget)
-import qualified Brick.Types            as T
-import           Brick.Widgets.Core     (str, txt)
-import qualified Brick.Widgets.Edit     as E
-import           Control.Concurrent     (forkIO, threadDelay)
-import           Control.Monad          (void)
-import           Control.Monad.IO.Class (liftIO)
-import           Data.List              (partition, sort)
-import           Data.Maybe             (fromMaybe)
-import           Data.Text              (Text)
-import qualified Data.Text              as TT
-import qualified Data.Text.Zipper       as Z hiding (textZipper)
-import           GHC.Conc               (killThread)
-import qualified Graphics.Vty           as V
-import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
-import           System.Exit            (ExitCode (ExitSuccess))
-import           System.Info            (os)
-import           System.Process         (callCommand, readProcessWithExitCode)
+import           Brick.BChan               (writeBChan)
+import qualified Brick.Focus               as F
+import qualified Brick.Main                as M
+import           Brick.Types               (Widget)
+import qualified Brick.Types               as T
+import           Brick.Widgets.Core        (txt)
+import qualified Brick.Widgets.Edit        as E
+import qualified Brick.Widgets.List        as L
+import qualified Brick.Widgets.ProgressBar as P
+import           Control.Concurrent        (forkIO, threadDelay)
+import           Control.Monad             (void)
+import           Control.Monad.IO.Class    (liftIO)
+import           Data.List                 (partition, sort)
+import           Data.Maybe                (fromMaybe)
+import           Data.Text                 (Text)
+import qualified Data.Text                 as TT
+import qualified Data.Text.Zipper          as Z hiding (textZipper)
+import           GHC.Conc                  (killThread)
+import qualified Graphics.Vty              as V
+import           Lens.Micro                ((%~), (&), (.~), (?~), (^.))
+import           System.Exit               (ExitCode (ExitSuccess))
+import           System.Info               (os)
+import           System.Process
+    ( callCommand
+    , readProcessWithExitCode
+    )
 
-import qualified Brick.Widgets.List as L
-import           Common             (annotate, exit, initialFooter, tab)
-import           Types
+import Common (annotate, exit, initialFooter, tab)
+import Types
     ( Action (Clip, Ls, Show)
     , CmdOutput
     , CopyType (CopyUsername)
@@ -143,7 +147,9 @@ handleClipCount st count = do
               >> writeBChan (st^.chan) (ClearClipCount (count - 1))
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO bg_cmd
-  pure $ st & footer .~ str ("Clearing clipboard in " <> show count <> " seconds")
+  let label = Just $ "Clearing clipboard in " <> show count <> " seconds"
+  let v = fromIntegral count / fromIntegral (st ^. clearTimeout)
+  pure $ st & footer .~ P.progressBar label v
             & countdownThreadId ?~ tid
 
 clearClipboard :: IO ()
