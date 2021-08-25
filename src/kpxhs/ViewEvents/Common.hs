@@ -235,19 +235,19 @@ focus_search :: (Text, Text)
 focus_search = ("Tab", " focus search  ")
 
 isDir :: State -> Bool
-isDir st = fromMaybe False (processSelected f st)
+isDir st = fromMaybe False (getSelectedEntry f st)
   where
     f entry = TT.last entry == '/'
 
 isGoUpToParent :: State -> Bool
-isGoUpToParent st = fromMaybe False (processSelected f st)
+isGoUpToParent st = fromMaybe False (getSelectedEntry f st)
   where
     f entry = entry == "-- (Go up parent) --"
 
 isCopyable :: State -> Bool
 isCopyable st = not (isDir st || isGoUpToParent st)
 
-processSelected :: (Text -> a) -> State -> Maybe a
-processSelected f st = do
+getSelectedEntry :: (Text -> a) -> State -> Maybe a
+getSelectedEntry f st = do
   (_, entry) <- L.listSelectedElement $ st ^. visibleEntries
   pure $ f entry

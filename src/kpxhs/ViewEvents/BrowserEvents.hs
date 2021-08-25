@@ -55,7 +55,7 @@ import ViewEvents.Common
     , liftContinue2
     , prepareExit
     , processStdout
-    , processSelected
+    , getSelectedEntry
     , runCmd
     , updateFooter
     , updateFooterGuarded
@@ -95,7 +95,7 @@ handleEnter st = liftContinue1 f st
     f = if isDir st then enterDirFork else showEntryFork
 
 showEntryFork :: State -> IO State
-showEntryFork st = fromMaybe def (processSelected f st)
+showEntryFork st = fromMaybe def (getSelectedEntry f st)
   where
     def = pure $ st & footer .~ str "No entry selected!"
     f "-- (Go up parent) --" = pure $ goUpParent st
@@ -115,7 +115,7 @@ fetchEntryInBackground st entry = fromMaybe def (showEntryWithCache newst entry)
 
 
 enterDirFork :: State -> IO State
-enterDirFork st = fromMaybe def (processSelected f st)
+enterDirFork st = fromMaybe def (getSelectedEntry f st)
   where
     def = pure $ st & footer .~ str "No directory selected!"
     f = fetchDirInBackground st
@@ -209,7 +209,7 @@ showEntryInner st entry details = newst
 
 copyEntryFromBrowser :: State -> CopyType -> IO State
 copyEntryFromBrowser st ctype =
-  fromMaybe def (processSelected f st)
+  fromMaybe def (getSelectedEntry f st)
     where
       def = pure $ st & footer .~ str "No entry selected!"
       f entry = copyEntryCommon st entry ctype
