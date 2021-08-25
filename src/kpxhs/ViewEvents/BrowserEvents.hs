@@ -2,23 +2,22 @@
 
 module ViewEvents.BrowserEvents (browserEvent) where
 
-import           Brick.BChan            (writeBChan)
-import qualified Brick.Main             as M
-import qualified Brick.Types            as T
-import           Brick.Util             (clamp)
-import           Brick.Widgets.Core     (str, txt)
-import qualified Brick.Widgets.Edit     as E
-import qualified Brick.Widgets.List     as L
-import           Control.Concurrent     (forkIO)
-import           Control.Monad          (void)
-import           Data.Map.Strict        ((!?))
-import qualified Data.Map.Strict        as Map
-import           Data.Maybe             (fromMaybe)
-import           Data.Text              (Text)
-import qualified Data.Text              as TT
-import qualified Graphics.Vty           as V
-import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
-import           System.Exit            (ExitCode (ExitSuccess))
+import           Brick.BChan        (writeBChan)
+import qualified Brick.Main         as M
+import qualified Brick.Types        as T
+import           Brick.Util         (clamp)
+import           Brick.Widgets.Core (str, txt)
+import qualified Brick.Widgets.Edit as E
+import qualified Brick.Widgets.List as L
+import           Control.Concurrent (forkIO)
+import           Control.Monad      (void)
+import           Data.Map.Strict    ((!?))
+import qualified Data.Map.Strict    as Map
+import           Data.Maybe         (fromMaybe)
+import           Data.Text          (Text)
+import qualified Graphics.Vty       as V
+import           Lens.Micro         ((%~), (&), (.~), (?~), (^.))
+import           System.Exit        (ExitCode (ExitSuccess))
 
 import Common
     ( dirsToStr
@@ -51,10 +50,13 @@ import ViewEvents.Common
     , getCreds
     , handleClipCount
     , handleCopy
+    , isCopyable
+    , isDir
     , liftContinue1
     , liftContinue2
     , prepareExit
     , processInput
+    , processSelected
     , runCmd
     , updateFooter
     )
@@ -66,9 +68,9 @@ browserEvent =
         case e of
           T.VtyEvent (V.EvKey V.KEsc [])        -> handleEsc st
           T.VtyEvent (V.EvKey V.KEnter [])      -> handleEnter st
-          T.VtyEvent (V.EvKey (V.KChar 'p') []) ->
+          T.VtyEvent (V.EvKey (V.KChar 'p') []) | isCopyable st ->
             liftContinue2 copyEntryFromBrowser st CopyPassword
-          T.VtyEvent (V.EvKey (V.KChar 'u') []) ->
+          T.VtyEvent (V.EvKey (V.KChar 'u') []) | isCopyable st ->
             liftContinue2 copyEntryFromBrowser st CopyUsername
           T.VtyEvent ev                         -> M.continue $ handleNav ev st
           T.AppEvent ev                         -> liftContinue2 handleAppEvent st ev
@@ -81,18 +83,6 @@ handleEsc st =
     ([], True)  -> M.continue $ prepareExit st
     ([], False) -> M.halt st
     _           -> M.continue $ goUpParent st
-
-
--- If there is "go up to parent" then check for that first
-isDir :: State -> Bool
-isDir st = fromMaybe False (processSelected f st)
-  where
-    f entry = TT.last entry == '/'
-
-processSelected :: (Text -> a) -> State -> Maybe a
-processSelected f st = do
-  (_, entry) <- L.listSelectedElement $ st ^. visibleEntries
-  pure $ f entry
 
 
 -- | This tree of functions will run a shell command in the background
@@ -182,6 +172,7 @@ goUpParent st =
   st & visibleEntries .~ toBrowserList entries
      & searchField .~ E.editor SearchField (Just 1) ""
      & currentDir %~ initOrDef []
+     & updateFooter
   where
     entries = fromMaybe ["Failed to get entries!"] $ maybeGetEntries st
 
@@ -223,27 +214,28 @@ copyEntryFromBrowser st ctype =
       f entry = copyEntryCommon st entry ctype
 
 handleNav :: V.Event -> State -> State
-handleNav e st =
-  st & visibleEntries %~ case e of
-    -- Keys from handleListEvent
-    V.EvKey V.KUp []         -> L.listMoveUp
-    V.EvKey V.KDown []       -> L.listMoveDown
-    V.EvKey V.KHome []       -> listMoveToBeginning
-    V.EvKey V.KEnd []        -> listMoveToEnd
-    V.EvKey V.KPageDown []   -> listMovePageDown
-    V.EvKey V.KPageUp []     -> listMovePageUp
-    -- WASD
-    V.EvKey (V.KChar 'w') [] -> L.listMoveUp
-    V.EvKey (V.KChar 's') [] -> L.listMoveDown
-    V.EvKey (V.KChar 'e') [] -> listMovePageDown
-    V.EvKey (V.KChar 'q') [] -> listMovePageUp
-    -- Vi
-    V.EvKey (V.KChar 'k') [] -> L.listMoveUp
-    V.EvKey (V.KChar 'j') [] -> L.listMoveDown
-    V.EvKey (V.KChar 'g') [] -> listMoveToBeginning
-    V.EvKey (V.KChar 'G') [] -> listMoveToEnd
-    _                        -> id
+handleNav e st = new_st & updateFooter
   where
+    new_st = st & visibleEntries %~
+      case e of
+        -- Keys from handleListEvent
+        V.EvKey V.KUp []         -> L.listMoveUp
+        V.EvKey V.KDown []       -> L.listMoveDown
+        V.EvKey V.KHome []       -> listMoveToBeginning
+        V.EvKey V.KEnd []        -> listMoveToEnd
+        V.EvKey V.KPageDown []   -> listMovePageDown
+        V.EvKey V.KPageUp []     -> listMovePageUp
+        -- WASD
+        V.EvKey (V.KChar 'w') [] -> L.listMoveUp
+        V.EvKey (V.KChar 's') [] -> L.listMoveDown
+        V.EvKey (V.KChar 'e') [] -> listMovePageDown
+        V.EvKey (V.KChar 'q') [] -> listMovePageUp
+        -- Vi
+        V.EvKey (V.KChar 'k') [] -> L.listMoveUp
+        V.EvKey (V.KChar 'j') [] -> L.listMoveDown
+        V.EvKey (V.KChar 'g') [] -> listMoveToBeginning
+        V.EvKey (V.KChar 'G') [] -> listMoveToEnd
+        _                        -> id
     -- Default page up and down functions too fast for me
     listMovePageUp l = listMoveBy (subtract 5) l
     listMovePageDown l = listMoveBy (5 +) l

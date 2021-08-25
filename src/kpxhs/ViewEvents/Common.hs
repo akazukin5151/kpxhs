@@ -13,6 +13,7 @@ import           Control.Concurrent     (forkIO, threadDelay)
 import           Control.Monad          (void)
 import           Control.Monad.IO.Class (liftIO)
 import           Data.List              (partition, sort)
+import           Data.Maybe             (fromMaybe)
 import           Data.Text              (Text)
 import qualified Data.Text              as TT
 import qualified Data.Text.Zipper       as Z hiding (textZipper)
@@ -23,8 +24,9 @@ import           System.Exit            (ExitCode (ExitSuccess))
 import           System.Info            (os)
 import           System.Process         (callCommand, readProcessWithExitCode)
 
-import Common   (annotate, exit, initialFooter, tab)
-import Types
+import qualified Brick.Widgets.List as L
+import           Common             (annotate, exit, initialFooter, tab)
+import           Types
     ( Action (Clip, Ls, Show)
     , CmdOutput
     , CopyType (CopyUsername)
@@ -44,6 +46,7 @@ import Types
     , keyfileField
     , passwordField
     , previousView
+    , visibleEntries
     )
 
 
@@ -185,16 +188,37 @@ updateFooter st = st & footer .~ viewDefaultFooter st
 viewDefaultFooter :: State -> Widget Field
 viewDefaultFooter st =
   annotate $ case st^.activeView of
-    SearchView -> [exit, tab " focus list "]
-    EntryView -> [back, username, password]
-    BrowserView ->
-      case st^.currentDir of
-        [] -> [exit, focus_search, username, password]
-        _  -> [back, focus_search, username, password]
+    SearchView   -> [exit, tab " focus list "]
+    EntryView    -> [back, username, password]
     PasswordView -> initialFooter $ st ^. focusRing
-    ExitView -> [("", "")]
+    ExitView     -> [("", "")]
+    BrowserView ->
+      let extra = if isCopyable st then [username, password] else [] in
+      case st^.currentDir of
+        [] -> [exit, focus_search] <> extra
+        _  -> [back, focus_search] <> extra
   where
     back = ("Esc", " back  ")
     username = ("u", " copy username  ")
     password = ("p", " copy password")
-    focus_search = ("Tab", " focus search  ")
+
+focus_search :: (Text, Text)
+focus_search = ("Tab", " focus search  ")
+
+isDir :: State -> Bool
+isDir st = fromMaybe False (processSelected f st)
+  where
+    f entry = TT.last entry == '/'
+
+isGoUpToParent :: State -> Bool
+isGoUpToParent st = fromMaybe False (processSelected f st)
+  where
+    f entry = entry == "-- (Go up parent) --"
+
+isCopyable :: State -> Bool
+isCopyable st = not (isDir st || isGoUpToParent st)
+
+processSelected :: (Text -> a) -> State -> Maybe a
+processSelected f st = do
+  (_, entry) <- L.listSelectedElement $ st ^. visibleEntries
+  pure $ f entry
