@@ -52,7 +52,8 @@ initialState ring dbdir kfdir timeout' chan =
       _hasCopied = False,
       _chan = chan,
       _clearTimeout = timeout',
-      _countdownThreadId = Nothing
+      _countdownThreadId = Nothing,
+      _currentCountdown = Nothing
     }
       where
         choices = [ ("Clear and exit", Clear)

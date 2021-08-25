@@ -204,6 +204,8 @@ showEntryInner st entry details = newst
                & currentEntryDetailName ?~ entry
                & allEntryDetails %~ Map.alter f dirname
                & updateFooter
+               -- Not guarded here because the countdown should only be in
+               -- browser view
 
 copyEntryFromBrowser :: State -> CopyType -> IO State
 copyEntryFromBrowser st ctype =

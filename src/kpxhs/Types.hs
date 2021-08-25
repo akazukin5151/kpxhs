@@ -71,7 +71,7 @@ data State = State
     _currentDir             :: [Text],
     -- | The state container for the exit dialog
     _exitDialog             :: D.Dialog ExitDialog,
-    -- | Whether the user has copied anything
+    -- | Whether the clipboard contains a copied value from kpxhs
     _hasCopied              :: Bool,
     -- | The app event channel; contains all the info that needs to be passed from
     -- a background thread to the AppEvent handler
@@ -79,7 +79,9 @@ data State = State
     -- | Number of seconds to wait before clearing the clipboard
     _clearTimeout           :: Int,
     -- | The current clipboard clear countdown thread id
-    _countdownThreadId      :: Maybe ThreadId
+    _countdownThreadId      :: Maybe ThreadId,
+    -- | The current value of the counter
+    _currentCountdown       :: Maybe Float
   }
 
 makeLenses ''State

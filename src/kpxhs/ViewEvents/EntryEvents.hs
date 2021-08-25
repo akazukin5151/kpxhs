@@ -2,13 +2,14 @@
 
 module ViewEvents.EntryEvents (entryDetailsEvent) where
 
-import qualified Brick.Main             as M
-import qualified Brick.Types            as T
-import           Brick.Widgets.Core     (str)
-import           Data.Maybe             (fromMaybe)
-import qualified Data.Text              as TT
-import qualified Graphics.Vty           as V
-import           Lens.Micro             ((&), (.~))
+import qualified Brick.Main                as M
+import qualified Brick.Types               as T
+import           Brick.Widgets.Core        (str)
+import qualified Brick.Widgets.ProgressBar as P
+import           Data.Maybe                (fromMaybe)
+import qualified Data.Text                 as TT
+import qualified Graphics.Vty              as V
+import           Lens.Micro                ((&), (.~), (^.))
 
 import Common            (maybeGetEntryData)
 import Types
@@ -18,6 +19,8 @@ import Types
     , State
     , View (BrowserView)
     , activeView
+    , clearTimeout
+    , currentCountdown
     , footer
     )
 import ViewEvents.Common
@@ -25,7 +28,8 @@ import ViewEvents.Common
     , handleClipCount
     , handleCopy
     , liftContinue2
-    , updateFooter
+    , mkCountdownLabel
+    , updateFooterGuarded
     )
 
 entryDetailsEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
@@ -43,7 +47,13 @@ entryDetailsEvent st _ = M.continue st
 returnToBrowser :: State -> State
 returnToBrowser st =
   st & activeView .~ BrowserView
-     & updateFooter
+     & f
+  where
+    toCount :: Float -> Int
+    toCount x = round $ x * fromIntegral (st^.clearTimeout)
+    f = case st^.currentCountdown of
+      Just x  -> footer .~ P.progressBar (mkCountdownLabel $ toCount x) x
+      Nothing -> updateFooterGuarded
 
 copyEntryFromDetails :: State -> CopyType -> IO State
 copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)

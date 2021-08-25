@@ -42,6 +42,7 @@ import Types
     , chan
     , clearTimeout
     , countdownThreadId
+    , currentCountdown
     , currentDir
     , dbPathField
     , focusRing
@@ -143,14 +144,27 @@ handleClipCount st 0     =
                              & hasCopied .~ False
                              & countdownThreadId .~ Nothing)
 handleClipCount st count = do
+  -- Even if the footer shouldn't be changed, the countdown should proceed
+  let changeFooter = case st^.activeView of
+                       BrowserView -> True
+                       SearchView  -> True
+                       _           -> False
   let bg_cmd = threadDelay 1000000
               >> writeBChan (st^.chan) (ClearClipCount (count - 1))
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO bg_cmd
-  let label = Just $ "Clearing clipboard in " <> show count <> " seconds"
+  let label = mkCountdownLabel count
   let v = fromIntegral count / fromIntegral (st ^. clearTimeout)
-  pure $ st & footer .~ P.progressBar label v
+  let f = if changeFooter
+             then footer .~ P.progressBar label v
+             else id
+  pure $ st & f
             & countdownThreadId ?~ tid
+            & currentCountdown ?~ v
+
+mkCountdownLabel :: Show a => a -> Maybe String
+mkCountdownLabel count =
+  Just $ "Clearing clipboard in " <> show count <> " seconds"
 
 clearClipboard :: IO ()
 clearClipboard = callCommand $ "printf '' | " ++ handler where
