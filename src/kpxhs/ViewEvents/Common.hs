@@ -104,6 +104,10 @@ _runCmdInner action dir extraArgs pw kf = do
                    "" -> extraArgs
                    _  -> ["-k", kf] ++ extraArgs
 
+_copyTypeToStr :: CopyType -> Text
+_copyTypeToStr CopyUsername = "username"
+_copyTypeToStr _            = "password"
+
 copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
@@ -126,9 +130,17 @@ handleCopy st (ExitSuccess, _) = do
             & countdownThreadId ?~ tid
 handleCopy st (_, stderr)      = pure $ st & footer .~ txt stderr
 
-_copyTypeToStr :: CopyType -> Text
-_copyTypeToStr CopyUsername = "username"
-_copyTypeToStr _            = "password"
+handleClipCount :: State -> Int -> IO State
+handleClipCount st 0     =
+  clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
+                             & hasCopied .~ False)
+handleClipCount st count = do
+  let bg_cmd = threadDelay 1000000
+              >> writeBChan (st^.chan) (ClearClipCount (count - 1))
+  -- Save the tid in case if it needs to be cancelled later
+  tid <- forkIO bg_cmd
+  pure $ st & footer .~ str ("Clearing clipboard in " <> show count <> " seconds")
+            & countdownThreadId ?~ tid
 
 clearClipboard :: IO ()
 clearClipboard = callCommand $ "printf '' | " ++ handler where
@@ -151,18 +163,6 @@ commonTabEvent fallback st e =
 _handleTab :: State -> (State -> View -> State) -> View -> State
 _handleTab st f BrowserView = f st SearchView
 _handleTab st f _           = f st BrowserView
-
-handleClipCount :: State -> Int -> IO State
-handleClipCount st 0     =
-  clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
-                             & hasCopied .~ False)
-handleClipCount st count = do
-  let bg_cmd = threadDelay 1000000
-              >> writeBChan (st^.chan) (ClearClipCount (count - 1))
-  -- Save the tid in case if it needs to be cancelled later
-  tid <- forkIO bg_cmd
-  pure $ st & footer .~ str ("Clearing clipboard in " <> show count <> " seconds")
-            & countdownThreadId ?~ tid
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =
