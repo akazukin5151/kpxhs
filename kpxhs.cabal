@@ -49,7 +49,6 @@ executable kpxhs
                      -Wno-prepositive-qualified-module
                      -Wno-missing-deriving-strategies
   build-depends:     base >= 4.7 && < 5,
-                     ghc >= 8.10,
                      brick >= 0.6 && <= 0.61,
                      vty == 5.*,
                      microlens == 0.4.*,
