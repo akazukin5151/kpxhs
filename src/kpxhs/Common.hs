@@ -2,19 +2,21 @@
 
 module Common where
 
-import           Brick.AttrMap      (AttrName)
-import qualified Brick.Focus        as F
-import           Brick.Markup       (Markup, markup, (@?))
-import           Brick.Types        (Widget)
-import qualified Brick.Widgets.List as L
-import           Data.Map.Strict    ((!?))
-import           Data.Text          (Text)
-import qualified Data.Text          as TT
-import qualified Data.Vector        as Vec
-import           Lens.Micro         ((^.))
+import           Brick.AttrMap        (AttrName)
+import qualified Brick.Focus          as F
+import           Brick.Markup         (Markup, markup, (@?))
+import           Brick.Types          (Widget)
+import qualified Brick.Widgets.Dialog as D
+import qualified Brick.Widgets.List   as L
+import           Data.Map.Strict      ((!?))
+import           Data.Text            (Text)
+import qualified Data.Text            as TT
+import qualified Data.Vector          as Vec
+import           Lens.Micro           ((^.))
 
 import Types
-    ( Field (BrowserField, PasswordField, PathField)
+    ( ExitDialog (Cancel, Clear, Exit)
+    , Field (BrowserField, PasswordField, PathField)
     , State
     , allEntryDetails
     , currentDir
@@ -63,3 +65,13 @@ maybeGetEntryData st = do
   entryname <- st^.currentEntryDetailName
   entriesInThisDir <- (st^.allEntryDetails) !? dirname
   entriesInThisDir !? entryname
+
+defaultDialog :: D.Dialog ExitDialog
+defaultDialog = D.dialog Nothing (Just (0, defaultDialogChoices)) 60
+
+defaultDialogChoices :: [(String, ExitDialog)]
+defaultDialogChoices =
+  [ ("Clear and exit", Clear)
+  , ("Just exit", Exit)
+  , ("Do not exit", Cancel)
+  ]

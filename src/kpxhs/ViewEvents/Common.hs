@@ -29,7 +29,7 @@ import           System.Process
     , readProcessWithExitCode
     )
 
-import Common (annotate, exit, initialFooter, tab)
+import Common (annotate, defaultDialog, exit, initialFooter, tab)
 import Types
     ( Action (Clip, Ls, Show)
     , CmdOutput
@@ -45,6 +45,7 @@ import Types
     , currentCountdown
     , currentDir
     , dbPathField
+    , exitDialog
     , focusRing
     , footer
     , hasCopied
@@ -70,6 +71,7 @@ processInput s = dirs ++ entries_
 prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
+     & exitDialog .~ defaultDialog
      & activeView .~ ExitView
 
 getCreds :: State -> (Text, Text, Text)

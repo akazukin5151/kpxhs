@@ -19,12 +19,11 @@ import           System.Directory          (getHomeDirectory)
 import           System.Environment        (getArgs)
 import           System.Exit               (ExitCode (ExitFailure), exitWith)
 
-import Common (annotate, initialFooter, toBrowserList)
+import Common (annotate, defaultDialog, initialFooter, toBrowserList)
 import Config (parseConfig)
 import Events (appEvent)
 import Types
     ( Event
-    , ExitDialog (Cancel, Clear, Exit)
     , Field (KeyfileField, PasswordField, PathField, SearchField)
     , State (..)
     , View (PasswordView)
@@ -48,18 +47,13 @@ initialState ring dbdir kfdir timeout' chan =
       _keyfileField = E.editor KeyfileField (Just 1) kfdir,
       _searchField = E.editor SearchField (Just 1) "",
       _currentDir = [],
-      _exitDialog = D.dialog Nothing (Just (0, choices)) 60,
+      _exitDialog = defaultDialog,
       _hasCopied = False,
       _chan = chan,
       _clearTimeout = timeout',
       _countdownThreadId = Nothing,
       _currentCountdown = Nothing
     }
-      where
-        choices = [ ("Clear and exit", Clear)
-                  , ("Just exit", Exit)
-                  , ("Do not exit", Cancel)
-                  ]
 
 theMap :: A.AttrMap
 theMap =
