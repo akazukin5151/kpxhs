@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.DialogUI (drawDialog) where
+module UI.LoginUI (drawDialog) where
 
 import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C

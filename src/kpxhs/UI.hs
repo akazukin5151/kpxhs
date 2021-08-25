@@ -10,7 +10,7 @@ import Types
     , activeView
     )
 import UI.BrowserUI (drawBrowser)
-import UI.DialogUI  (drawDialog)
+import UI.LoginUI  (drawDialog)
 import UI.EntryUI   (drawEntryDetails)
 import UI.ExitUI    (drawExitView)
 

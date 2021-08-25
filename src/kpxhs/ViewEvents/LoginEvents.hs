@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE Rank2Types        #-}
 
-module ViewEvents.PasswordEvents (passwordEvent) where
+module ViewEvents.LoginEvents (passwordEvent) where
 
 import           Brick.BChan        (writeBChan)
 import qualified Brick.Focus        as F

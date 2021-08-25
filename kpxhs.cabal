@@ -23,14 +23,14 @@ executable kpxhs
                      UI.Common,
                      UI.BrowserUI,
                      UI.ExitUI,
-                     UI.DialogUI,
+                     UI.LoginUI,
                      UI.EntryUI,
                      Events,
                      ViewEvents.BrowserEvents,
                      ViewEvents.Common,
                      ViewEvents.SearchEvents,
                      ViewEvents.EntryEvents,
-                     ViewEvents.PasswordEvents,
+                     ViewEvents.LoginEvents,
                      ViewEvents.ExitEvents
 
   default-language:  Haskell2010
