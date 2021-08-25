@@ -133,7 +133,8 @@ handleCopy st (_, stderr)      = pure $ st & footer .~ txt stderr
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
   clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
-                             & hasCopied .~ False)
+                             & hasCopied .~ False
+                             & countdownThreadId .~ Nothing)
 handleClipCount st count = do
   let bg_cmd = threadDelay 1000000
               >> writeBChan (st^.chan) (ClearClipCount (count - 1))
