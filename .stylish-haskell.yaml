@@ -117,7 +117,7 @@ steps:
       # - none: Do not perform any alignment.
       #
       # Default: global.
-      align: file
+      align: group
 
       # The following options affect only import list alignment.
       #

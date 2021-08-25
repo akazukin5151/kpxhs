@@ -8,14 +8,15 @@ import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~), (^.))
 
-import           ViewEvents.Common      (clearClipboard, updateFooter)
-import           Types                  ( ExitDialog (Cancel, Clear, Exit)
-                                        , Field
-                                        , State
-                                        , activeView
-                                        , exitDialog
-                                        , previousView
-                                        )
+import Types
+    ( ExitDialog (Cancel, Clear, Exit)
+    , Field
+    , State
+    , activeView
+    , exitDialog
+    , previousView
+    )
+import ViewEvents.Common (clearClipboard, updateFooter)
 
 
 exitEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)

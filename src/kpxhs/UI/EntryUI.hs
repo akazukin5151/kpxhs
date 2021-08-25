@@ -12,8 +12,8 @@ import           Data.Text            (Text)
 import qualified Data.Text            as TT
 import           Lens.Micro           ((^.))
 
-import           Common               (maybeGetEntryData)
-import           Types                (Field, State, footer)
+import Common (maybeGetEntryData)
+import Types  (Field, State, footer)
 
 
 drawEntryDetails :: State -> [Widget Field]

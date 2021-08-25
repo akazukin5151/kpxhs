@@ -21,39 +21,42 @@ import qualified Graphics.Vty           as V
 import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
 
-import           Common                 ( dirsToStr
-                                        , dirsToStrRoot
-                                        , maybeGetEntryData
-                                        , toBrowserList
-                                        )
-import           Types                  ( Action (Ls, Show)
-                                        , CmdOutput
-                                        , CopyType (..)
-                                        , Event (ClearClipCount, EnterDir, ShowEntry)
-                                        , Field (SearchField)
-                                        , State
-                                        , View (EntryView)
-                                        , activeView
-                                        , allEntryDetails
-                                        , allEntryNames
-                                        , chan
-                                        , currentDir
-                                        , currentEntryDetailName
-                                        , footer
-                                        , hasCopied
-                                        , searchField
-                                        , visibleEntries
-                                        )
-import           ViewEvents.Common      ( commonTabEvent
-                                        , copyEntryCommon
-                                        , getCreds
-                                        , handleClipCount
-                                        , liftContinue
-                                        , prepareExit
-                                        , processInput
-                                        , runCmd
-                                        , updateFooter
-                                        )
+import Common
+    ( dirsToStr
+    , dirsToStrRoot
+    , maybeGetEntryData
+    , toBrowserList
+    )
+import Types
+    ( Action (Ls, Show)
+    , CmdOutput
+    , CopyType (CopyPassword, CopyUsername)
+    , Event (ClearClipCount, EnterDir, ShowEntry)
+    , Field (SearchField)
+    , State
+    , View (EntryView)
+    , activeView
+    , allEntryDetails
+    , allEntryNames
+    , chan
+    , currentDir
+    , currentEntryDetailName
+    , footer
+    , hasCopied
+    , searchField
+    , visibleEntries
+    )
+import ViewEvents.Common
+    ( commonTabEvent
+    , copyEntryCommon
+    , getCreds
+    , handleClipCount
+    , liftContinue
+    , prepareExit
+    , processInput
+    , runCmd
+    , updateFooter
+    )
 
 browserEvent :: State
              -> T.BrickEvent Field Event

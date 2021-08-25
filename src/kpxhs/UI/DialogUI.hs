@@ -7,15 +7,17 @@ import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core   (hLimitPercent, str, vBox, (<+>))
 import           Data.Text            (Text)
 import qualified Data.Text            as TT
+import           Lens.Micro           ((^.))
 
-import           UI.Common            (getEditor)
-import           Types                ( Field
-                                      , State
-                                      , dbPathField
-                                      , keyfileField
-                                      , passwordField, footer
-                                      )
-import Lens.Micro ((^.))
+import Types
+    ( Field
+    , State
+    , dbPathField
+    , footer
+    , keyfileField
+    , passwordField
+    )
+import UI.Common (getEditor)
 
 
 hidePassword :: [Text] -> Text

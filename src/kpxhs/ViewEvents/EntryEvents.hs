@@ -5,21 +5,28 @@ module ViewEvents.EntryEvents (entryDetailsEvent) where
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (str)
+import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Maybe             (fromMaybe)
 import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~))
-import           Control.Monad.IO.Class (MonadIO (liftIO))
 
-import           Common                 (maybeGetEntryData)
-import           ViewEvents.Common      (copyEntryCommon, liftContinue, updateFooter, handleClipCount)
-import           Types                  ( CopyType (..)
-                                        , Field
-                                        , State
-                                        , View (BrowserView)
-                                        , activeView
-                                        , footer, Event (ClearClipCount)
-                                        )
+import Common            (maybeGetEntryData)
+import Types
+    ( CopyType (CopyPassword, CopyUsername)
+    , Event (ClearClipCount)
+    , Field
+    , State
+    , View (BrowserView)
+    , activeView
+    , footer
+    )
+import ViewEvents.Common
+    ( copyEntryCommon
+    , handleClipCount
+    , liftContinue
+    , updateFooter
+    )
 
 entryDetailsEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
 entryDetailsEvent st (T.VtyEvent e) =

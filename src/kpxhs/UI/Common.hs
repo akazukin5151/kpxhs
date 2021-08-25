@@ -7,7 +7,7 @@ import qualified Brick.Widgets.Edit as E
 import           Data.Text          (Text)
 import           Lens.Micro         (Getting, (^.))
 
-import           Types              (Field, State, focusRing)
+import Types (Field, State, focusRing)
 
 
 getEditor :: State

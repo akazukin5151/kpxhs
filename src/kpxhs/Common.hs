@@ -13,12 +13,13 @@ import qualified Data.Text          as TT
 import qualified Data.Vector        as Vec
 import           Lens.Micro         ((^.))
 
-import           Types              ( Field (BrowserField, PasswordField, PathField)
-                                    , State
-                                    , allEntryDetails
-                                    , currentDir
-                                    , currentEntryDetailName
-                                    )
+import Types
+    ( Field (BrowserField, PasswordField, PathField)
+    , State
+    , allEntryDetails
+    , currentDir
+    , currentEntryDetailName
+    )
 
 -- | This should only be used for running the show cmd
 dirsToStr :: [Text] -> Text

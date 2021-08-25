@@ -2,12 +2,15 @@
 
 module ViewEvents.Common where
 
+import           Brick.BChan            (writeBChan)
 import qualified Brick.Focus            as F
 import qualified Brick.Main             as M
 import           Brick.Types            (Widget)
 import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (str, txt)
 import qualified Brick.Widgets.Edit     as E
+import           Control.Concurrent     (forkIO, threadDelay)
+import           Control.Monad          (void)
 import           Control.Monad.IO.Class (liftIO)
 import           Data.List              (partition, sort)
 import           Data.Text              (Text)
@@ -16,15 +19,12 @@ import qualified Data.Text.Zipper       as Z hiding (textZipper)
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
-import           System.Process         (readProcessWithExitCode, callCommand)
+import           System.Info            (os)
+import           System.Process         (callCommand, readProcessWithExitCode)
 
-import Brick.BChan        (writeBChan)
-import Common             (annotate, exit, initialFooter, tab)
-import Control.Concurrent (forkIO, threadDelay)
-import Control.Monad      (void)
-import System.Info        (os)
+import Common (annotate, exit, initialFooter, tab)
 import Types
-    ( Action (..)
+    ( Action (Clip, Ls, Show)
     , CmdOutput
     , CopyType (CopyUsername)
     , Event (ClearClipCount)

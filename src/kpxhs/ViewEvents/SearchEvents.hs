@@ -12,16 +12,17 @@ import           Data.Text          (Text, isInfixOf, toLower)
 import qualified Graphics.Vty       as V
 import           Lens.Micro         ((%~), (&), (.~), (^.))
 
-import           Common             (toBrowserList)
-import           ViewEvents.Common  (commonTabEvent, prepareExit)
-import           Types              ( Field
-                                    , State
-                                    , allEntryNames
-                                    , currentDir
-                                    , hasCopied
-                                    , searchField
-                                    , visibleEntries
-                                    )
+import Common            (toBrowserList)
+import Types
+    ( Field
+    , State
+    , allEntryNames
+    , currentDir
+    , hasCopied
+    , searchField
+    , visibleEntries
+    )
+import ViewEvents.Common (commonTabEvent, prepareExit)
 
 
 searchEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)

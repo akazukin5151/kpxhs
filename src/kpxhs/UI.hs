@@ -1,18 +1,18 @@
 module UI (drawUI) where
 
-import Brick.Types  (Widget)
-import Lens.Micro   ((^.))
+import Brick.Types (Widget)
+import Lens.Micro  ((^.))
 
-import UI.BrowserUI (drawBrowser)
-import UI.DialogUI  (drawDialog)
-import UI.EntryUI   (drawEntryDetails)
-import UI.ExitUI    (drawExitView)
 import Types
     ( Field
     , State
     , View (EntryView, ExitView, PasswordView)
     , activeView
     )
+import UI.BrowserUI (drawBrowser)
+import UI.DialogUI  (drawDialog)
+import UI.EntryUI   (drawEntryDetails)
+import UI.ExitUI    (drawExitView)
 
 
 drawUI :: State -> [Widget Field]

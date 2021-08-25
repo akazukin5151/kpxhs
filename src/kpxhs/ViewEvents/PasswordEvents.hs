@@ -10,6 +10,7 @@ import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (txt)
 import qualified Brick.Widgets.Edit     as E
 import           Control.Concurrent     (forkIO)
+import           Control.Monad          (void)
 import           Control.Monad.IO.Class (MonadIO (liftIO))
 import qualified Data.Map.Strict        as Map
 import           Data.Text              (Text)
@@ -18,22 +19,24 @@ import qualified Graphics.Vty           as V
 import           Lens.Micro             (Lens', (%~), (&), (.~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
 
-import           Common                 (toBrowserList)
-import           ViewEvents.Common      (getCreds, processInput, runCmd, updateFooter)
-import           Types                  ( Action (Ls)
-                                        , Field (..)
-                                        , State
-                                        , View (SearchView)
-                                        , activeView
-                                        , allEntryNames
-                                        , dbPathField
-                                        , focusRing
-                                        , footer
-                                        , keyfileField
-                                        , passwordField
-                                        , visibleEntries, chan, Event (Login)
-                                        )
-import Control.Monad (void)
+import Common            (toBrowserList)
+import Types
+    ( Action (Ls)
+    , Event (Login)
+    , Field (BrowserField, KeyfileField, PasswordField, PathField, SearchField)
+    , State
+    , View (SearchView)
+    , activeView
+    , allEntryNames
+    , chan
+    , dbPathField
+    , focusRing
+    , footer
+    , keyfileField
+    , passwordField
+    , visibleEntries
+    )
+import ViewEvents.Common (getCreds, processInput, runCmd, updateFooter)
 
 
 valid :: State -> Bool
