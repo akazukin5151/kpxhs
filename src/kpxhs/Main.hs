@@ -50,7 +50,8 @@ initialState ring dbdir kfdir timeout' chan =
       _exitDialog = D.dialog Nothing (Just (0, choices)) 60,
       _hasCopied = False,
       _chan = chan,
-      _clearTimeout = timeout'
+      _clearTimeout = timeout',
+      _countdownThreadId = Nothing
     }
       where
         choices = [ ("Clear and exit", Clear)

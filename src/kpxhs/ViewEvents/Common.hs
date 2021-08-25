@@ -16,13 +16,14 @@ import           Data.List              (partition, sort)
 import           Data.Text              (Text)
 import qualified Data.Text              as TT
 import qualified Data.Text.Zipper       as Z hiding (textZipper)
+import           GHC.Conc               (killThread)
 import qualified Graphics.Vty           as V
-import           Lens.Micro             ((%~), (&), (.~), (^.))
+import           Lens.Micro             ((%~), (&), (.~), (?~), (^.))
 import           System.Exit            (ExitCode (ExitSuccess))
 import           System.Info            (os)
 import           System.Process         (callCommand, readProcessWithExitCode)
 
-import Common (annotate, exit, initialFooter, tab)
+import Common   (annotate, exit, initialFooter, tab)
 import Types
     ( Action (Clip, Ls, Show)
     , CmdOutput
@@ -34,6 +35,7 @@ import Types
     , activeView
     , chan
     , clearTimeout
+    , countdownThreadId
     , currentDir
     , dbPathField
     , focusRing
@@ -102,12 +104,6 @@ _runCmdInner action dir extraArgs pw kf = do
                    "" -> extraArgs
                    _  -> ["-k", kf] ++ extraArgs
 
--- No longer used as the countdown overrides it
--- I think the countdown is more important anyway, no need to allocate new space
--- or integrate countdown with notif
---let attr_repr = attr & show & drop 1 & init & capitalise
---let notif = attr_repr <> " for \"" <> TT.unpack entry <> "\" copied to clipboard!"
---st & footer .~ str notif
 copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
@@ -120,8 +116,14 @@ copyEntryCommon st entry ctype = do
 
 handleCopy :: State -> (ExitCode, Text) -> IO State
 handleCopy st (ExitSuccess, _) = do
-    void $ forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
-    pure $ st & hasCopied .~ True
+  -- If there already exists a countdown thread, kill it first to prevent interference
+  case st ^. countdownThreadId of
+    Just x  -> killThread x
+    Nothing -> pure ()
+  -- Save the tid in case if it needs to be cancelled later
+  tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
+  pure $ st & hasCopied .~ True
+            & countdownThreadId ?~ tid
 handleCopy st (_, stderr)      = pure $ st & footer .~ txt stderr
 
 _copyTypeToStr :: CopyType -> Text
@@ -152,16 +154,15 @@ _handleTab st f _           = f st BrowserView
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
-  clearClipboard >> pure new_st
-    where
-      new_st = st & footer .~ txt "Clipboard cleared"
-                  & hasCopied .~ False
-handleClipCount st count =
-  void (forkIO bg_cmd) >> pure new_st
-    where
-      bg_cmd = threadDelay 1000000
-                >> writeBChan (st^.chan) (ClearClipCount (count - 1))
-      new_st = st & footer .~ str ("Clearing clipboard in " <> show count <> " seconds")
+  clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
+                             & hasCopied .~ False)
+handleClipCount st count = do
+  let bg_cmd = threadDelay 1000000
+              >> writeBChan (st^.chan) (ClearClipCount (count - 1))
+  -- Save the tid in case if it needs to be cancelled later
+  tid <- forkIO bg_cmd
+  pure $ st & footer .~ str ("Clearing clipboard in " <> show count <> " seconds")
+            & countdownThreadId ?~ tid
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =

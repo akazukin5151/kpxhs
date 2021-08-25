@@ -8,6 +8,7 @@ import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Edit   as E
 import qualified Brick.Widgets.List   as L
+import           Control.Concurrent   (ThreadId)
 import qualified Data.Map.Strict      as Map
 import           Data.Text            (Text)
 import           GHC.IO.Exception     (ExitCode)
@@ -76,7 +77,9 @@ data State = State
     -- a background thread to the AppEvent handler
     _chan                   :: BChan Event,
     -- | Number of seconds to wait before clearing the clipboard
-    _clearTimeout           :: Int
+    _clearTimeout           :: Int,
+    -- | The current clipboard clear countdown thread id
+    _countdownThreadId      :: Maybe ThreadId
   }
 
 makeLenses ''State
