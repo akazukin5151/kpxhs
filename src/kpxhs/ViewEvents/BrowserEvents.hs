@@ -13,7 +13,7 @@ import           Control.Concurrent (forkIO)
 import           Control.Monad      (void)
 import           Data.Map.Strict    ((!?))
 import qualified Data.Map.Strict    as Map
-import           Data.Maybe         (fromMaybe, isJust)
+import           Data.Maybe         (fromMaybe)
 import           Data.Text          (Text)
 import qualified Graphics.Vty       as V
 import           Lens.Micro         ((%~), (&), (.~), (?~), (^.))
@@ -29,7 +29,7 @@ import Types
     ( Action (Ls, Show)
     , CmdOutput
     , CopyType (CopyPassword, CopyUsername)
-    , Event (ClearClipCount, Copying, EnterDir, ShowEntry)
+    , Event (Copying, EnterDir, ShowEntry)
     , Field (SearchField)
     , State
     , View (EntryView)
@@ -37,7 +37,6 @@ import Types
     , allEntryDetails
     , allEntryNames
     , chan
-    , countdownThreadId
     , currentDir
     , currentEntryDetailName
     , footer
@@ -49,7 +48,6 @@ import ViewEvents.Common
     ( commonTabEvent
     , copyEntryCommon
     , getCreds
-    , handleClipCount
     , handleCopy
     , isCopyable
     , isDir
@@ -60,6 +58,7 @@ import ViewEvents.Common
     , processSelected
     , runCmd
     , updateFooter
+    , updateFooterGuarded
     )
 
 browserEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
@@ -139,7 +138,6 @@ fetchDirInBackground st entry  =
 handleAppEvent :: State -> Event -> IO State
 handleAppEvent st (ShowEntry entry out)  = pure $ handleShowEntryEvent st entry out
 handleAppEvent st (EnterDir entry out)   = pure $ handleEnterDirEvent st entry out
-handleAppEvent st (ClearClipCount count) = handleClipCount st count
 handleAppEvent st (Copying e)            = handleCopy st e
 handleAppEvent st _                      = pure st
 
@@ -215,9 +213,7 @@ copyEntryFromBrowser st ctype =
       f entry = copyEntryCommon st entry ctype
 
 handleNav :: V.Event -> State -> State
-handleNav e st = if isJust $ st ^. countdownThreadId
-                    then new_st
-                    else new_st & updateFooter
+handleNav e st = new_st & updateFooterGuarded
   where
     new_st = st & visibleEntries %~
       case e of

@@ -14,7 +14,8 @@ import           Lens.Micro         ((%~), (&), (.~), (^.))
 
 import Common            (toBrowserList)
 import Types
-    ( Field
+    ( Event
+    , Field
     , State
     , allEntryNames
     , currentDir
@@ -25,14 +26,14 @@ import Types
 import ViewEvents.Common (commonTabEvent, prepareExit)
 
 
-searchEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
+searchEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
 searchEvent =
   commonTabEvent
     ( \st e ->
         case e of
-          T.VtyEvent (V.EvKey V.KEsc []) -> handleEsc st
-          T.VtyEvent ev                  -> M.continue =<< handleSearch st ev
-          _                              -> M.continue st
+          T.VtyEvent (V.EvKey V.KEsc [])    -> handleEsc st
+          T.VtyEvent ev                     -> M.continue =<< handleSearch st ev
+          _                                 -> M.continue st
     )
 
 handleEsc :: State -> T.EventM Field (T.Next State)

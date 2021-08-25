@@ -15,7 +15,7 @@ import           Control.Concurrent        (forkIO, threadDelay)
 import           Control.Monad             (void)
 import           Control.Monad.IO.Class    (liftIO)
 import           Data.List                 (partition, sort)
-import           Data.Maybe                (fromMaybe)
+import           Data.Maybe                (fromMaybe, isJust)
 import           Data.Text                 (Text)
 import qualified Data.Text                 as TT
 import qualified Data.Text.Zipper          as Z hiding (textZipper)
@@ -158,14 +158,15 @@ clearClipboard = callCommand $ "printf '' | " ++ handler where
     "linux" -> "xclip -selection clipboard"
     _       -> "pbcopy"
 
-commonTabEvent :: (State -> T.BrickEvent Field e -> T.EventM Field (T.Next State))
+commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State))
                -> State
-               -> T.BrickEvent Field e
+               -> T.BrickEvent Field Event
                -> T.EventM Field (T.Next State)
 commonTabEvent fallback st e =
   case e of
     T.VtyEvent (V.EvKey (V.KChar '\t') []) -> f focusNext
     T.VtyEvent (V.EvKey V.KBackTab [])     -> f focusPrev
+    T.AppEvent (ClearClipCount count)      -> liftContinue2 handleClipCount st count
     _                                      -> fallback st e
   where
     f x = M.continue $ _handleTab st x (st ^. activeView)
@@ -178,7 +179,7 @@ focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =
   st & focusRing %~ f
      & activeView .~ view
-     & updateFooter
+     & updateFooterGuarded
 
 focusNext :: State -> View -> State
 focusNext = focus F.focusNext
@@ -190,6 +191,12 @@ focusPrev = focus F.focusPrev
 --  Should be only used when transitioning to a new view or field
 updateFooter :: State -> State
 updateFooter st = st & footer .~ viewDefaultFooter st
+
+updateFooterGuarded :: State -> State
+updateFooterGuarded st =
+  if isJust $ st ^. countdownThreadId
+     then st
+     else st & updateFooter
 
 viewDefaultFooter :: State -> Widget Field
 viewDefaultFooter st =
