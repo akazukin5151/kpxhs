@@ -3,21 +3,20 @@
 
 module ViewEvents.PasswordEvents (passwordEvent) where
 
-import           Brick.BChan            (writeBChan)
-import qualified Brick.Focus            as F
-import qualified Brick.Main             as M
-import qualified Brick.Types            as T
-import           Brick.Widgets.Core     (txt)
-import qualified Brick.Widgets.Edit     as E
-import           Control.Concurrent     (forkIO)
-import           Control.Monad          (void)
-import           Control.Monad.IO.Class (MonadIO (liftIO))
-import qualified Data.Map.Strict        as Map
-import           Data.Text              (Text)
-import qualified Data.Text              as TT
-import qualified Graphics.Vty           as V
-import           Lens.Micro             (Lens', (%~), (&), (.~), (^.))
-import           System.Exit            (ExitCode (ExitSuccess))
+import           Brick.BChan        (writeBChan)
+import qualified Brick.Focus        as F
+import qualified Brick.Main         as M
+import qualified Brick.Types        as T
+import           Brick.Widgets.Core (txt)
+import qualified Brick.Widgets.Edit as E
+import           Control.Concurrent (forkIO)
+import           Control.Monad      (void)
+import qualified Data.Map.Strict    as Map
+import           Data.Text          (Text)
+import qualified Data.Text          as TT
+import qualified Graphics.Vty       as V
+import           Lens.Micro         (Lens', (%~), (&), (.~), (^.))
+import           System.Exit        (ExitCode (ExitSuccess))
 
 import Common            (toBrowserList)
 import Types
@@ -36,7 +35,13 @@ import Types
     , passwordField
     , visibleEntries
     )
-import ViewEvents.Common (getCreds, processInput, runCmd, updateFooter)
+import ViewEvents.Common
+    ( getCreds
+    , liftContinue1
+    , processInput
+    , runCmd
+    , updateFooter
+    )
 
 
 valid :: State -> Bool
@@ -50,7 +55,7 @@ passwordEvent st (T.VtyEvent e) =
     V.EvKey V.KEsc []              -> M.halt st
     V.EvKey (V.KChar '\t') []      -> focus F.focusNext st
     V.EvKey V.KBackTab []          -> focus F.focusPrev st
-    V.EvKey V.KEnter [] | valid st -> M.continue =<< liftIO (loginInBackground st)
+    V.EvKey V.KEnter [] | valid st -> liftContinue1 loginInBackground st
     _                              -> M.continue =<< handleFieldInput st e
 passwordEvent st (T.AppEvent e) = M.continue $ gotoBrowser st e
 passwordEvent st _ = M.continue st

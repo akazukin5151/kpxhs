@@ -11,7 +11,6 @@ import qualified Brick.Widgets.Edit     as E
 import qualified Brick.Widgets.List     as L
 import           Control.Concurrent     (forkIO)
 import           Control.Monad          (void)
-import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Map.Strict        ((!?))
 import qualified Data.Map.Strict        as Map
 import           Data.Maybe             (fromMaybe)
@@ -51,7 +50,8 @@ import ViewEvents.Common
     , copyEntryCommon
     , getCreds
     , handleClipCount
-    , liftContinue
+    , liftContinue1
+    , liftContinue2
     , prepareExit
     , processInput
     , runCmd
@@ -68,11 +68,11 @@ browserEvent =
           T.VtyEvent (V.EvKey V.KEsc [])        -> handleEsc st
           T.VtyEvent (V.EvKey V.KEnter [])      -> handleEnter st
           T.VtyEvent (V.EvKey (V.KChar 'p') []) ->
-            liftContinue copyEntryFromBrowser st CopyPassword
+            liftContinue2 copyEntryFromBrowser st CopyPassword
           T.VtyEvent (V.EvKey (V.KChar 'u') []) ->
-            liftContinue copyEntryFromBrowser st CopyUsername
+            liftContinue2 copyEntryFromBrowser st CopyUsername
           T.VtyEvent ev                         -> M.continue $ handleNav ev st
-          T.AppEvent ev                         -> liftContinue handleAppEvent st ev
+          T.AppEvent ev                         -> liftContinue2 handleAppEvent st ev
           _                                     -> M.continue st
     )
 
@@ -101,7 +101,7 @@ processSelected f st = do
 -- The output of the shell command will be handled later,
 -- asynchronously, by handleAppEvent
 handleEnter :: State -> T.EventM Field (T.Next State)
-handleEnter st = M.continue =<< liftIO (f st)
+handleEnter st = liftContinue1 f st
   where
     f = if isDir st then enterDirFork else showEntryFork
 

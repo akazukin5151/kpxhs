@@ -45,8 +45,11 @@ import Types
     )
 
 
-liftContinue :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
-liftContinue g st x = liftIO (g st x) >>= M.continue
+liftContinue1 :: (a -> IO b) -> a -> T.EventM n (T.Next b)
+liftContinue1 g st = liftIO (g st) >>= M.continue
+
+liftContinue2 :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
+liftContinue2 g st x = liftIO (g st x) >>= M.continue
 
 processInput :: Text -> [Text]
 processInput s = dirs ++ entries_

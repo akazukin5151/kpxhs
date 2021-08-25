@@ -5,7 +5,6 @@ module ViewEvents.EntryEvents (entryDetailsEvent) where
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
 import           Brick.Widgets.Core     (str)
-import           Control.Monad.IO.Class (MonadIO (liftIO))
 import           Data.Maybe             (fromMaybe)
 import qualified Data.Text              as TT
 import qualified Graphics.Vty           as V
@@ -24,7 +23,7 @@ import Types
 import ViewEvents.Common
     ( copyEntryCommon
     , handleClipCount
-    , liftContinue
+    , liftContinue2
     , updateFooter
     )
 
@@ -32,11 +31,11 @@ entryDetailsEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next
 entryDetailsEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEsc []        -> M.continue $ returnToBrowser st
-    V.EvKey (V.KChar 'p') [] -> liftContinue copyEntryFromDetails st CopyPassword
-    V.EvKey (V.KChar 'u') [] -> liftContinue copyEntryFromDetails st CopyUsername
+    V.EvKey (V.KChar 'p') [] -> liftContinue2 copyEntryFromDetails st CopyPassword
+    V.EvKey (V.KChar 'u') [] -> liftContinue2 copyEntryFromDetails st CopyUsername
     _                        -> M.continue st
 entryDetailsEvent st (T.AppEvent (ClearClipCount count)) =
-  M.continue =<< liftIO (handleClipCount st count)
+  liftContinue2 handleClipCount st count
 entryDetailsEvent st _ = M.continue st
 
 returnToBrowser :: State -> State
