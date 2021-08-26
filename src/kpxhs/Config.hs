@@ -29,8 +29,8 @@ parseConfig cfgdir = do
   where
     fallback :: IOException -> IO Text
     fallback _ = pure ""
-    initial = Setting { timeout = Nothing
-                      , dbPath = Nothing
+    initial = Setting { timeout     = Nothing
+                      , dbPath      = Nothing
                       , keyfilePath = Nothing
                       }
     pathfirst = F.focusRing [PathField, PasswordField, KeyfileField]
@@ -50,9 +50,11 @@ parse s (x : xs) =
     (key', value') = TT.breakOn "=" x
     key = TT.strip key'
     value = TT.strip $ TT.drop 1 $ TT.strip value'
-    textToMaybeInt :: Text -> Maybe Int
-    textToMaybeInt = readMaybe . TT.unpack
-    handleNegative :: Maybe Int -> Maybe (Maybe Int)
-    handleNegative (Just y) | y > 0 = Just (Just y)
-    handleNegative (Just _)         = Just Nothing
-    handleNegative _                = Nothing
+
+textToMaybeInt :: Text -> Maybe Int
+textToMaybeInt = readMaybe . TT.unpack
+
+handleNegative :: Maybe Int -> Maybe (Maybe Int)
+handleNegative (Just y) | y > 0 = Just (Just y)
+handleNegative (Just _)         = Just Nothing
+handleNegative _                = Nothing
