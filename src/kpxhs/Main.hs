@@ -31,7 +31,7 @@ import Types
 import UI     (drawUI)
 
 
-initialState :: F.FocusRing Field -> Text -> Text -> Int -> BChan Event -> State
+initialState :: F.FocusRing Field -> Text -> Text -> Maybe Int -> BChan Event -> State
 initialState ring dbdir kfdir timeout' chan =
   State
     { _visibleEntries = toBrowserList [],

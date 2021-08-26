@@ -13,6 +13,7 @@ import           Data.Text                 (Text)
 import           GHC.Conc                  (killThread)
 import           GHC.IO.Exception          (ExitCode (ExitSuccess))
 import           Lens.Micro                ((.~), (?~), (^.))
+import           System.Exit               (ExitCode (ExitFailure))
 import           System.Info               (os)
 import           System.Process            (callCommand)
 
@@ -48,23 +49,35 @@ copyEntryCommon st entry ctype = do
   pure $ st & footer .~ txt "Copying..."
 
 handleCopy :: State -> (ExitCode, Text) -> IO State
-handleCopy st (ExitSuccess, _) = do
+handleCopy st (ExitFailure _, stderr) = pure $ st & footer .~ txt stderr
+handleCopy st (ExitSuccess, _)        =
+  case st ^. clearTimeout of
+    Nothing       -> pure $ st & footer .~ txt "Copied!"
+    Just timeout' -> handleCopyInner st timeout'
+
+handleCopyInner :: State -> Int -> IO State
+handleCopyInner st timeout' = do
   -- If there already exists a countdown thread, kill it first to prevent interference
   case st ^. countdownThreadId of
     Just x  -> killThread x
     Nothing -> pure ()
   -- Save the tid in case if it needs to be cancelled later
-  tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount (st^.clearTimeout)
+  tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount timeout'
   pure $ st & hasCopied .~ True
             & countdownThreadId ?~ tid
-handleCopy st (_, stderr)      = pure $ st & footer .~ txt stderr
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
   clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
                              & hasCopied .~ False
                              & countdownThreadId .~ Nothing)
-handleClipCount st count = do
+handleClipCount st count =
+  case st ^. clearTimeout of
+    Nothing       -> pure st
+    Just timeout' -> handleClipCountInner st count timeout'
+
+handleClipCountInner :: State -> Int -> Int -> IO State
+handleClipCountInner st count timeout' = do
   -- Even if the footer shouldn't be changed, the countdown should proceed
   let changeFooter = case st^.activeView of
                        BrowserView -> True
@@ -75,7 +88,7 @@ handleClipCount st count = do
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO bg_cmd
   let label = mkCountdownLabel count
-  let v = fromIntegral count / fromIntegral (st ^. clearTimeout)
+  let v = fromIntegral count / fromIntegral timeout'
   let f = if changeFooter
              then footer .~ P.progressBar label v
              else id

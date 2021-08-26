@@ -48,11 +48,11 @@ returnToBrowser st =
   st & activeView .~ BrowserView
      & f
   where
-    toCount :: Float -> Int
-    toCount x = round $ x * fromIntegral (st^.clearTimeout)
-    f = case st^.currentCountdown of
-      Just x  -> footer .~ P.progressBar (mkCountdownLabel $ toCount x) x
-      Nothing -> updateFooterGuarded
+    toCount :: Float -> Int -> Int
+    toCount x t = round $ x * fromIntegral t
+    f = case (st^.currentCountdown, st^.clearTimeout) of
+      (Just x, Just t) -> footer .~ P.progressBar (mkCountdownLabel $ toCount x t) x
+      _                -> updateFooterGuarded
 
 copyEntryFromDetails :: State -> CopyType -> IO State
 copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)

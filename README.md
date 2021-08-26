@@ -66,6 +66,7 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
     - Default: ""
 - You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
     - Default: 10 (seconds)
+    - Any value less than or equal to 0 will disable automatic clipboard clearing
 - See also `test/example_config`
 
 1. `mkdir ~/.config/kpxhs`
@@ -78,9 +79,11 @@ db_path = /home/me/kpxhs/test/kpxhs_test.kdbx
 keyfile_path = /home/me/kpxhs/test/keyfile.key
 ```
 
+- Order of key-value pairs does not matter
 - The keys must be exact and verbatim
 - Equal sign is required, but whitespace around the sign is insignificant
 - The timeout must be an integer
+    - Any value less than or equal to 0 will disable automatic clipboard clearing (but any *invalid* integer will cause the program to fallback to its default, which is 10 seconds)
 - The two paths can be any string, but any number of leading whitespace is stripped
 - Any other (invalid) text is ignored, so they act like comments
 - Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it

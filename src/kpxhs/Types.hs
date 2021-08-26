@@ -15,7 +15,13 @@ import           GHC.IO.Exception     (ExitCode)
 import           Lens.Micro.TH        (makeLenses)
 
 
-data Setting = Setting { timeout     :: Maybe Int
+data Setting = Setting { timeout     :: Maybe (Maybe Int)
+                         -- ^ The inner Maybe indicates whether clipboard should be
+                         -- cleared at all. (Just Nothing) means the config disabled
+                         -- automatic clipboard clearing.
+                         -- The outer Maybe indicates whether the
+                         -- config exists and a valid timeout value is given
+                         -- The default is Just (Just 10)
                        , dbPath      :: Maybe Text
                        , keyfilePath :: Maybe Text
                        }
@@ -77,7 +83,8 @@ data State = State
     -- a background thread to the AppEvent handler
     _chan                   :: BChan Event,
     -- | Number of seconds to wait before clearing the clipboard
-    _clearTimeout           :: Int,
+    -- If Nothing, then the clipboard won't be automatically cleared
+    _clearTimeout           :: Maybe Int,
     -- | The current clipboard clear countdown thread id
     _countdownThreadId      :: Maybe ThreadId,
     -- | The current value of the counter
