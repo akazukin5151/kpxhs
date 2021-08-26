@@ -84,7 +84,7 @@ keyfile_path = /home/me/kpxhs/test/keyfile.key
 - Equal sign is required, but whitespace around the sign is insignificant
 - The timeout must be an integer
     - Any value less than or equal to 0 will disable automatic clipboard clearing (but any *invalid* integer will cause the program to fallback to its default, which is 10 seconds)
-- The two paths can be any string, but any number of leading whitespace is stripped
+- The two paths can be any string, but any number of surrounding whitespace is stripped
 - Any other (invalid) text is ignored, so they act like comments
 - Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it
 
