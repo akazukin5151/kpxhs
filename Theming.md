@@ -7,6 +7,8 @@
     - Security
 3. How it works
 4. Writing the theme file
+    - Attributes
+    - Colors
 
 ## Introduction
 
@@ -21,8 +23,9 @@
     - [Attributes for the Login dialog](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-Edit.html#g:7)
     - [Attributes for the Progress bar](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-ProgressBar.html#g:1)
     - [Attributes for borders](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-Border.html#g:5)
-    - [Color codes](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes-Color.html)
+    - [ISO Color codes](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes-Color.html)
         - NOTE: the ISOColor numbers are zero-indexed, but the hackage docs show the bullet points starting at 1. Double check [the source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.Color.html#Color)
+    - [ANSI Color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) (scroll down a bit)
     - `AttrName` [docs](https://hackage.haskell.org/package/brick-0.64/docs/Brick-AttrMap.html#t:AttrName)
 
 ## Reasons for design decisions
@@ -66,6 +69,7 @@ eval (On f b) = f `on` b
 
 - **The theme file must be a valid Haskell expression**
 - Imagine that the theme file contains the following code:
+    - No qualified imports, imagine that all constructor are in scope
 
 ```hs
 import Brick        (AttrName)
@@ -82,6 +86,8 @@ data AttrAux = Fg Color | Bg Color | On Color Color
 - You cannot use `$` to replace parenthesis, because no functions are evaluated, the entire file is passed to the Haskell `read` function
 - Whitespace and newline rules follow normal Haskell rules for expressions
 
+### Attributes
+
 - `Fg Color`: set the foreground color
 - `Bg Color`: set the background color
 - `On Color Color`: set both foreground and background colors
@@ -95,3 +101,13 @@ There are two special attribute names exclusive to `kpxhs`. They are appropriate
 - `AttrName ["kpxhs", "label"]`: The style of the label bound (eg, "exit")
 
 In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. `kpxhs.key` would style the "Esc" text and `kpxhs.label` would style the "exit" type
+
+### Colors
+
+- Use either the `ISOColor` or `Color240` constructor
+- Both of them take a `Word8`, so you can write an integer literal
+- `ISOColor` takes integers from 0 to 15 inclusive. The exact colors depend on your terminal configuration, but they are essentially "simplified" colors like "black"
+    - [Color codes](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes-Color.html)
+- `Color240` takes integers from 0 to 255 inclusive.
+    - [ANSI Color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) (scroll down a bit)
+    - It's not the full RGB color palette, but Brick doesn't support that anyway
