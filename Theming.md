@@ -4,6 +4,7 @@
 
 1. Introduction
 2. Reasons for design decisions
+    - Security
 3. How it works
 4. Writing the theme file
 
@@ -11,6 +12,7 @@
 
 - The theme file is in `~/.config/kpxhs/theme.hs`
 - Refer to [test/default_theme.hs](test/default_theme.hs) for reference; it is also the default theme if you don't provide any
+- You should probably edit the default theme instead of writing from scratch, because if you write from scratch, all the colors in the default theme are lost.
 - You can theme almost every element because the entire attribute map is exposed
 - Refer to the Brick docs for detailed information on what exactly you can theme and how to
     - [Brick.AttrMap](https://hackage.haskell.org/package/brick-0.64/docs/Brick-AttrMap.html)
@@ -36,6 +38,14 @@ A.attrMap V.defAttr [ (attrName1, attr1), (attrName2, attr2) ]
 - If the theme file is a valid Haskell expression, it can just be `read`, avoiding building a DSL, writing a parser, or using Aeson/Dhall which doubles/triples the binary size respectively. The expression can be passed into `A.attrMap V.defAttr`, maintaining full flexibility.
 
 - [Brick.Themes](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Themes.html) are not used here because it doesn't seem to allow full unlimited customization.
+
+### Security
+
+While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `ThemeAux`. That means there's no way to cheat and successfully pass in something that's not `ThemeAux`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors. And those colors must type check as `Color` to be `read`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
+
+It is Turing incomplete because `read` is Turing incomplete. This means parsing and evaluation is guaranteed to terminate.
+
+Is it possible for an update to expose a vulnerability? Yes, either by maliciously or accidentally. But as with any FOSS software, you can always review the source code or at least the changes yourself. It doesn't auto-update, and is not in any package repositories where an update can sneak in, so every update has to be installed manually. If you find a security flaw, please do report it.
 
 ## How it works
 
@@ -69,7 +79,8 @@ data AttrAux = Fg Color | Bg Color | On Color Color
 
 - **The type of the expression is:** `ThemeAux`
 - The only contents of the file is the list-of-tuples (**no assignments**, nothing else)
-- You should probably edit the default theme instead of writing from scratch, because if you write from scratch, all the colors in the default theme are lost.
+- You cannot use `$` to replace parenthesis, because no functions are evaluated, the entire file is passed to the Haskell `read` function
+- Whitespace and newline rules follow normal Haskell rules for expressions
 
 - `Fg Color`: set the foreground color
 - `Bg Color`: set the background color
