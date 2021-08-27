@@ -3,10 +3,10 @@
 ## Contents
 
 1. [Introduction](#Introduction)
-2. [Reasons for design decisions](#Reasons for design decisions)
+2. [Reasons for design decisions](#Reasons-for-design-decisions)
     - [Security](#Security)
-3. [How it works](#How it works)
-4. [Writing the theme file](#Writing the theme file)
+3. [How it works](#How-it-works)
+4. [Writing the theme file](#Writing-the-theme-file)
     - [Attributes](#Attributes)
     - [Colors](#Colors)
 5. [Examples](#Examples)
