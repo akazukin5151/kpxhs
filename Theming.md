@@ -9,6 +9,7 @@
 4. [Writing the theme file](#Writing-the-theme-file)
     - [Attributes](#Attributes)
     - [Colors](#Colors)
+    - [Styles](#Styles)
 5. [Examples](#Examples)
 
 ## Introduction
