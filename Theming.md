@@ -27,6 +27,8 @@
         - NOTE: the ISOColor numbers are zero-indexed, but the hackage docs show the bullet points starting at 1. Double check [the source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.Color.html#Color)
     - [ANSI Color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) (scroll down a bit)
     - `AttrName` [docs](https://hackage.haskell.org/package/brick-0.64/docs/Brick-AttrMap.html#t:AttrName)
+    - [Styles](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes.html#t:Style)
+    - [Styles source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.html#Style)
 
 ## Reasons for design decisions
 
@@ -60,9 +62,10 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 
 ```hs
 eval :: AttrAux -> Attr
-eval (Fg c)   = fg c
-eval (Bg c)   = bg c
-eval (On f b) = f `on` b
+eval (Fg c)          = fg c
+eval (Bg c)          = bg c
+eval (On f b)        = f `on` b
+eval (WithStyle a s) = withStyle (eval a) s
 ```
     
 ## Writing the theme file
@@ -73,11 +76,11 @@ eval (On f b) = f `on` b
 
 ```hs
 import Brick        (AttrName)
-import Graphics.Vty (Color)
+import Graphics.Vty (Color, Style)
 
 type ThemeAux = [(AttrName, AttrAux)]
 
-data AttrAux = Fg Color | Bg Color | On Color Color
+data AttrAux = Fg Color | Bg Color | On Color Color | WithStyle AttrAux Style
   deriving (Show, Read)
 ```
 
@@ -88,12 +91,14 @@ data AttrAux = Fg Color | Bg Color | On Color Color
 
 ### Attributes
 
+- Note that the fg and bg colors will override each other; use `On` to set both
 - `Fg Color`: set the foreground color
 - `Bg Color`: set the background color
 - `On Color Color`: set both foreground and background colors
     - Resembles the `on` function in Brick, which is written as an infix function
     - Imagine applying the constructor in infix
     - `On color1 color2` ==> ```color1 `On` color2```
+- `WithStyle AttrAux Style`: set the style on given attribute. See [Styles](#Styles)
 
 There are two special attribute names exclusive to `kpxhs`. They are appropriately namespaced with `"kpxhs"`.
 
@@ -111,3 +116,32 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 - `Color240` takes integers from 0 to 255 inclusive.
     - [ANSI Color codes](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit) (scroll down a bit)
     - It's not the full RGB color palette, but Brick doesn't support that anyway
+
+
+### Styles
+
+- Text styles includes bold, italic, underline, reverse, etc
+    - [Styles](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes.html#t:Style)
+- The `WithStyle` constructor mirrors the `withStyle` function, which takes an attribute and applies a style to it
+- The `Style` type from `Graphics.Vty` is a type alias of `Word8`. In the [source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.html#Style), it is written like `0x01`, `0x02`, etc
+- Can be nested arbitrarily, but of course has to terminate with a non-recursive variant
+- Best explained with examples
+
+## Examples
+
+1. Set the background color of `kpxhs.key` to white
+```hs
+, (AttrName ["kpxhs", "key"],      Bg (ISOColor 7))
+```
+
+2. Set the background color of `kpxhs.key` to white and make it bold
+
+```hs
+, (AttrName ["kpxhs", "key"],      WithStyle (Bg (ISOColor 7)) 0x20)
+```
+
+3. Set the background color of `kpxhs.key` to white and make it bold-italic
+
+```hs
+, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (Bg (ISOColor 7)) 0x20) 0x40)
+```

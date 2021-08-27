@@ -13,7 +13,7 @@ import           Control.Concurrent      (ThreadId)
 import qualified Data.Map.Strict         as Map
 import           Data.Text               (Text)
 import           GHC.IO.Exception        (ExitCode)
-import           Graphics.Vty            (Attr)
+import           Graphics.Vty            (Attr, Style)
 import           Graphics.Vty.Attributes (Color)
 import           Lens.Micro.TH           (makeLenses)
 
@@ -26,7 +26,7 @@ type ThemeAux = [(AttrName, AttrAux)]
 type Theme = [(AttrName, Attr)]
 
 -- | A 'dumb' representation of the @fg@, @bg@, and @on@ functions
-data AttrAux = Fg Color | Bg Color | On Color Color
+data AttrAux = Fg Color | Bg Color | On Color Color | WithStyle AttrAux Style
   deriving (Show, Read)
 
 data Setting = Setting { timeout     :: Maybe (Maybe Int)

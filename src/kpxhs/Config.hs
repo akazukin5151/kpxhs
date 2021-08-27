@@ -18,12 +18,13 @@ import           Graphics.Vty           (Attr, Color (ISOColor))
 import           Text.Read              (readMaybe)
 
 import Types
-    ( AttrAux (Bg, Fg, On)
+    ( AttrAux (Bg, Fg, On, WithStyle)
     , Field (KeyfileField, PasswordField, PathField)
     , Setting (Setting, dbPath, keyfilePath, timeout)
     , Theme
     , ThemeAux
     )
+import Graphics.Vty.Attributes (withStyle)
 
 
 fallback :: IOException -> IO Text
@@ -49,9 +50,10 @@ parseConfig cfgdir = do
 
 -- | Evaluates the dumb representation using their respective functions
 eval :: AttrAux -> Attr
-eval (Fg c)   = fg c
-eval (Bg c)   = bg c
-eval (On f b) = f `on` b
+eval (Fg c)          = fg c
+eval (Bg c)          = bg c
+eval (On f b)        = f `on` b
+eval (WithStyle a s) = withStyle (eval a) s
 
 parseTheme :: FilePath -> IO [(AttrName, Attr)]
 parseTheme theme_path = do
