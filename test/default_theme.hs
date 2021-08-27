@@ -1,0 +1,10 @@
+[ (AttrName ["list","selected"],   Fg (ISOColor 1))
+, (AttrName ["edit"],              On (ISOColor 0) (ISOColor 7))
+, (AttrName ["edit","focused"],    On (ISOColor 7) (ISOColor 4))
+, (AttrName ["dialog"],            On (ISOColor 7) (ISOColor 4))
+, (AttrName ["button"],            On (ISOColor 0) (ISOColor 7))
+, (AttrName ["button","selected"], Bg (ISOColor 3))
+, (AttrName ["key"],               Bg (ISOColor 7))
+, (AttrName ["label"],             Fg (ISOColor 0))
+, (AttrName ["progressComplete"],  On (ISOColor 7) (ISOColor 4))
+]
