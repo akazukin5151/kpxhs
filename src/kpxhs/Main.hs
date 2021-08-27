@@ -2,22 +2,18 @@
 
 module Main where
 
-import qualified Brick.AttrMap             as A
-import           Brick.BChan               (BChan, newBChan)
-import qualified Brick.Focus               as F
-import qualified Brick.Main                as M
-import           Brick.Util                (bg, fg, on)
-import qualified Brick.Widgets.Dialog      as D
-import qualified Brick.Widgets.Edit        as E
-import qualified Brick.Widgets.List        as L
-import qualified Brick.Widgets.ProgressBar as P
-import           Control.Monad             (void)
-import qualified Data.Map.Strict           as Map
-import           Data.Text                 (Text)
-import qualified Graphics.Vty              as V
-import           System.Directory          (getHomeDirectory)
-import           System.Environment        (getArgs)
-import           System.Exit               (ExitCode (ExitFailure), exitWith)
+import qualified Brick.AttrMap      as A
+import           Brick.BChan        (BChan, newBChan)
+import qualified Brick.Focus        as F
+import qualified Brick.Main         as M
+import qualified Brick.Widgets.Edit as E
+import           Control.Monad      (void)
+import qualified Data.Map.Strict    as Map
+import           Data.Text          (Text)
+import qualified Graphics.Vty       as V
+import           System.Directory   (getHomeDirectory)
+import           System.Environment (getArgs)
+import           System.Exit        (ExitCode (ExitFailure), exitWith)
 
 import Common (annotate, defaultDialog, initialFooter, toBrowserList)
 import Config (parseConfig)
@@ -55,30 +51,17 @@ initialState ring dbdir kfdir timeout' chan =
       _currentCountdown = Nothing
     }
 
-theMap :: A.AttrMap
-theMap =
-  A.attrMap
-    V.defAttr
-    [ (L.listSelectedAttr,             fg V.red),
-      (L.listSelectedAttr <> "custom", fg V.cyan),
-      (E.editAttr,                     V.black `on` V.white),
-      (E.editFocusedAttr,              V.white `on` V.blue),
-      (D.dialogAttr,                   V.white `on` V.blue),
-      (D.buttonAttr,                   V.black `on` V.white),
-      (D.buttonSelectedAttr,           bg V.yellow),
-      ("key",                          bg V.white),
-      ("label",                        fg V.black),
-      (P.progressCompleteAttr,         V.white `on` V.blue)
-    ]
+mkMap :: [(A.AttrName, V.Attr)] -> A.AttrMap
+mkMap = A.attrMap V.defAttr
 
-theApp :: M.App State Event Field
-theApp =
+theApp :: [(A.AttrName, V.Attr)] -> M.App State Event Field
+theApp theme =
   M.App
     { M.appDraw = drawUI,
       M.appChooseCursor = M.showFirstCursor,
       M.appHandleEvent = appEvent,
       M.appStartEvent = pure,
-      M.appAttrMap = const theMap
+      M.appAttrMap = const $ mkMap theme
     }
 
 main :: IO ()
@@ -92,15 +75,15 @@ main = do
 tui :: IO ()
 tui = do
   home <- getHomeDirectory
-  let cfgdir = home ++ "/.config/kpxhs/config"
-  (timeout', dbdir, kfdir, ring) <- parseConfig cfgdir
+  let cfgdir = home ++ "/.config/kpxhs/"
+  (timeout', dbdir, kfdir, ring, theme) <- parseConfig cfgdir
 
   chan <- newBChan 10
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
 
   void $
-    M.customMain initialVty buildVty (Just chan) theApp
+    M.customMain initialVty buildVty (Just chan) (theApp theme)
       (initialState ring dbdir kfdir timeout' chan)
 
 isHelp :: String -> Bool

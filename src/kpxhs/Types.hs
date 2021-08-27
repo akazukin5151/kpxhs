@@ -2,18 +2,32 @@
 
 module Types where
 
-import           Brick.BChan          (BChan)
-import qualified Brick.Focus          as F
-import           Brick.Types          (Widget)
-import qualified Brick.Widgets.Dialog as D
-import qualified Brick.Widgets.Edit   as E
-import qualified Brick.Widgets.List   as L
-import           Control.Concurrent   (ThreadId)
-import qualified Data.Map.Strict      as Map
-import           Data.Text            (Text)
-import           GHC.IO.Exception     (ExitCode)
-import           Lens.Micro.TH        (makeLenses)
+import           Brick                   (AttrName)
+import           Brick.BChan             (BChan)
+import qualified Brick.Focus             as F
+import           Brick.Types             (Widget)
+import qualified Brick.Widgets.Dialog    as D
+import qualified Brick.Widgets.Edit      as E
+import qualified Brick.Widgets.List      as L
+import           Control.Concurrent      (ThreadId)
+import qualified Data.Map.Strict         as Map
+import           Data.Text               (Text)
+import           GHC.IO.Exception        (ExitCode)
+import           Graphics.Vty            (Attr)
+import           Graphics.Vty.Attributes (Color)
+import           Lens.Micro.TH           (makeLenses)
 
+
+-- | An external representation of the theme, replacing @fg@, @bg@ and @on@
+-- functions with constructors which can simply be @read@ in
+type ThemeAux = [(AttrName, AttrAux)]
+
+-- | Actual representation of the theme, using Brick types
+type Theme = [(AttrName, Attr)]
+
+-- | A 'dumb' representation of the @fg@, @bg@, and @on@ functions
+data AttrAux = Fg Color | Bg Color | On Color Color
+  deriving (Show, Read)
 
 data Setting = Setting { timeout     :: Maybe (Maybe Int)
                          -- ^ The inner Maybe indicates whether clipboard should be
