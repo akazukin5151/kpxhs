@@ -48,6 +48,9 @@ returnToBrowser st =
   st & activeView .~ BrowserView
      & f
   where
+    -- https://github.com/NorfairKing/haskell-dangerous-functions#fromintegral
+    -- I think Int -> Float is fine because Float is larger than Int
+    -- so an int shouldn't be truncated
     toCount :: Float -> Int -> Int
     toCount x t = round $ x * fromIntegral t
     f = case (st^.currentCountdown, st^.clearTimeout) of

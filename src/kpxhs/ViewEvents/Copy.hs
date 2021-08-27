@@ -88,6 +88,9 @@ handleClipCountInner st count timeout' = do
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO bg_cmd
   let label = mkCountdownLabel count
+  -- https://github.com/NorfairKing/haskell-dangerous-functions#fromintegral
+  -- I think Int -> Float is fine because Float is larger than Int
+  -- so an int shouldn't be truncated
   let v = fromIntegral count / fromIntegral timeout'
   let f = if changeFooter
              then footer .~ P.progressBar label v
