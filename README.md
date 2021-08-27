@@ -66,7 +66,7 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
     - `Nothing` will fall back to the default
 - You can also have `kpxhs` auto-fill a path to the keyfile
     - Default: `Just ""`
-    - `Just "xxx"` will fill in the database path with the string "xxx"
+    - `Just "xxx"` will fill in the keyfile path with the string "xxx"
     - `Nothing` will fall back to the default
 - You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
     - Default: `Just (Seconds 10)`
