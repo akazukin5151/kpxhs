@@ -61,11 +61,11 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
 # Configure (optional)
 
 - You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default.
-    - Default: ""
+    - Default: `""`
 - You can also have `kpxhs` auto-fill a path to the keyfile
-    - Default: ""
+    - Default: `""`
 - You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
-    - Default: 10 (seconds)
+    - Default: `10` (seconds)
     - Any value less than or equal to 0 will disable automatic clipboard clearing
 - See also `test/example_config`
 
@@ -87,6 +87,10 @@ keyfile_path = /home/me/kpxhs/test/keyfile.key
 - The two paths can be any string, but any number of surrounding whitespace is stripped
 - Any other (invalid) text is ignored, so they act like comments
 - Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it
+
+## Theming
+
+See [Theming.md](Theming.md)
 
 # Usage
 
