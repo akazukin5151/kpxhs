@@ -10,7 +10,7 @@
 ## Introduction
 
 - The theme file is in `~/.config/kpxhs/theme.hs`
-- Refer to `test/default_theme.hs` for reference; it is also the default theme if you don't provide any
+- Refer to [test/default_theme.hs](test/default_theme.hs) for reference; it is also the default theme if you don't provide any
 - You can theme almost every element because the entire attribute map is exposed
 - Refer to the Brick docs for detailed information on what exactly you can theme and how to
     - [Brick.AttrMap](https://hackage.haskell.org/package/brick-0.64/docs/Brick-AttrMap.html)

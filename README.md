@@ -67,7 +67,7 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
 - You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
     - Default: `10` (seconds)
     - Any value less than or equal to 0 will disable automatic clipboard clearing
-- See also `test/example_config`
+- See also [test/example_config](test/example_config)
 
 1. `mkdir ~/.config/kpxhs`
 2. `nvim ~/.config/kpxhs/config`
