@@ -2,29 +2,31 @@
 
 module Config (parseConfig) where
 
-import           Brick                  (AttrName, bg, fg)
-import           Brick.AttrMap          (attrName)
-import qualified Brick.Focus            as F
-import           Brick.Util             (on)
-import           Control.Exception      (IOException)
-import           Control.Exception.Base (catch)
-import           Data.Bifunctor         (second)
-import           Data.Functor           ((<&>))
-import           Data.Maybe             (fromMaybe)
-import           Data.Text              (Text, unpack)
-import qualified Data.Text              as TT
-import qualified Data.Text.IO           as TTI
-import           Graphics.Vty           (Attr, Color (ISOColor))
-import           Text.Read              (readMaybe)
+import           Brick                         (AttrName, bg, fg)
+import           Brick.AttrMap                 (attrName)
+import qualified Brick.Focus                   as F
+import           Brick.Util                    (on)
+import           Control.Exception             (IOException)
+import           Control.Exception.Base        (catch)
+import           Data.Bifunctor                (second)
+import           Data.Functor                  ((<&>))
+import           Data.Maybe                    (fromMaybe)
+import           Data.Text                     (Text, unpack)
+import qualified Data.Text                     as TT
+import qualified Data.Text.IO                  as TTI
+import           Graphics.Vty                  (Attr, Color (ISOColor))
+import           Graphics.Vty.Attributes       (withStyle)
+import           Graphics.Vty.Attributes.Color (rgbColor)
+import           Text.Read                     (readMaybe)
 
 import Types
     ( AttrAux (Bg, Fg, On, WithStyle)
+    , ColorAux (ISO, RGB)
     , Field (KeyfileField, PasswordField, PathField)
     , Setting (Setting, dbPath, keyfilePath, timeout)
     , Theme
     , ThemeAux
     )
-import Graphics.Vty.Attributes (withStyle)
 
 
 fallback :: IOException -> IO Text
@@ -48,11 +50,17 @@ parseConfig cfgdir = do
     pathfirst = F.focusRing [PathField, PasswordField, KeyfileField]
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
 
+-- | Evaluates the colors, especially converting RGB into a Color240 code
+-- Note that rgbColor might throw an error; this is intended
+evalColor :: ColorAux -> Color
+evalColor (ISO i)     = ISOColor i
+evalColor (RGB r g b) = rgbColor r g b
+
 -- | Evaluates the dumb representation using their respective functions
 eval :: AttrAux -> Attr
-eval (Fg c)          = fg c
-eval (Bg c)          = bg c
-eval (On f b)        = f `on` b
+eval (Fg c)          = fg (evalColor c)
+eval (Bg c)          = bg (evalColor c)
+eval (On f b)        = evalColor f `on` evalColor b
 eval (WithStyle a s) = withStyle (eval a) s
 
 parseTheme :: FilePath -> IO [(AttrName, Attr)]
@@ -64,15 +72,15 @@ parseTheme theme_path = do
 
 defaultTheme :: ThemeAux
 defaultTheme =
-  [ (mkAttrName ["list","selected"],   Fg (ISOColor 1))
-  , (mkAttrName ["edit"],              On (ISOColor 0) (ISOColor 7))
-  , (mkAttrName ["edit","focused"],    On (ISOColor 7) (ISOColor 4))
-  , (mkAttrName ["dialog"],            On (ISOColor 7) (ISOColor 4))
-  , (mkAttrName ["button"],            On (ISOColor 0) (ISOColor 7))
-  , (mkAttrName ["button","selected"], Bg (ISOColor 3))
-  , (mkAttrName ["key"],               Bg (ISOColor 7))
-  , (mkAttrName ["label"],             Fg (ISOColor 0))
-  , (mkAttrName ["progressComplete"],  On (ISOColor 7) (ISOColor 4))
+  [ (mkAttrName ["list","selected"],   Fg (ISO 1))
+  , (mkAttrName ["edit"],              On (ISO 0) (ISO 7))
+  , (mkAttrName ["edit","focused"],    On (ISO 7) (ISO 4))
+  , (mkAttrName ["dialog"],            On (ISO 7) (ISO 4))
+  , (mkAttrName ["button"],            On (ISO 0) (ISO 7))
+  , (mkAttrName ["button","selected"], Bg (ISO 3))
+  , (mkAttrName ["key"],               Bg (ISO 7))
+  , (mkAttrName ["label"],             Fg (ISO 0))
+  , (mkAttrName ["progressComplete"],  On (ISO 7) (ISO 4))
   ]
     where
       -- Use attrName to convert String -> AttrName then

@@ -2,32 +2,42 @@
 
 module Types where
 
-import           Brick                   (AttrName)
-import           Brick.BChan             (BChan)
-import qualified Brick.Focus             as F
-import           Brick.Types             (Widget)
-import qualified Brick.Widgets.Dialog    as D
-import qualified Brick.Widgets.Edit      as E
-import qualified Brick.Widgets.List      as L
-import           Control.Concurrent      (ThreadId)
-import qualified Data.Map.Strict         as Map
-import           Data.Text               (Text)
-import           GHC.IO.Exception        (ExitCode)
-import           Graphics.Vty            (Attr, Style)
-import           Graphics.Vty.Attributes (Color)
-import           Lens.Micro.TH           (makeLenses)
+import           Brick                (AttrName)
+import           Brick.BChan          (BChan)
+import qualified Brick.Focus          as F
+import           Brick.Types          (Widget)
+import qualified Brick.Widgets.Dialog as D
+import qualified Brick.Widgets.Edit   as E
+import qualified Brick.Widgets.List   as L
+import           Control.Concurrent   (ThreadId)
+import qualified Data.Map.Strict      as Map
+import           Data.Text            (Text)
+import           Data.Word            (Word8)
+import           GHC.IO.Exception     (ExitCode)
+import           Graphics.Vty         (Attr, Style)
+import           Lens.Micro.TH        (makeLenses)
 
 
--- | An external representation of the theme, replacing @fg@, @bg@ and @on@
+-- | An external representation of the theme, replacing @fg@, @bg@, @on@ and @withStyle@
 -- functions with constructors which can simply be @read@ in
 type ThemeAux = [(AttrName, AttrAux)]
 
 -- | Actual representation of the theme, using Brick types
 type Theme = [(AttrName, Attr)]
 
--- | A 'dumb' representation of the @fg@, @bg@, and @on@ functions
-data AttrAux = Fg Color | Bg Color | On Color Color | WithStyle AttrAux Style
+-- | A 'dumb' representation of the @fg@, @bg@, @on@, and @withStyle@ functions
+data AttrAux = Fg ColorAux
+             | Bg ColorAux
+             | On ColorAux ColorAux
+             | WithStyle AttrAux Style
+             deriving (Show, Read)
+
+-- | An xternal representation of either an ISO color code or an RGB color
+-- Needs to be converted into a Vty Color
+-- This is because the Vty Color240 is extremely weird
+data ColorAux = ISO Word8 | RGB Word8 Word8 Word8
   deriving (Show, Read)
+
 
 data Setting = Setting { timeout     :: Maybe (Maybe Int)
                          -- ^ The inner Maybe indicates whether clipboard should be
