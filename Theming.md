@@ -57,7 +57,7 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 
 - The attribute names are already `Read`, so the `read` function works out-of-the-box, albeit with a more verbose constructor
 - The attributes are trickier as the functions `fg`, `bg`, and `on` are used to convert colors into {fore, back}ground color attributes. They are turned into constructors for the theme file: `Fg`, `Bg`, and `On`
-- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `ISO 1`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and Color240 is weird so RGB conversion is baked in
+- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `ISO 1`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and `Color240` is weird so RGB conversion is baked in
 - The styles are applied with the `withStyle` function, which takes an attribute (which is `Read`) and a style. The style are a type alias for `Word8`, which is `Read` too. `withStyle` is turned into the constructor `WithStyle`
 
 - PS: The eval function is very cute
@@ -122,8 +122,8 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 - `ISO` takes one `Word8` from 0 to 15 inclusive. The exact colors depend on your terminal configuration, but they are essentially "simplified" colors like "black"
     - [Color codes](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes-Color.html)
 - `RGB` takes three `Word8`, each from 0 to 255 inclusive.
-    - Internally, `kpxhs` converts the rgb values into Color240
-    - This is because Color240 is extremely weird
+    - Internally, `kpxhs` converts the rgb values into `Color240`
+    - The `RGB` constructor is exposed instead `Color240` because `Color240` is extremely weird
     - Note that it doesn't support the entire rgb palette, so some colors can throw an error. `kpxhs` allows it to be thrown, because some attributes might be a hassle to navigate to, so aborting the program will let the user know their color is invalid as early as possible.
 - (You can write an integer literal for `Word8`)
 

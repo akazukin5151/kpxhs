@@ -39,7 +39,17 @@
   - {name: GHC.Enum.enumFromThenTo, within: []} # Does not do what you think it does, depending on the type.
 
   - {name: unless, within: []} # Really confusing, use 'when' instead.
-  - {name: either, within: []} # Really confusing, just use a case-match.
+  # I've commented this out because, who hasn't memorized
+  # `data Either a b = Left a | Right b`? Obviously it's left then right, so
+  # the either function is `either handle_left handle_right either_value`
+  # Just indent the 3 arguments so it resembles a case-match, like so:
+  # a = either
+  #       (handle_left foo)
+  #       (handle_right bar)
+  #       (qux either_value)
+  # Unlike a case-match, this function lets me write point-free functions for
+  # handle_left and handle_right
+  #- {name: either, within: []} # Really confusing, just use a case-match.
 
   - {name: nub, within: []} # O(n^2)
 

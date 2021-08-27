@@ -72,7 +72,7 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
     - Default: `Just (Seconds 10)`
     - `Just DoNotClear` will disable automatic clipboard clearing
     - `Nothing` will fall back to the default
-- See also [test/example_config](test/example_config)
+- See also [test/example_config.hs](test/example_config.hs)
 
 Write something like this in `~/.config/kpxhs/config.hs`:
 
@@ -86,7 +86,7 @@ Config { timeout = Just (Seconds 10)
 - Must be a valid Haskell expression
 - Constructs the following record (don't worry about String vs Text)
 
-```
+```hs
 data Timeout = Seconds Int | DoNotClear
 
 data Config = Config { timeout     :: Maybe Timeout
