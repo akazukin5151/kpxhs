@@ -60,32 +60,42 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
 
 # Configure (optional)
 
-- You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default.
-    - Default: `""`
+- You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default. The paths can be any string
+    - Default: `Just ""`
+    - `Just "xxx"` will fill in the database path with the string "xxx"
+    - `Nothing` will fall back to the default
 - You can also have `kpxhs` auto-fill a path to the keyfile
-    - Default: `""`
+    - Default: `Just ""`
+    - `Just "xxx"` will fill in the database path with the string "xxx"
+    - `Nothing` will fall back to the default
 - You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
-    - Default: `10` (seconds)
-    - Any value less than or equal to 0 will disable automatic clipboard clearing
+    - Default: `Just (Seconds 10)`
+    - `Just DoNotClear` will disable automatic clipboard clearing
+    - `Nothing` will fall back to the default
 - See also [test/example_config](test/example_config)
 
-1. `mkdir ~/.config/kpxhs`
-2. `nvim ~/.config/kpxhs/config`
-3. Write something like this:
+Write something like this in `~/.config/kpxhs/config.hs`:
+
+```hs
+Config { timeout = Just (Seconds 10)
+       , dbPath = Just "/home/me/kpxhs/test/kpxhs_test.kdbx"
+       , keyfilePath = Just "/home/me/kpxhs/test/keyfile.key"
+       }
+```
+
+- Must be a valid Haskell expression
+- Constructs the following record (don't worry about String vs Text)
 
 ```
-timeout = 10
-db_path = /home/me/kpxhs/test/kpxhs_test.kdbx
-keyfile_path = /home/me/kpxhs/test/keyfile.key
+data Timeout = Seconds Int | DoNotClear
+
+data Config = Config { timeout     :: Maybe Timeout
+                     , dbPath      :: Maybe Text
+                     , keyfilePath :: Maybe Text
+                     }
 ```
 
-- Order of key-value pairs does not matter
-- The keys must be exact and verbatim
-- Equal sign is required, but whitespace around the sign is insignificant
-- The timeout must be an integer
-    - Any value less than or equal to 0 will disable automatic clipboard clearing (but any *invalid* integer will cause the program to fallback to its default, which is 10 seconds)
-- The two paths can be any string, but any number of surrounding whitespace is stripped
-- Any other (invalid) text is ignored, so they act like comments
+- See [Theming.md](Theming.md) for rationale and details on "Haskell expression"
 - Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it
 
 ## Theming

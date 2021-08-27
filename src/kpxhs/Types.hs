@@ -38,17 +38,14 @@ data AttrAux = Fg ColorAux
 data ColorAux = ISO Word8 | RGB Word8 Word8 Word8
   deriving (Show, Read)
 
+data Timeout = Seconds Int | DoNotClear
+  deriving (Show, Read)
 
-data Setting = Setting { timeout     :: Maybe (Maybe Int)
-                         -- ^ The inner Maybe indicates whether clipboard should be
-                         -- cleared at all. (Just Nothing) means the config disabled
-                         -- automatic clipboard clearing.
-                         -- The outer Maybe indicates whether the
-                         -- config exists and a valid timeout value is given
-                         -- The default is Just (Just 10)
-                       , dbPath      :: Maybe Text
-                       , keyfilePath :: Maybe Text
-                       }
+data Config = Config { timeout     :: Maybe Timeout
+                     , dbPath      :: Maybe Text
+                     , keyfilePath :: Maybe Text
+                     } deriving (Show, Read)
+
 
 data Action = Ls | Clip | Show
 

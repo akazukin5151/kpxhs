@@ -13,7 +13,6 @@ import qualified Data.ByteString               as B
 import           Data.Functor                  ((<&>))
 import           Data.Maybe                    (fromMaybe)
 import           Data.Text                     (Text, unpack)
-import qualified Data.Text                     as TT
 import           Data.Text.Encoding            (decodeUtf8')
 import           Graphics.Vty                  (Attr, Color (ISOColor))
 import           Graphics.Vty.Attributes       (withStyle)
@@ -23,34 +22,39 @@ import           Text.Read                     (readMaybe)
 import Types
     ( AttrAux (Bg, Fg, On, WithStyle)
     , ColorAux (ISO, RGB)
+    , Config (Config, dbPath, keyfilePath, timeout)
     , Field (KeyfileField, PasswordField, PathField)
-    , Setting (Setting, dbPath, keyfilePath, timeout)
     , Theme
-    , ThemeAux
+    , ThemeAux, Timeout (Seconds, DoNotClear)
     )
 
 
 fallback :: IOException -> IO B.ByteString
 fallback _ = pure ""
 
+defaultConfig :: Config
+defaultConfig = Config { timeout = Just (Seconds 10)
+                       , dbPath = Just ""
+                       , keyfilePath = Just ""
+                       }
+
 parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, Theme)
 parseConfig cfgdir = do
-  file <- catch (B.readFile $ cfgdir <> "config") fallback
+  file <- catch (B.readFile $ cfgdir <> "config.hs") fallback
   attrMap <- parseTheme $ cfgdir <> "theme.hs"
-  case decodeUtf8' file of
-    Left _ -> pure (Just 10, "", "", pathfirst, attrMap)
-    Right utf8_file -> do
-      let parsed   = parseSettings (TT.lines utf8_file) initial
-      let timeout' = fromMaybe (Just 10) (timeout parsed)
-      let db_path  = fromMaybe "" (dbPath parsed)
-      let kf_path  = fromMaybe "" (keyfilePath parsed)
-      let ring     = if db_path == "" then pathfirst else passwordfirst
-      pure (timeout', db_path, kf_path, ring, attrMap)
+  let config = either
+        (const defaultConfig)
+        (fromMaybe defaultConfig . readMaybe . unpack)
+        (decodeUtf8' file)
+  let db_path  = fromMaybe "" (dbPath config)
+  let kf_path  = fromMaybe "" (keyfilePath config)
+  let ring     = if db_path == "" then pathfirst else passwordfirst
+  let timeout' =
+        case fromMaybe (Seconds 10) (timeout config) of
+          Seconds t  -> Just t
+          DoNotClear -> Nothing
+  pure (timeout', db_path, kf_path, ring, attrMap)
   where
-    initial = Setting { timeout     = Nothing
-                      , dbPath      = Nothing
-                      , keyfilePath = Nothing
-                      }
     pathfirst = F.focusRing [PathField, PasswordField, KeyfileField]
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
 
@@ -94,28 +98,3 @@ defaultTheme =
       -- mappend that with the accumulator
       mkAttrName :: [String] -> AttrName
       mkAttrName xs = foldr ((<>) . attrName) mempty xs
-
-
-parseSettings :: [Text] -> Setting -> Setting
-parseSettings []       s = s
-parseSettings (x : xs) s =
-  if TT.null key' || TT.null value'
-    then parseSettings xs s
-    else parseSettings xs $
-      case key of
-        "timeout"      -> s { timeout     = handleNegative $ textToMaybeInt value }
-        "db_path"      -> s { dbPath      = Just value }
-        "keyfile_path" -> s { keyfilePath = Just value }
-        _              -> s
-  where
-    (key', value') = TT.breakOn "=" x
-    key = TT.strip key'
-    value = TT.strip $ TT.drop 1 $ TT.strip value'
-
-textToMaybeInt :: Text -> Maybe Int
-textToMaybeInt = readMaybe . TT.unpack
-
-handleNegative :: Maybe Int -> Maybe (Maybe Int)
-handleNegative (Just y) | y > 0 = Just (Just y)
-handleNegative (Just _)         = Just Nothing
-handleNegative _                = Nothing
