@@ -37,8 +37,9 @@ dirsToStrRoot x =
 annotate :: [(Text, Text)] -> Widget Field
 annotate x = markup $ foldr1 (<>) (f <$> x)
   where
+    -- The mappend is on AttrName, not on String
     f :: (Text, Text) -> Markup AttrName
-    f (key, label) = (key @? "key") <> (label @? "label")
+    f (key, label) = (key @? ("kpxhs" <> "key")) <> (label @? ("kpxhs" <> "label"))
 
 exit :: (Text, Text)
 exit = ("Esc", " exit  ")

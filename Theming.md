@@ -88,3 +88,10 @@ data AttrAux = Fg Color | Bg Color | On Color Color
     - Resembles the `on` function in Brick, which is written as an infix function
     - Imagine applying the constructor in infix
     - `On color1 color2` ==> ```color1 `On` color2```
+
+There are two special attribute names exclusive to `kpxhs`. They are appropriately namespaced with `"kpxhs"`.
+
+- `AttrName ["kpxhs", "key"]`: The style of the key being bound (eg, "Esc")
+- `AttrName ["kpxhs", "label"]`: The style of the label bound (eg, "exit")
+
+In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. `kpxhs.key` would style the "Esc" text and `kpxhs.label` would style the "exit" type
