@@ -47,7 +47,7 @@ A.attrMap V.defAttr [ (attrName1, attr1), (attrName2, attr2) ]
 
 ### Security
 
-While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `ThemeAux`. That means there's no way to cheat and successfully pass in something that's not `ThemeAux`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors. And those colors must type check as `Color` to be `read`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
+While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `ThemeAux`. That means there's no way to cheat and successfully pass in something that's not `ThemeAux`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors. And those colors must type check as `ColorAux` to be `read`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
 
 It is Turing incomplete because `read` is Turing incomplete. This means parsing and evaluation is guaranteed to terminate.
 
@@ -57,8 +57,8 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 
 - The attribute names are already `Read`, so the `read` function works out-of-the-box, albeit with a more verbose constructor
 - The attributes are trickier as the functions `fg`, `bg`, and `on` are used to convert colors into {fore, back}ground color attributes. They are turned into constructors for the theme file: `Fg`, `Bg`, and `On`
-- The colors are also `Read`, but type constructors have to be used (eg, `ISO 1`) instead of their convenience functions (eg, `red`)
-- The styles are a type alias for `Word8`, which is `Read` too.
+- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `ISO 1`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and Color240 is weird so RGB conversion is baked in
+- The styles are applied with the `withStyle` function, which takes an attribute (which is `Read`) and a style. The style are a type alias for `Word8`, which is `Read` too. `withStyle` is turned into the constructor `WithStyle`
 
 - PS: The eval function is very cute
 
@@ -114,7 +114,7 @@ There are two special attribute names exclusive to `kpxhs`. They are appropriate
 - `AttrName ["kpxhs", "key"]`: The style of the key being bound (eg, "Esc")
 - `AttrName ["kpxhs", "label"]`: The style of the label bound (eg, "exit")
 
-In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. `kpxhs.key` would style the "Esc" text and `kpxhs.label` would style the "exit" type
+In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. `kpxhs.key` would style the "Esc" text and `kpxhs.label` would style the "exit" text
 
 ### Colors
 
