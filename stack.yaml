@@ -42,7 +42,14 @@ packages:
 #
 extra-deps: [
   vector-0.12.3.0,
-  brick-0.61
+  brick-0.61,
+  bytestring-0.11.1.0,
+  binary-0.8.9.0,
+  directory-1.3.6.2,
+  parsec-3.1.14.0,
+  process-1.6.13.2,
+  text-1.2.5.0,
+  unix-2.7.2.2
 ]
 
 # Override default flag values for local packages and extra-deps
