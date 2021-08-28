@@ -7,24 +7,32 @@ import           Brick.BChan        (BChan, newBChan)
 import qualified Brick.Focus        as F
 import qualified Brick.Main         as M
 import qualified Brick.Widgets.Edit as E
-import           Control.Monad      (void)
+import           Control.Monad      (void, when)
+import qualified Data.ByteString    as B
 import qualified Data.Map.Strict    as Map
 import           Data.Text          (Text)
+import           Data.Text.Encoding (encodeUtf8)
 import qualified Graphics.Vty       as V
-import           System.Directory   (getHomeDirectory)
+import           System.Directory
+    ( createDirectory
+    , doesDirectoryExist
+    , doesFileExist
+    , getHomeDirectory
+    )
 import           System.Environment (getArgs)
-import           System.Exit        (ExitCode (ExitFailure), exitWith)
+import           System.Exit        (exitFailure)
 
-import Common (annotate, defaultDialog, initialFooter, toBrowserList)
-import Config (parseConfig)
-import Events (appEvent)
+import Common   (annotate, defaultDialog, initialFooter, toBrowserList)
+import Config   (parseConfig)
+import Defaults (defaultConfigText, defaultThemeText, help)
+import Events   (appEvent)
 import Types
     ( Event
     , Field (KeyfileField, PasswordField, PathField, SearchField)
     , State (..)
     , View (PasswordView)
     )
-import UI     (drawUI)
+import UI       (drawUI)
 
 
 initialState :: F.FocusRing Field -> Text -> Text -> Maybe Int -> BChan Event -> State
@@ -68,9 +76,10 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    []             -> tui
-    [x] | isHelp x -> showHelp
-    _              -> showHelp >> exitWith (ExitFailure 1)
+    []                           -> tui
+    [x] | isCmd "help" x         -> putStrLn help
+    [x] | isCmd "write-config" x -> writeConfig
+    _                            -> putStrLn help >> exitFailure
 
 tui :: IO ()
 tui = do
@@ -86,27 +95,29 @@ tui = do
     M.customMain initialVty buildVty (Just chan) (theApp theme)
       (initialState ring dbdir kfdir timeout' chan)
 
-isHelp :: String -> Bool
-isHelp string = s == "h" || s == "help"
+isCmd :: String -> String -> Bool
+isCmd cmd string = s == pure (head cmd) || s == cmd
   where
     s = dropWhile (== '-') string
 
-showHelp :: IO ()
-showHelp =
-  putStrLn "kpxhs - Interactive Keepass database TUI viewer\n\
-            \  Usage\n\
-            \    kpxhs                  Start the program\n\
-            \    kpxhs [-h | --help]    Show this help\n\n\
-            \  TUI keybindings (in general)\n\
-            \    Esc                    Quit\n\
-            \    Tab                    Cycle focus\n\
-            \    Enter                  Show entry details\n\
-            \    u                      Copy username\n\
-            \    p                      Copy password\n\
-            \  Navigation\n\
-            \    j, s                   Move down\n\
-            \    k, w                   Move up\n\
-            \    g                      Move to top\n\
-            \    G                      Move to bottom\n\
-            \    q                      Page up\n\
-            \    e                      Page down"
+-- | Aborts if either config or theme exists, to prevent inconsistency
+writeConfig :: IO ()
+writeConfig = do
+  home <- getHomeDirectory
+  let cfgdir = home ++ "/.config/kpxhs/"
+  dirExists <- doesDirectoryExist cfgdir
+  when (not dirExists) $
+    createDirectory cfgdir
+
+  let cfgPath = cfgdir <> "config.hs"
+  configExists <- doesFileExist cfgPath
+  when configExists $
+    putStrLn "config.hs already exists, aborting" >> exitFailure
+
+  let themePath = cfgdir <> "theme.hs"
+  themeExists <- doesFileExist themePath
+  when themeExists $
+     putStrLn "theme.hs already exists, aborting" >> exitFailure
+
+  B.writeFile cfgPath $ encodeUtf8 defaultConfigText
+  B.writeFile themePath $ encodeUtf8 defaultThemeText

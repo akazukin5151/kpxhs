@@ -111,6 +111,7 @@ kpxhs - Interactive Keepass database TUI viewer
   Usage
     kpxhs                  Start the program
     kpxhs [-h | --help]    Show this help
+    kpxhs --write-config   Write the default configs to ~/.config/kpxhs/
 
   TUI keybindings (in general)
     Esc                    Quit

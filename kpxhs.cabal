@@ -19,6 +19,7 @@ executable kpxhs
   other-modules:     Types,
                      Common,
                      Config,
+                     Defaults,
                      UI,
                      UI.Common,
                      UI.BrowserUI,
