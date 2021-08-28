@@ -16,15 +16,15 @@ import Data.Text (Text)
 
 defaultConfig :: Config
 defaultConfig = Config { timeout = Just (Seconds 10)
-                       , dbPath = Just ""
-                       , keyfilePath = Just ""
+                       , dbPath = Nothing
+                       , keyfilePath = Nothing
                        }
 
 defaultConfigText :: Text
 defaultConfigText =
   "Config { timeout = Just (Seconds 10)\n\
-  \       , dbPath = Just \"\"\n\
-  \       , keyfilePath = Just \"\"\n\
+  \       , dbPath = Nothing\n\
+  \       , keyfilePath = Nothing\n\
   \       }"
 
 
