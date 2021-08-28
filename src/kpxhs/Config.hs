@@ -49,14 +49,13 @@ parseConfig cfgdir = do
   let db_path  = fromMaybe "" (dbPath config)
   let kf_path  = fromMaybe "" (keyfilePath config)
   let ring     = if db_path == "" then pathfirst else passwordfirst
-  let timeout' =
-        case fromMaybe (Seconds 10) (timeout config) of
-          Seconds t  -> Just t
-          DoNotClear -> Nothing
+  let timeout' = timeoutToMaybe $ fromMaybe (Seconds 10) (timeout config)
   pure (timeout', db_path, kf_path, ring, attrMap)
   where
     pathfirst = F.focusRing [PathField, PasswordField, KeyfileField]
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
+    timeoutToMaybe (Seconds t) = Just t
+    timeoutToMaybe DoNotClear  = Nothing
 
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended

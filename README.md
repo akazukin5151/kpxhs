@@ -88,6 +88,7 @@ Config { timeout = Just (Seconds 10)
 - Construct the `Config` record (don't worry about String vs Text)
 
 ```hs
+-- Timeout is isomorphic to Maybe; Used for clarity
 data Timeout = Seconds Int | DoNotClear
 
 data Config = Config { timeout     :: Maybe Timeout
