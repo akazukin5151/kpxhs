@@ -18,11 +18,11 @@ import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
 import           Text.Read                     (readMaybe)
 
-import Defaults (defaultTheme)
+import Defaults (defaultConfig, defaultTheme)
 import Types
     ( AttrAux (Bg, Fg, On, WithStyle)
     , ColorAux (ISO, RGB)
-    , Config (Config, dbPath, keyfilePath, timeout)
+    , Config (dbPath, keyfilePath, timeout)
     , Field (KeyfileField, PasswordField, PathField)
     , Theme
     , Timeout (DoNotClear, Seconds)
@@ -31,12 +31,6 @@ import Types
 
 fallback :: IOException -> IO B.ByteString
 fallback _ = pure ""
-
-defaultConfig :: Config
-defaultConfig = Config { timeout = Just (Seconds 10)
-                       , dbPath = Just ""
-                       , keyfilePath = Just ""
-                       }
 
 parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, Theme)
 parseConfig cfgdir = do
