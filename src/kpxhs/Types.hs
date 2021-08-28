@@ -32,7 +32,7 @@ data AttrAux = Fg ColorAux
              | WithStyle AttrAux Style
              deriving (Show, Read)
 
--- | An xternal representation of either an ISO color code or an RGB color
+-- | An external representation of either an ISO color code or an RGB color
 -- Needs to be converted into a Vty Color
 -- This is because the Vty Color240 is extremely weird
 data ColorAux = ISO Word8 | RGB Word8 Word8 Word8
