@@ -60,6 +60,7 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
 
 # Configure (optional)
 
+- Hint: run `kpxhs --write-config` to generate the default config for further editing
 - You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default. The paths can be any string
     - Default: `""`
     - `Just "xxx"` will fill in the database path with the string "xxx"
