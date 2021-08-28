@@ -36,8 +36,8 @@ defaultTheme =
   , (mkAttrName ["dialog"],            On (ISO 7) (ISO 4))
   , (mkAttrName ["button"],            On (ISO 0) (ISO 7))
   , (mkAttrName ["button","selected"], Bg (ISO 3))
-  , (mkAttrName ["key"],               Bg (ISO 7))
-  , (mkAttrName ["label"],             Fg (ISO 0))
+  , (mkAttrName ["kpxhs","key"],       Bg (ISO 7))
+  , (mkAttrName ["kpxhs","label"],     Fg (ISO 0))
   , (mkAttrName ["progressComplete"],  On (ISO 7) (ISO 4))
   ]
     where

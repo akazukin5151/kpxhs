@@ -3,7 +3,6 @@
 module Config (parseConfig) where
 
 import           Brick                         (AttrName, bg, fg)
-import           Brick.AttrMap                 (attrName)
 import qualified Brick.Focus                   as F
 import           Brick.Util                    (on)
 import           Control.Exception             (IOException)
@@ -19,13 +18,14 @@ import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
 import           Text.Read                     (readMaybe)
 
+import Defaults (defaultTheme)
 import Types
     ( AttrAux (Bg, Fg, On, WithStyle)
     , ColorAux (ISO, RGB)
     , Config (Config, dbPath, keyfilePath, timeout)
     , Field (KeyfileField, PasswordField, PathField)
     , Theme
-    , ThemeAux, Timeout (Seconds, DoNotClear)
+    , Timeout (DoNotClear, Seconds)
     )
 
 
@@ -79,21 +79,3 @@ parseTheme theme_path = do
         (decodeUtf8' file)
   -- second eval === (\(a, b) -> (a, eval b))
   pure $ theme_aux <&> second eval
-
-defaultTheme :: ThemeAux
-defaultTheme =
-  [ (mkAttrName ["list","selected"],   Fg (ISO 1))
-  , (mkAttrName ["edit"],              On (ISO 0) (ISO 7))
-  , (mkAttrName ["edit","focused"],    On (ISO 7) (ISO 4))
-  , (mkAttrName ["dialog"],            On (ISO 7) (ISO 4))
-  , (mkAttrName ["button"],            On (ISO 0) (ISO 7))
-  , (mkAttrName ["button","selected"], Bg (ISO 3))
-  , (mkAttrName ["key"],               Bg (ISO 7))
-  , (mkAttrName ["label"],             Fg (ISO 0))
-  , (mkAttrName ["progressComplete"],  On (ISO 7) (ISO 4))
-  ]
-    where
-      -- Use attrName to convert String -> AttrName then
-      -- mappend that with the accumulator
-      mkAttrName :: [String] -> AttrName
-      mkAttrName xs = foldr ((<>) . attrName) mempty xs
