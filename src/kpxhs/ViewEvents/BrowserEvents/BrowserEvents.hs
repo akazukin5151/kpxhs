@@ -16,7 +16,7 @@ import Types
     , Event
     , Field
     , State
-    , currentDir
+    , currentPath
     , footer
     , hasCopied
     , visibleEntries
@@ -49,7 +49,7 @@ browserEvent =
 
 handleEsc :: State -> T.EventM Field (T.Next State)
 handleEsc st =
-  case (st^.currentDir, st^.hasCopied) of
+  case (st^.currentPath, st^.hasCopied) of
     ([], True)  -> M.continue $ prepareExit st
     ([], False) -> M.halt st
     _           -> M.continue $ goUpParent st

@@ -14,8 +14,8 @@ import           Data.Text          (Text)
 import           Lens.Micro         ((%~), (&), (.~), (?~), (^.))
 
 import Common
-    ( dirsToStr
-    , dirsToStrRoot
+    ( pathToStr
+    , pathToStrRoot
     , maybeGetEntryData
     , toBrowserList
     )
@@ -26,7 +26,7 @@ import Types
     , activeView
     , allEntryDetails
     , allEntryNames
-    , currentDir
+    , currentPath
     , selectedEntryName
     , searchField
     , visibleEntries
@@ -38,8 +38,8 @@ maybeGetEntries :: State -> Maybe [Text]
 maybeGetEntries st =
   (st ^. allEntryNames) !? dir
   where
-    newDir = initOrDef ["."] (st ^. currentDir)
-    dir = dirsToStr newDir
+    newDir = initOrDef ["."] (st ^. currentPath)
+    dir = pathToStr newDir
 
 initOrDef :: [a] -> [a] -> [a]
 initOrDef d []  = d
@@ -59,7 +59,7 @@ showEntrySuccess st entry stdout =
 showEntryInner :: State -> Text -> Text -> State
 showEntryInner st entry details = newst
   where
-    dirname = dirsToStrRoot (st^.currentDir)
+    dirname = pathToStrRoot (st^.currentPath)
     f :: Maybe (M.Map Text Text) -> Maybe (M.Map Text Text)
     f (Just m) = Just $ M.insertWith (curry snd) entry details m
     f _        = Just $ M.singleton entry details
@@ -76,14 +76,14 @@ enterDirSuccess st entries_ rawDir =
   st & visibleEntries .~ toBrowserList entries_
      & allEntryNames  %~ M.insert rawDir entries_
      & searchField    .~ E.editor SearchField (Just 1) ""
-     & currentDir     %~ (++ [rawDir])
+     & currentPath     %~ (++ [rawDir])
      & updateFooter  -- clears any footers set when entering dir
 
 goUpParent :: State -> State
 goUpParent st =
   st & visibleEntries .~ toBrowserList entries
      & searchField    .~ E.editor SearchField (Just 1) ""
-     & currentDir     %~ initOrDef []
+     & currentPath     %~ initOrDef []
      & updateFooter
   where
     entries = fromMaybe ["Failed to get entries!"] $ maybeGetEntries st

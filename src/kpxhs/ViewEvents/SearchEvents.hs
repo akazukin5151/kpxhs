@@ -18,7 +18,7 @@ import Types
     , Field
     , State
     , allEntryNames
-    , currentDir
+    , currentPath
     , hasCopied
     , searchField
     , visibleEntries, footer
@@ -54,7 +54,7 @@ handleSearch st e = do
             Just x  -> visibleEntries .~ toBrowserList (filter f x)
   pure $ updatedSt & g
   where
-    theDir = dirsToCurrent $ st ^. currentDir
+    theDir = dirsToCurrent $ st ^. currentPath
 
 
 -- Adapted from the definition of last in Prelude

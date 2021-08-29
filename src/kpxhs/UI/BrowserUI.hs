@@ -24,11 +24,11 @@ import qualified Data.Vector          as Vec
 import qualified Graphics.Vty         as V
 import           Lens.Micro           ((&), (^.))
 
-import Common    (dirsToStr)
+import Common    (pathToStr)
 import Types
     ( Field (BrowserField)
     , State
-    , currentDir
+    , currentPath
     , focusRing
     , footer
     , searchField
@@ -64,9 +64,9 @@ drawBrowserList st =
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
   where
-    label = foldr1 (<+>) $ txt <$> [currentDir_, " ", "(", cur, "/", total, ")"]
-    currentDir_ =
-      case dirsToStr $ st^.currentDir of
+    label = foldr1 (<+>) $ txt <$> [currentPath_, " ", "(", cur, "/", total, ")"]
+    currentPath_ =
+      case pathToStr $ st^.currentPath of
         "" -> "(Root)"
         x  -> TT.init x
     cur = maybe "-" (pack . show . (+1)) (st^.visibleEntries.L.listSelectedL)

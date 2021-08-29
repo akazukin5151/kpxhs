@@ -18,7 +18,7 @@ import           Data.Text          (Text)
 import           Lens.Micro         ((&), (.~), (?~), (^.))
 
 import Common
-    ( dirsToStr
+    ( pathToStr
     )
 import Types
     ( CmdAction (Ls, Show)
@@ -27,7 +27,7 @@ import Types
     , State
     , allEntryNames
     , chan
-    , currentDir
+    , currentPath
     , selectedEntryName
     , footer
     )
@@ -75,7 +75,7 @@ fetchDirInBackground st entry  =
       pure $ st & footer .~ txt "Fetching..."
   where
     (dbPathField_, pw, kf) = getCreds st
-    concatedDir = dirsToStr (st ^. currentDir) <> entry
+    concatedDir = pathToStr (st ^. currentPath) <> entry
     bg_cmd = do
       (code, stdout, stderr) <- runCmd Ls dbPathField_ [concatedDir] pw kf
       writeBChan (st^.chan) $ EnterDir entry (code, stdout, stderr)

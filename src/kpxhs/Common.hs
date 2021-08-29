@@ -19,18 +19,18 @@ import Types
     , Field (BrowserField, PasswordField, PathField)
     , State
     , allEntryDetails
-    , currentDir
+    , currentPath
     , selectedEntryName
     )
 
 -- | This should only be used for running the show cmd
-dirsToStr :: [Text] -> Text
-dirsToStr = TT.concat
+pathToStr :: [Text] -> Text
+pathToStr = TT.concat
 
 -- | This should be used for accessing any other mappings in the state
-dirsToStrRoot :: [Text] -> Text
-dirsToStrRoot x =
-  case dirsToStr x of
+pathToStrRoot :: [Text] -> Text
+pathToStrRoot x =
+  case pathToStr x of
     "" -> "."
     y  -> y
 
@@ -62,7 +62,7 @@ toBrowserList xs = L.list BrowserField (Vec.fromList xs) 1
 
 maybeGetEntryData :: State -> Maybe Text
 maybeGetEntryData st = do
-  let dirname = dirsToStrRoot (st^.currentDir)
+  let dirname = pathToStrRoot (st^.currentPath)
   entryname <- st^.selectedEntryName
   entriesInThisDir <- (st^.allEntryDetails) !? dirname
   entriesInThisDir !? entryname

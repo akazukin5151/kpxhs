@@ -21,7 +21,7 @@ import Types
     , View (BrowserView, EntryDetailsView, ExitView, PasswordView, SearchView)
     , activeView
     , countdownThreadId
-    , currentDir
+    , currentPath
     , exitDialog
     , focusRing
     , footer
@@ -92,7 +92,7 @@ viewDefaultFooter st =
     ExitView         -> [("", "")]
     BrowserView      ->
       let extra = if isCopyable st then [username, password] else [] in
-      case st^.currentDir of
+      case st^.currentPath of
         [] -> [exit, focus_search] <> extra
         _  -> [back, focus_search] <> extra
   where
