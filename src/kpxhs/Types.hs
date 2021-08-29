@@ -91,9 +91,9 @@ data State = State
     _activeView             :: View,
     -- | The previous View
     _previousView           :: View,
-    -- | The string in the bottom of the window
+    -- | The widget in the bottom of the window
     _footer                 :: Widget Field,
-    -- | Determines fields that can be focused and their order
+    -- | Determines the fields that can be focused and their order
     _focusRing              :: F.FocusRing Field,
     -- | Field for the database path
     _dbPathField            :: E.Editor Text Field,
