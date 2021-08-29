@@ -11,7 +11,7 @@ import Types
     )
 import UI.BrowserUI      (drawBrowser)
 import UI.EntryDetailsUI (drawEntryDetails)
-import UI.ExitUI         (drawExitDialogView)
+import UI.ExitDialogUI   (drawExitDialogView)
 import UI.LoginUI        (drawDialog)
 
 

@@ -23,7 +23,7 @@ executable kpxhs
                      UI,
                      UI.Common,
                      UI.BrowserUI,
-                     UI.ExitUI,
+                     UI.ExitDialogUI,
                      UI.LoginUI,
                      UI.EntryDetailsUI,
                      Events,

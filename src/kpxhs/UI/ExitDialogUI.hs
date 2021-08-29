@@ -1,4 +1,4 @@
-module UI.ExitUI (drawExitDialogView) where
+module UI.ExitDialogUI (drawExitDialogView) where
 
 import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C
