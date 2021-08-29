@@ -40,8 +40,8 @@ liftContinue2 g st x = liftIO (g st x) >>= M.continue
 prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
-     & exitDialog .~ defaultDialog
-     & activeView .~ ExitView
+     & exitDialog   .~ defaultDialog
+     & activeView   .~ ExitView
 
 commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State))
                -> State
@@ -62,7 +62,7 @@ _handleTab st f _           = f st BrowserView
 
 focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
 focus f st view =
-  st & focusRing %~ f
+  st & focusRing  %~ f
      & activeView .~ view
      & updateFooterGuarded
 

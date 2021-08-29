@@ -63,15 +63,15 @@ handleCopyInner st timeout' = do
     Nothing -> pure ()
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount timeout'
-  pure $ st & hasCopied .~ True
+  pure $ st & hasCopied         .~ True
             & countdownThreadId ?~ tid
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
-  clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
-                             & hasCopied .~ False
+  clearClipboard >> pure (st & footer            .~ txt "Clipboard cleared"
+                             & hasCopied         .~ False
                              & countdownThreadId .~ Nothing
-                             & currentCountdown .~ Nothing)
+                             & currentCountdown  .~ Nothing)
 handleClipCount st count =
   case st ^. clearTimeout of
     Nothing       -> pure st
@@ -94,7 +94,7 @@ handleClipCountInner st count timeout' = do
              else id
   pure $ st & f
             & countdownThreadId ?~ tid
-            & currentCountdown ?~ v
+            & currentCountdown  ?~ v
 
 mkCountdownLabel :: Show a => a -> Maybe String
 mkCountdownLabel count =
