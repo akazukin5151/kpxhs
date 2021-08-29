@@ -83,7 +83,7 @@ data State = State
     -- Mapping between directory name to list of entry names
     _allEntryNames          :: Map.Map Text [Text],
     -- | The name of the entry selected to show details for
-    _currentEntryDetailName :: Maybe Text,
+    _selectedEntryName      :: Maybe Text,
     -- | All the entry details that has been opened
     -- Mapping between directory name to (entry names and their details)
     _allEntryDetails        :: Map.Map Text (Map.Map Text Text),

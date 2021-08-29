@@ -40,7 +40,7 @@ initialState ring dbdir kfdir timeout' chan =
   State
     { _visibleEntries = toBrowserList [],
       _allEntryNames = Map.empty,
-      _currentEntryDetailName = Nothing,
+      _selectedEntryName = Nothing,
       _allEntryDetails = Map.empty,
       _previousView = PasswordView,  -- doesn't really matter here
       _activeView = PasswordView,

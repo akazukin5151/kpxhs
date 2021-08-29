@@ -20,7 +20,7 @@ import Types
     , State
     , allEntryDetails
     , currentDir
-    , currentEntryDetailName
+    , selectedEntryName
     )
 
 -- | This should only be used for running the show cmd
@@ -63,7 +63,7 @@ toBrowserList xs = L.list BrowserField (Vec.fromList xs) 1
 maybeGetEntryData :: State -> Maybe Text
 maybeGetEntryData st = do
   let dirname = dirsToStrRoot (st^.currentDir)
-  entryname <- st^.currentEntryDetailName
+  entryname <- st^.selectedEntryName
   entriesInThisDir <- (st^.allEntryDetails) !? dirname
   entriesInThisDir !? entryname
 

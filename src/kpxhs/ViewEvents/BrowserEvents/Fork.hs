@@ -28,7 +28,7 @@ import Types
     , allEntryNames
     , chan
     , currentDir
-    , currentEntryDetailName
+    , selectedEntryName
     , footer
     )
 import ViewEvents.Common (liftContinue1)
@@ -50,7 +50,7 @@ showEntryFork st = fromMaybe def (getSelectedEntry f st)
 fetchEntryInBackground :: State -> Text -> IO State
 fetchEntryInBackground st entry = maybe def pure (showEntryWithCache newst entry)
   where
-    newst = st & currentEntryDetailName ?~ entry
+    newst = st & selectedEntryName ?~ entry
     (dir, pw, kf) = getCreds newst
     bg_cmd = do
       (code, stdout, stderr) <- runCmd Show dir [entry] pw kf

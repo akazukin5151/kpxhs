@@ -27,7 +27,7 @@ import Types
     , allEntryDetails
     , allEntryNames
     , currentDir
-    , currentEntryDetailName
+    , selectedEntryName
     , searchField
     , visibleEntries
     )
@@ -64,7 +64,7 @@ showEntryInner st entry details = newst
     f (Just m) = Just $ Map.insertWith (curry snd) entry details m
     f _        = Just $ Map.singleton entry details
     newst = st & activeView             .~ EntryDetailsView
-               & currentEntryDetailName ?~ entry
+               & selectedEntryName ?~ entry
                & allEntryDetails        %~ Map.alter f dirname
                & updateFooter
                -- Not guarded here because the countdown should only be in
