@@ -99,6 +99,7 @@ data Config = Config { timeout     :: Maybe Timeout
 ```
 
 - See [Theming.md](Theming.md) for rationale and details on "Haskell expression"
+- To be clear, while it has to be a valid Haskell expression, it is indeed not a valid Haskell file/module. It is not supposed to be compiled, but interpreted at launch.
 - Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it
 
 ## Theming
