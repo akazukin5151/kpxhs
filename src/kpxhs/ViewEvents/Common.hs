@@ -18,7 +18,7 @@ import Types
     ( Event (ClearClipCount)
     , Field
     , State
-    , View (BrowserView, EntryDetailsView, ExitView, LoginView, SearchView)
+    , View (BrowserView, EntryDetailsView, ExitDialogView, LoginView, SearchView)
     , activeView
     , countdownThreadId
     , currentPath
@@ -41,7 +41,7 @@ prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
      & exitDialog   .~ defaultDialog
-     & activeView   .~ ExitView
+     & activeView   .~ ExitDialogView
 
 commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State))
                -> State
@@ -89,7 +89,7 @@ viewDefaultFooter st =
     SearchView       -> [exit, tab " focus list "]
     EntryDetailsView -> [back, username, password]
     LoginView        -> initialFooter $ st ^. focusRing
-    ExitView         -> [("", "")]
+    ExitDialogView   -> [("", "")]
     BrowserView      ->
       let extra = if isCopyable st then [username, password] else [] in
       case st^.currentPath of

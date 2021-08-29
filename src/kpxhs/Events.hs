@@ -7,7 +7,7 @@ import Types
     ( Event
     , Field
     , State
-    , View (BrowserView, EntryDetailsView, ExitView, LoginView, SearchView)
+    , View (BrowserView, EntryDetailsView, ExitDialogView, LoginView, SearchView)
     , activeView
     )
 import ViewEvents.BrowserEvents.BrowserEvents (browserEvent)
@@ -25,4 +25,4 @@ appEvent st e = f st e
           EntryDetailsView -> entryDetailsEvent
           SearchView       -> searchEvent
           BrowserView      -> browserEvent
-          ExitView         -> exitEvent
+          ExitDialogView   -> exitEvent

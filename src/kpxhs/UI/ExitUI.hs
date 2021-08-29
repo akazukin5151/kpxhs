@@ -1,4 +1,4 @@
-module UI.ExitUI (drawExitView) where
+module UI.ExitUI (drawExitDialogView) where
 
 import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C
@@ -8,8 +8,8 @@ import           Lens.Micro           ((^.))
 import           Types                (Field, State, exitDialog)
 
 
-drawExitView :: State -> [Widget Field]
-drawExitView st = [ui]
+drawExitDialogView :: State -> [Widget Field]
+drawExitDialogView st = [ui]
   where
     ui = D.renderDialog (st^.exitDialog)
          $ C.hCenter

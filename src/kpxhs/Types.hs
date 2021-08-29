@@ -53,7 +53,7 @@ data View = LoginView
           | BrowserView
           | SearchView
           | EntryDetailsView
-          | ExitView
+          | ExitDialogView
           deriving (Eq)
 
 data Field = PathField
