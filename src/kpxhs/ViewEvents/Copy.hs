@@ -18,7 +18,7 @@ import           System.Info               (os)
 import           System.Process            (callCommand)
 
 import Types
-    ( Action (Clip)
+    ( CmdAction (Clip)
     , CopyType (CopyUsername)
     , Event (ClearClipCount, Copying)
     , State

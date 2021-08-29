@@ -47,13 +47,21 @@ data Config = Config { timeout     :: Maybe Timeout
                      } deriving (Show, Read)
 
 
-data Action = Ls | Clip | Show
+data CmdAction = Ls | Clip | Show
 
-data View = PasswordView | BrowserView | SearchView | EntryView | ExitView
-  deriving (Eq)
+data View = PasswordView
+          | BrowserView
+          | SearchView
+          | EntryDetailsView
+          | ExitView
+          deriving (Eq)
 
-data Field = PathField | PasswordField | KeyfileField | BrowserField | SearchField
-  deriving (Ord, Eq, Show)
+data Field = PathField
+           | PasswordField
+           | KeyfileField
+           | BrowserField
+           | SearchField
+           deriving (Ord, Eq, Show)
 
 data CopyType = CopyUsername | CopyPassword
 

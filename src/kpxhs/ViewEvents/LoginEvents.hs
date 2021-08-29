@@ -20,7 +20,7 @@ import           System.Exit        (ExitCode (ExitSuccess))
 
 import Common            (toBrowserList)
 import Types
-    ( Action (Ls)
+    ( CmdAction (Ls)
     , Event (Login)
     , Field (BrowserField, KeyfileField, PasswordField, PathField, SearchField)
     , State

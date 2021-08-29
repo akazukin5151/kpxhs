@@ -22,7 +22,7 @@ import Common
 import Types
     ( Field (SearchField)
     , State
-    , View (EntryView)
+    , View (EntryDetailsView)
     , activeView
     , allEntryDetails
     , allEntryNames
@@ -63,7 +63,7 @@ showEntryInner st entry details = newst
     f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
     f (Just m) = Just $ Map.insertWith (curry snd) entry details m
     f _        = Just $ Map.singleton entry details
-    newst = st & activeView             .~ EntryView
+    newst = st & activeView             .~ EntryDetailsView
                & currentEntryDetailName ?~ entry
                & allEntryDetails        %~ Map.alter f dirname
                & updateFooter

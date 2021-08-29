@@ -18,7 +18,7 @@ import Types
     ( Event (ClearClipCount)
     , Field
     , State
-    , View (BrowserView, EntryView, ExitView, PasswordView, SearchView)
+    , View (BrowserView, EntryDetailsView, ExitView, PasswordView, SearchView)
     , activeView
     , countdownThreadId
     , currentDir
@@ -86,11 +86,11 @@ updateFooterGuarded st =
 viewDefaultFooter :: State -> Widget Field
 viewDefaultFooter st =
   annotate $ case st^.activeView of
-    SearchView   -> [exit, tab " focus list "]
-    EntryView    -> [back, username, password]
-    PasswordView -> initialFooter $ st ^. focusRing
-    ExitView     -> [("", "")]
-    BrowserView ->
+    SearchView       -> [exit, tab " focus list "]
+    EntryDetailsView -> [back, username, password]
+    PasswordView     -> initialFooter $ st ^. focusRing
+    ExitView         -> [("", "")]
+    BrowserView      ->
       let extra = if isCopyable st then [username, password] else [] in
       case st^.currentDir of
         [] -> [exit, focus_search] <> extra

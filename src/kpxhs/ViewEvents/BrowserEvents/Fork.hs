@@ -21,7 +21,7 @@ import Common
     ( dirsToStr
     )
 import Types
-    ( Action (Ls, Show)
+    ( CmdAction (Ls, Show)
     , Event (EnterDir, ShowEntry)
     , Field
     , State

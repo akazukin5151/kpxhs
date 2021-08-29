@@ -12,7 +12,7 @@ import           Lens.Micro         ((^.))
 import           System.Process     (readProcessWithExitCode)
 
 import Types
-    ( Action (..)
+    ( CmdAction (..)
     , CmdOutput
     , Field
     , State
@@ -61,12 +61,12 @@ isGoUpToParent st = fromMaybe False (getSelectedEntry f st)
 isCopyable :: State -> Bool
 isCopyable st = not (isDir st || isGoUpToParent st)
 
-actionToString :: Action -> String
+actionToString :: CmdAction -> String
 actionToString Ls   = "ls"
 actionToString Clip = "clip"
 actionToString Show = "show"
 
-runCmd :: Action
+runCmd :: CmdAction
        -> Text    -- ^ dir
        -> [Text]  -- ^ args
        -> Text    -- ^ password
