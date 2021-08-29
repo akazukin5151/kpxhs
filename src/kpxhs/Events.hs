@@ -11,7 +11,7 @@ import Types
     , activeView
     )
 import ViewEvents.BrowserEvents.BrowserEvents (browserEvent)
-import ViewEvents.EntryEvents                 (entryDetailsEvent)
+import ViewEvents.EntryDetailsEvents          (entryDetailsEvent)
 import ViewEvents.ExitEvents                  (exitEvent)
 import ViewEvents.LoginEvents                 (passwordEvent)
 import ViewEvents.SearchEvents                (searchEvent)

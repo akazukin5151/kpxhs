@@ -33,7 +33,7 @@ executable kpxhs
                      ViewEvents.BrowserEvents.Event,
                      ViewEvents.Common,
                      ViewEvents.SearchEvents,
-                     ViewEvents.EntryEvents,
+                     ViewEvents.EntryDetailsEvents,
                      ViewEvents.LoginEvents,
                      ViewEvents.ExitEvents,
                      ViewEvents.Copy,

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module ViewEvents.EntryEvents (entryDetailsEvent) where
+module ViewEvents.EntryDetailsEvents (entryDetailsEvent) where
 
 import qualified Brick.Main                as M
 import qualified Brick.Types               as T
