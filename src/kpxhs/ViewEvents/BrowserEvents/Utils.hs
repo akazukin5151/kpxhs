@@ -8,7 +8,7 @@ module ViewEvents.BrowserEvents.Utils where
 import qualified Brick.Widgets.Edit as E
 import           Data.Functor       ((<&>))
 import           Data.Map.Strict    ((!?))
-import qualified Data.Map.Strict    as Map
+import qualified Data.Map.Strict    as M
 import           Data.Maybe         (fromMaybe)
 import           Data.Text          (Text)
 import           Lens.Micro         ((%~), (&), (.~), (?~), (^.))
@@ -60,12 +60,12 @@ showEntryInner :: State -> Text -> Text -> State
 showEntryInner st entry details = newst
   where
     dirname = dirsToStrRoot (st^.currentDir)
-    f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
-    f (Just m) = Just $ Map.insertWith (curry snd) entry details m
-    f _        = Just $ Map.singleton entry details
+    f :: Maybe (M.Map Text Text) -> Maybe (M.Map Text Text)
+    f (Just m) = Just $ M.insertWith (curry snd) entry details m
+    f _        = Just $ M.singleton entry details
     newst = st & activeView             .~ EntryDetailsView
                & selectedEntryName ?~ entry
-               & allEntryDetails        %~ Map.alter f dirname
+               & allEntryDetails        %~ M.alter f dirname
                & updateFooter
                -- Not guarded here because the countdown should only be in
                -- browser view
@@ -74,7 +74,7 @@ showEntryInner st entry details = newst
 enterDirSuccess :: State -> [Text] -> Text -> State
 enterDirSuccess st entries_ rawDir =
   st & visibleEntries .~ toBrowserList entries_
-     & allEntryNames  %~ Map.insert rawDir entries_
+     & allEntryNames  %~ M.insert rawDir entries_
      & searchField    .~ E.editor SearchField (Just 1) ""
      & currentDir     %~ (++ [rawDir])
      & updateFooter  -- clears any footers set when entering dir

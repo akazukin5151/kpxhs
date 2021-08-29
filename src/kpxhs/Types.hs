@@ -10,7 +10,7 @@ import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Edit   as E
 import qualified Brick.Widgets.List   as L
 import           Control.Concurrent   (ThreadId)
-import qualified Data.Map.Strict      as Map
+import qualified Data.Map.Strict      as M
 import           Data.Text            (Text)
 import           Data.Word            (Word8)
 import           GHC.IO.Exception     (ExitCode)
@@ -81,12 +81,12 @@ data State = State
     _visibleEntries         :: L.List Field Text,
     -- | All the entries (visible or not) that has been loaded from all directories
     -- Mapping between directory name to list of entry names
-    _allEntryNames          :: Map.Map Text [Text],
+    _allEntryNames          :: M.Map Text [Text],
     -- | The name of the entry selected to show details for
     _selectedEntryName      :: Maybe Text,
     -- | All the entry details that has been opened
     -- Mapping between directory name to (entry names and their details)
-    _allEntryDetails        :: Map.Map Text (Map.Map Text Text),
+    _allEntryDetails        :: M.Map Text (M.Map Text Text),
     -- | The currently visible View
     _activeView             :: View,
     -- | The previous View
