@@ -70,7 +70,8 @@ handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
   clearClipboard >> pure (st & footer .~ txt "Clipboard cleared"
                              & hasCopied .~ False
-                             & countdownThreadId .~ Nothing)
+                             & countdownThreadId .~ Nothing
+                             & currentCountdown .~ Nothing)
 handleClipCount st count =
   case st ^. clearTimeout of
     Nothing       -> pure st
@@ -79,10 +80,6 @@ handleClipCount st count =
 handleClipCountInner :: State -> Int -> Int -> IO State
 handleClipCountInner st count timeout' = do
   -- Even if the footer shouldn't be changed, the countdown should proceed
-  let changeFooter = case st^.activeView of
-                       BrowserView -> True
-                       SearchView  -> True
-                       _           -> False
   let bg_cmd = threadDelay 1000000
               >> writeBChan (st^.chan) (ClearClipCount (count - 1))
   -- Save the tid in case if it needs to be cancelled later
@@ -92,7 +89,7 @@ handleClipCountInner st count timeout' = do
   -- I think Int -> Float is fine because Float is larger than Int
   -- so an int shouldn't be truncated
   let v = fromIntegral count / fromIntegral timeout'
-  let f = if changeFooter
+  let f = if st^.activeView == BrowserView || st^.activeView == SearchView
              then footer .~ P.progressBar label v
              else id
   pure $ st & f
@@ -104,7 +101,8 @@ mkCountdownLabel count =
   Just $ "Clearing clipboard in " <> show count <> " seconds"
 
 clearClipboard :: IO ()
-clearClipboard = callCommand $ "printf '' | " ++ handler where
-  handler = case os of
-    "linux" -> "xclip -selection clipboard"
-    _       -> "pbcopy"
+clearClipboard = callCommand $ "printf '' | " ++ handler
+  where
+    handler = case os of
+      "linux" -> "xclip -selection clipboard"
+      _       -> "pbcopy"

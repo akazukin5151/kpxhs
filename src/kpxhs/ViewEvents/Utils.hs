@@ -51,38 +51,42 @@ getCreds st = (dir, pw, kf)
 isDir :: State -> Bool
 isDir st = fromMaybe False (getSelectedEntry f st)
   where
-    f entry = TT.last entry == '/'
+    f = (== '/') . TT.last
 
 isGoUpToParent :: State -> Bool
 isGoUpToParent st = fromMaybe False (getSelectedEntry f st)
   where
-    f entry = entry == "-- (Go up parent) --"
+    f = (== "-- (Go up parent) --")
 
 isCopyable :: State -> Bool
 isCopyable st = not (isDir st || isGoUpToParent st)
 
-runCmd :: Action
-       -> Text
-       -> [Text]
-       -> Text
-       -> Text
-       -> IO CmdOutput
-runCmd Ls dir args pw kf   = _runCmdInner "ls" dir args pw kf
-runCmd Clip dir args pw kf = _runCmdInner "clip" dir args pw kf
-runCmd Show dir args pw kf = _runCmdInner "show" dir args pw kf
+actionToString :: Action -> String
+actionToString Ls   = "ls"
+actionToString Clip = "clip"
+actionToString Show = "show"
 
-_runCmdInner :: Text
+runCmd :: Action
+       -> Text    -- ^ dir
+       -> [Text]  -- ^ args
+       -> Text    -- ^ password
+       -> Text    -- ^ keyfile path
+       -> IO CmdOutput
+runCmd a = _runCmdInner (actionToString a)
+
+_runCmdInner :: String
              -> Text
              -> [Text]
              -> Text
              -> Text
              -> IO CmdOutput
 _runCmdInner action dir extraArgs pw kf = do
-  (e, a, b) <- readProcessWithExitCode "keepassxc-cli" args (TT.unpack pw)
-  pure (e, TT.pack a, TT.pack b)
+  (code, stdout, stderr) <- readProcessWithExitCode "keepassxc-cli" args (TT.unpack pw)
+  pure (code, TT.pack stdout, TT.pack stderr)
   where
     args :: [String]
-    args = TT.unpack <$> [action, dir] ++ extraArgs_
-    extraArgs_ = case kf of
-                   "" -> extraArgs
-                   _  -> ["-k", kf] ++ extraArgs
+    args = [action, TT.unpack dir] ++ extraArgs_
+    extraArgs_ =
+      TT.unpack <$> case kf of
+        "" -> extraArgs
+        _  -> ["-k", kf] ++ extraArgs

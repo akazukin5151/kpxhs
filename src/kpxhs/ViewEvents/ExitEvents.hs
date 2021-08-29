@@ -21,11 +21,9 @@ import ViewEvents.Copy   (clearClipboard)
 
 
 exitEvent :: State -> T.BrickEvent Field e -> T.EventM Field (T.Next State)
-exitEvent st (T.VtyEvent e) =
-  case e of
-    V.EvKey V.KEnter [] -> handleEnter st
-    _                   -> handleDialog st e
-exitEvent st _ = M.continue st
+exitEvent st (T.VtyEvent (V.EvKey V.KEnter [])) = handleEnter st
+exitEvent st (T.VtyEvent e)                     = handleDialog st e
+exitEvent st _                                  = M.continue st
 
 -- | handleDialogEvent returns (EventM f (Dialog a)),
 -- but (>>= M.continue) needs (EventM f State),

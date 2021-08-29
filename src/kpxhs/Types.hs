@@ -50,6 +50,7 @@ data Config = Config { timeout     :: Maybe Timeout
 data Action = Ls | Clip | Show
 
 data View = PasswordView | BrowserView | SearchView | EntryView | ExitView
+  deriving (Eq)
 
 data Field = PathField | PasswordField | KeyfileField | BrowserField | SearchField
   deriving (Ord, Eq, Show)

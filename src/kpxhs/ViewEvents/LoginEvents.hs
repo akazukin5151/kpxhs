@@ -77,20 +77,19 @@ gotoBrowser st _                                = st
 
 gotoBrowserSuccess :: State -> [Text] -> State
 gotoBrowserSuccess st ent =
-  st & activeView .~ SearchView
+  st & activeView     .~ SearchView
      & visibleEntries .~ toBrowserList ent
-     & allEntryNames .~ Map.singleton "." ent
-     & focusRing .~ F.focusRing [SearchField, BrowserField]
+     & allEntryNames  .~ Map.singleton "." ent
+     & focusRing      .~ F.focusRing [SearchField, BrowserField]
      & updateFooter
 
 handleFieldInput :: State -> V.Event -> T.EventM Field State
 handleFieldInput st e =
-  case field of
+  case F.focusGetCurrent (st ^. focusRing) of
     Just PathField     -> inner dbPathField
     Just PasswordField -> inner passwordField
     Just KeyfileField  -> inner keyfileField
     _                  -> pure st
   where
-    field = F.focusGetCurrent (st ^. focusRing)
     inner :: Lens' State (E.Editor Text Field) -> T.EventM Field State
     inner field_ = T.handleEventLensed st field_ E.handleEditorEvent e

@@ -48,7 +48,7 @@ showEntryFork st = fromMaybe def (getSelectedEntry f st)
     f entry                  = fetchEntryInBackground st entry
 
 fetchEntryInBackground :: State -> Text -> IO State
-fetchEntryInBackground st entry = fromMaybe def (showEntryWithCache newst entry)
+fetchEntryInBackground st entry = maybe def pure (showEntryWithCache newst entry)
   where
     newst = st & currentEntryDetailName ?~ entry
     (dir, pw, kf) = getCreds newst

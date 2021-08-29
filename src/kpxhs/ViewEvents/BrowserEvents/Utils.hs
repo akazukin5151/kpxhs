@@ -6,6 +6,7 @@
 module ViewEvents.BrowserEvents.Utils where
 
 import qualified Brick.Widgets.Edit as E
+import           Data.Functor       ((<&>))
 import           Data.Map.Strict    ((!?))
 import qualified Data.Map.Strict    as Map
 import           Data.Maybe         (fromMaybe)
@@ -45,10 +46,9 @@ initOrDef d []  = d
 initOrDef d [_] = d
 initOrDef _ xs  = init xs
 
-showEntryWithCache :: State -> Text -> Maybe (IO State)
-showEntryWithCache st entryname = do
-  details <- maybeGetEntryData st
-  pure $ pure $ showEntryInner st entryname details
+showEntryWithCache :: State -> Text -> Maybe State
+showEntryWithCache st entryname =
+  maybeGetEntryData st <&> showEntryInner st entryname
 
 showEntrySuccess :: State -> Text -> Text -> State
 showEntrySuccess st entry stdout =
@@ -63,9 +63,9 @@ showEntryInner st entry details = newst
     f :: Maybe (Map.Map Text Text) -> Maybe (Map.Map Text Text)
     f (Just m) = Just $ Map.insertWith (curry snd) entry details m
     f _        = Just $ Map.singleton entry details
-    newst = st & activeView .~ EntryView
+    newst = st & activeView             .~ EntryView
                & currentEntryDetailName ?~ entry
-               & allEntryDetails %~ Map.alter f dirname
+               & allEntryDetails        %~ Map.alter f dirname
                & updateFooter
                -- Not guarded here because the countdown should only be in
                -- browser view
@@ -74,16 +74,16 @@ showEntryInner st entry details = newst
 enterDirSuccess :: State -> [Text] -> Text -> State
 enterDirSuccess st entries_ rawDir =
   st & visibleEntries .~ toBrowserList entries_
-     & allEntryNames %~ Map.insert rawDir entries_
-     & searchField .~ E.editor SearchField (Just 1) ""
-     & currentDir %~ (++ [rawDir])
+     & allEntryNames  %~ Map.insert rawDir entries_
+     & searchField    .~ E.editor SearchField (Just 1) ""
+     & currentDir     %~ (++ [rawDir])
      & updateFooter  -- clears any footers set when entering dir
 
 goUpParent :: State -> State
 goUpParent st =
   st & visibleEntries .~ toBrowserList entries
-     & searchField .~ E.editor SearchField (Just 1) ""
-     & currentDir %~ initOrDef []
+     & searchField    .~ E.editor SearchField (Just 1) ""
+     & currentDir     %~ initOrDef []
      & updateFooter
   where
     entries = fromMaybe ["Failed to get entries!"] $ maybeGetEntries st
