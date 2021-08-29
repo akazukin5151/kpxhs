@@ -2,15 +2,15 @@
 
 module ViewEvents.SearchEvents (searchEvent) where
 
+import           Brick              (txt)
 import qualified Brick.Main         as M
 import qualified Brick.Types        as T
 import qualified Brick.Widgets.Edit as E
-import qualified Brick.Widgets.List as L
 import           Data.Map.Strict    ((!?))
 import           Data.Maybe         (fromMaybe, listToMaybe)
 import           Data.Text          (Text, isInfixOf, toLower)
 import qualified Graphics.Vty       as V
-import           Lens.Micro         ((%~), (&), (.~), (^.))
+import           Lens.Micro         ((&), (.~), (^.))
 
 import Common            (toBrowserList)
 import Types
@@ -21,7 +21,7 @@ import Types
     , currentDir
     , hasCopied
     , searchField
-    , visibleEntries
+    , visibleEntries, footer
     )
 import ViewEvents.Common (commonTabEvent, prepareExit)
 
@@ -45,18 +45,17 @@ handleEsc st =
 
 handleSearch :: State -> V.Event -> T.EventM Field State
 handleSearch st e = do
-  newB <- E.handleEditorEvent e (st ^. searchField)
-  let updatedSt = st & searchField .~ newB
-      newStr = fromMaybe "" $ listToMaybe $ E.getEditContents newB
-      newDir = dirsToCurrent $ st ^. currentDir
-      maybeEntries = (st ^. allEntryNames) !? newDir
-      entries = fromMaybe ["Failed to get entries!"] maybeEntries
-      f :: L.List Field Text -> L.List Field Text
-      f _ = toBrowserList $ filter g entries
-      g :: Text -> Bool
-      g entry = newStr `isInfixOf` toLower entry
-      newSt = updatedSt & visibleEntries %~ f
-  pure newSt
+  field <- E.handleEditorEvent e (st ^. searchField)
+  let updatedSt = st & searchField .~ field
+      searchStr = toLower $ fromMaybe "" $ listToMaybe $ E.getEditContents field
+      f entry = searchStr `isInfixOf` toLower entry
+      g = case (st ^. allEntryNames) !? theDir of
+            Nothing -> footer         .~ txt "Failed to get entries!"
+            Just x  -> visibleEntries .~ toBrowserList (filter f x)
+  pure $ updatedSt & g
+  where
+    theDir = dirsToCurrent $ st ^. currentDir
+
 
 -- Adapted from the definition of last in Prelude
 dirsToCurrent :: [Text] -> Text
