@@ -12,7 +12,7 @@ import Types
     )
 import ViewEvents.BrowserEvents.BrowserEvents (browserEvent)
 import ViewEvents.EntryDetailsEvents          (entryDetailsEvent)
-import ViewEvents.ExitEvents                  (exitEvent)
+import ViewEvents.ExitDialogEvents            (exitEvent)
 import ViewEvents.LoginEvents                 (passwordEvent)
 import ViewEvents.SearchEvents                (searchEvent)
 

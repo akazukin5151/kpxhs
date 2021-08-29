@@ -35,7 +35,7 @@ executable kpxhs
                      ViewEvents.SearchEvents,
                      ViewEvents.EntryDetailsEvents,
                      ViewEvents.LoginEvents,
-                     ViewEvents.ExitEvents,
+                     ViewEvents.ExitDialogEvents,
                      ViewEvents.Copy,
                      ViewEvents.Utils
 

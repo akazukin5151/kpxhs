@@ -1,4 +1,4 @@
-module ViewEvents.ExitEvents (exitEvent) where
+module ViewEvents.ExitDialogEvents (exitEvent) where
 
 import qualified Brick.Main             as M
 import qualified Brick.Types            as T
