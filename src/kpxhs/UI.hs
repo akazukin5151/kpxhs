@@ -6,7 +6,7 @@ import Lens.Micro  ((^.))
 import Types
     ( Field
     , State
-    , View (EntryDetailsView, ExitView, PasswordView)
+    , View (EntryDetailsView, ExitView, LoginView)
     , activeView
     )
 import UI.BrowserUI (drawBrowser)
@@ -17,7 +17,7 @@ import UI.ExitUI    (drawExitView)
 
 drawUI :: State -> [Widget Field]
 drawUI st = case st ^. activeView of
-  PasswordView     -> drawDialog       st
+  LoginView        -> drawDialog       st
   EntryDetailsView -> drawEntryDetails st
   ExitView         -> drawExitView     st
   _                -> drawBrowser      st

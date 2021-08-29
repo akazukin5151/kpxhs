@@ -18,7 +18,7 @@ import Types
     ( Event (ClearClipCount)
     , Field
     , State
-    , View (BrowserView, EntryDetailsView, ExitView, PasswordView, SearchView)
+    , View (BrowserView, EntryDetailsView, ExitView, LoginView, SearchView)
     , activeView
     , countdownThreadId
     , currentPath
@@ -88,7 +88,7 @@ viewDefaultFooter st =
   annotate $ case st^.activeView of
     SearchView       -> [exit, tab " focus list "]
     EntryDetailsView -> [back, username, password]
-    PasswordView     -> initialFooter $ st ^. focusRing
+    LoginView        -> initialFooter $ st ^. focusRing
     ExitView         -> [("", "")]
     BrowserView      ->
       let extra = if isCopyable st then [username, password] else [] in

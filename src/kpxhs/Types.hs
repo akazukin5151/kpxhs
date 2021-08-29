@@ -49,7 +49,7 @@ data Config = Config { timeout     :: Maybe Timeout
 
 data CmdAction = Ls | Clip | Show
 
-data View = PasswordView
+data View = LoginView
           | BrowserView
           | SearchView
           | EntryDetailsView

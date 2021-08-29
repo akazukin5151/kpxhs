@@ -7,7 +7,7 @@ import Types
     ( Event
     , Field
     , State
-    , View (BrowserView, EntryDetailsView, ExitView, PasswordView, SearchView)
+    , View (BrowserView, EntryDetailsView, ExitView, LoginView, SearchView)
     , activeView
     )
 import ViewEvents.BrowserEvents.BrowserEvents (browserEvent)
@@ -21,7 +21,7 @@ appEvent :: State -> BrickEvent Field Event -> EventM Field (Next State)
 appEvent st e = f st e
   where
     f = case st ^. activeView of
-          PasswordView     -> passwordEvent
+          LoginView        -> passwordEvent
           EntryDetailsView -> entryDetailsEvent
           SearchView       -> searchEvent
           BrowserView      -> browserEvent

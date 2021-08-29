@@ -30,7 +30,7 @@ import Types
     ( Event
     , Field (KeyfileField, PasswordField, PathField, SearchField)
     , State (..)
-    , View (PasswordView)
+    , View (LoginView)
     )
 import UI       (drawUI)
 
@@ -42,8 +42,8 @@ initialState ring dbdir kfdir timeout' chan =
       _allEntryNames = Map.empty,
       _selectedEntryName = Nothing,
       _allEntryDetails = Map.empty,
-      _previousView = PasswordView,  -- doesn't really matter here
-      _activeView = PasswordView,
+      _previousView = LoginView,  -- doesn't really matter here
+      _activeView = LoginView,
       _footer = annotate $ initialFooter ring,
       _focusRing = ring,
       _dbPathField = E.editor PathField (Just 1) dbdir,
