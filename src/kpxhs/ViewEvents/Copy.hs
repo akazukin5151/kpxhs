@@ -27,7 +27,7 @@ import Types
     , chan
     , clearTimeout
     , countdownThreadId
-    , currentCountdown
+    , counterValue
     , footer
     , isClipboardCleared
     )
@@ -68,10 +68,10 @@ handleCopyInner st timeout' = do
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
-  clearClipboard >> pure (st & footer            .~ txt "Clipboard cleared"
+  clearClipboard >> pure (st & footer             .~ txt "Clipboard cleared"
                              & isClipboardCleared .~ True
                              & countdownThreadId  .~ Nothing
-                             & currentCountdown   .~ Nothing)
+                             & counterValue       .~ Nothing)
 handleClipCount st count =
   case st ^. clearTimeout of
     Nothing       -> pure st
@@ -94,7 +94,7 @@ handleClipCountInner st count timeout' = do
              else id
   pure $ st & f
             & countdownThreadId ?~ tid
-            & currentCountdown  ?~ v
+            & counterValue      ?~ v
 
 mkCountdownLabel :: Show a => a -> Maybe String
 mkCountdownLabel count =

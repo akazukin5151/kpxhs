@@ -56,7 +56,7 @@ initialState ring dbdir kfdir timeout' chan =
       _chan = chan,
       _clearTimeout = timeout',
       _countdownThreadId = Nothing,
-      _currentCountdown = Nothing
+      _counterValue = Nothing
     }
 
 mkMap :: [(A.AttrName, V.Attr)] -> A.AttrMap

@@ -20,7 +20,7 @@ import Types
     , View (BrowserView)
     , activeView
     , clearTimeout
-    , currentCountdown
+    , counterValue
     , footer
     )
 import ViewEvents.Common (liftContinue2, updateFooterGuarded)
@@ -53,7 +53,7 @@ returnToBrowser st =
     -- so an int shouldn't be truncated
     toCount :: Float -> Int -> Int
     toCount x t = round $ x * fromIntegral t
-    f = case (st^.currentCountdown, st^.clearTimeout) of
+    f = case (st^.counterValue, st^.clearTimeout) of
       (Just x, Just t) -> footer .~ P.progressBar (mkCountdownLabel $ toCount x t) x
       _                -> updateFooterGuarded
 

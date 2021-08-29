@@ -118,7 +118,7 @@ data State = State
     -- | The current clipboard clear countdown thread id
     _countdownThreadId      :: Maybe ThreadId,
     -- | The current value of the counter
-    _currentCountdown       :: Maybe Float
+    _counterValue       :: Maybe Float
   }
 
 makeLenses ''State
