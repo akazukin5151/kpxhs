@@ -25,7 +25,7 @@ executable kpxhs
                      UI.BrowserUI,
                      UI.ExitUI,
                      UI.LoginUI,
-                     UI.EntryUI,
+                     UI.EntryDetailsUI,
                      Events,
                      ViewEvents.BrowserEvents.BrowserEvents,
                      ViewEvents.BrowserEvents.Utils,

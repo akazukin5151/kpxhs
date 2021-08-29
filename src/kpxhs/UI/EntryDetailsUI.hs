@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module UI.EntryUI (drawEntryDetails) where
+module UI.EntryDetailsUI (drawEntryDetails) where
 
 import           Brick.Types          (Widget)
 import qualified Brick.Widgets.Center as C

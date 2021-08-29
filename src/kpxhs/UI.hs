@@ -9,10 +9,10 @@ import Types
     , View (EntryDetailsView, ExitDialogView, LoginView)
     , activeView
     )
-import UI.BrowserUI (drawBrowser)
-import UI.LoginUI  (drawDialog)
-import UI.EntryUI   (drawEntryDetails)
-import UI.ExitUI    (drawExitDialogView)
+import UI.BrowserUI      (drawBrowser)
+import UI.EntryDetailsUI (drawEntryDetails)
+import UI.ExitUI         (drawExitDialogView)
+import UI.LoginUI        (drawDialog)
 
 
 drawUI :: State -> [Widget Field]
