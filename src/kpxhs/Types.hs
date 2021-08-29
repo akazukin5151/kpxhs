@@ -105,7 +105,7 @@ data State = State
     _searchField            :: E.Editor Text Field,
     -- | List of directory names that make up the path of the current directory
     _currentPath            :: [Text],
-    -- | The state container for the exit dialog
+    -- | The exit dialog
     _exitDialog             :: D.Dialog ExitDialog,
     -- | Whether the clipboard contains a copied value from kpxhs
     _isClipboardCleared     :: Bool,
