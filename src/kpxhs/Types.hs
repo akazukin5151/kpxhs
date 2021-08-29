@@ -108,7 +108,7 @@ data State = State
     -- | The state container for the exit dialog
     _exitDialog             :: D.Dialog ExitDialog,
     -- | Whether the clipboard contains a copied value from kpxhs
-    _hasCopied              :: Bool,
+    _isClipboardCleared     :: Bool,
     -- | The app event channel; contains all the info that needs to be passed from
     -- a background thread to the AppEvent handler
     _chan                   :: BChan Event,

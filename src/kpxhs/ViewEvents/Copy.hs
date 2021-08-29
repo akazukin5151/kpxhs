@@ -29,7 +29,7 @@ import Types
     , countdownThreadId
     , currentCountdown
     , footer
-    , hasCopied
+    , isClipboardCleared
     )
 import ViewEvents.Utils (getCreds, runCmd)
 
@@ -63,15 +63,15 @@ handleCopyInner st timeout' = do
     Nothing -> pure ()
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount timeout'
-  pure $ st & hasCopied         .~ True
-            & countdownThreadId ?~ tid
+  pure $ st & isClipboardCleared .~ False
+            & countdownThreadId  ?~ tid
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
   clearClipboard >> pure (st & footer            .~ txt "Clipboard cleared"
-                             & hasCopied         .~ False
-                             & countdownThreadId .~ Nothing
-                             & currentCountdown  .~ Nothing)
+                             & isClipboardCleared .~ True
+                             & countdownThreadId  .~ Nothing
+                             & currentCountdown   .~ Nothing)
 handleClipCount st count =
   case st ^. clearTimeout of
     Nothing       -> pure st

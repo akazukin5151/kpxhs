@@ -18,7 +18,7 @@ import Types
     , State
     , currentPath
     , footer
-    , hasCopied
+    , isClipboardCleared
     , visibleEntries
     )
 import ViewEvents.BrowserEvents.Event (handleAppEvent)
@@ -49,9 +49,9 @@ browserEvent =
 
 handleEsc :: State -> T.EventM Field (T.Next State)
 handleEsc st =
-  case (st^.currentPath, st^.hasCopied) of
-    ([], True)  -> M.continue $ prepareExit st
-    ([], False) -> M.halt st
+  case (st^.currentPath, st^.isClipboardCleared) of
+    ([], False) -> M.continue $ prepareExit st
+    ([], True)  -> M.halt st
     _           -> M.continue $ goUpParent st
 
 copyPassword :: State -> T.EventM Field (T.Next State)
