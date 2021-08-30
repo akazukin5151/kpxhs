@@ -17,7 +17,7 @@ import UI.LoginUI        (drawDialog)
 
 drawUI :: State -> [Widget Field]
 drawUI st = case st ^. activeView of
-  LoginView        -> drawDialog       st
-  EntryDetailsView -> drawEntryDetails st
-  ExitDialogView   -> drawExitDialogView     st
-  _                -> drawBrowser      st
+  LoginView        -> drawDialog         st
+  EntryDetailsView -> drawEntryDetails   st
+  ExitDialogView   -> drawExitDialogView st
+  _                -> drawBrowser        st

@@ -76,14 +76,14 @@ enterDirSuccess st entries_ rawDir =
   st & visibleEntries .~ toBrowserList entries_
      & allEntryNames  %~ M.insert rawDir entries_
      & searchField    .~ E.editor SearchField (Just 1) ""
-     & currentPath     %~ (++ [rawDir])
+     & currentPath    %~ (++ [rawDir])
      & updateFooter  -- clears any footers set when entering dir
 
 goUpParent :: State -> State
 goUpParent st =
   st & visibleEntries .~ toBrowserList entries
      & searchField    .~ E.editor SearchField (Just 1) ""
-     & currentPath     %~ initOrDef []
+     & currentPath    %~ initOrDef []
      & updateFooter
   where
     entries = fromMaybe ["Failed to get entries!"] $ maybeGetEntries st

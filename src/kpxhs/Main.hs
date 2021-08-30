@@ -38,25 +38,25 @@ import UI       (drawUI)
 initialState :: F.FocusRing Field -> Text -> Text -> Maybe Int -> BChan Event -> State
 initialState ring dbdir kfdir timeout' chan =
   State
-    { _visibleEntries = toBrowserList [],
-      _allEntryNames = Map.empty,
-      _selectedEntryName = Nothing,
-      _allEntryDetails = Map.empty,
-      _previousView = LoginView,  -- doesn't really matter here
-      _activeView = LoginView,
-      _footer = annotate $ initialFooter ring,
-      _focusRing = ring,
-      _dbPathField = E.editor PathField (Just 1) dbdir,
-      _passwordField = E.editor PasswordField (Just 1) "",
-      _keyfileField = E.editor KeyfileField (Just 1) kfdir,
-      _searchField = E.editor SearchField (Just 1) "",
-      _currentPath = [],
-      _exitDialog = defaultDialog,
+    { _visibleEntries     = toBrowserList [],
+      _allEntryNames      = Map.empty,
+      _selectedEntryName  = Nothing,
+      _allEntryDetails    = Map.empty,
+      _previousView       = LoginView,  -- doesn't really matter here
+      _activeView         = LoginView,
+      _footer             = annotate $ initialFooter ring,
+      _focusRing          = ring,
+      _dbPathField        = E.editor PathField (Just 1) dbdir,
+      _passwordField      = E.editor PasswordField (Just 1) "",
+      _keyfileField       = E.editor KeyfileField (Just 1) kfdir,
+      _searchField        = E.editor SearchField (Just 1) "",
+      _currentPath        = [],
+      _exitDialog         = defaultDialog,
       _isClipboardCleared = True,
-      _chan = chan,
-      _clearTimeout = timeout',
-      _countdownThreadId = Nothing,
-      _counterValue = Nothing
+      _chan               = chan,
+      _clearTimeout       = timeout',
+      _countdownThreadId  = Nothing,
+      _counterValue       = Nothing
     }
 
 mkMap :: [(A.AttrName, V.Attr)] -> A.AttrMap

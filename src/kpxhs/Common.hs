@@ -73,6 +73,6 @@ defaultDialog = D.dialog Nothing (Just (0, defaultDialogChoices)) 60
 defaultDialogChoices :: [(String, ExitDialog)]
 defaultDialogChoices =
   [ ("Clear and exit", Clear)
-  , ("Just exit", Exit)
-  , ("Do not exit", Cancel)
+  , ("Just exit",      Exit)
+  , ("Do not exit",    Cancel)
   ]
