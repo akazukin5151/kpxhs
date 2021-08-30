@@ -14,10 +14,11 @@
 
 ## Introduction
 
-- The theme file is in `~/.config/kpxhs/theme.hs`
+- The theme file is located in `~/.config/kpxhs/theme.hs`
 - Refer to [test/default_theme.hs](test/default_theme.hs) for reference; it is also the default theme if you don't provide any
 - You should probably edit the default theme instead of writing from scratch, because if you write from scratch, all the colors in the default theme are lost.
 - You can theme almost every element because the entire attribute map is exposed
+- Jump straight to [Writing the theme file](#Writing-the-theme-file) and [Examples](#Examples) to start writing your config; everything else is for other developers
 - Refer to the Brick docs for detailed information on what exactly you can theme and how to
     - [Brick.AttrMap](https://hackage.haskell.org/package/brick-0.64/docs/Brick-AttrMap.html)
     - [Attributes for the List widget](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-List.html#g:7)
@@ -43,7 +44,7 @@ A.attrMap V.defAttr [ (attrName1, attr1), (attrName2, attr2) ]
 
 ### Security
 
-While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `ThemeAux`. That means there's no way to cheat and successfully pass in something that's not `ThemeAux`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors. And those colors must type check as `ColorAux` to be `read`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
+While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `ThemeAux`. That means there's no way to cheat and successfully pass in something that's not `ThemeAux`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors and text styles. Those colors must type check as `ColorAux` to be `read`; text styles type check as `StyleAux`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
 
 It is Turing incomplete because `read` is Turing incomplete. This means parsing and evaluation is guaranteed to terminate.
 
@@ -53,8 +54,8 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 
 - The attribute names are already `Read`, so the `read` function works out-of-the-box, albeit with a more verbose constructor
 - The attributes are trickier as the functions `fg`, `bg`, and `on` are used to convert colors into {fore, back}ground color attributes. They are turned into constructors for the theme file: `Fg`, `Bg`, and `On`
-- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `ISO 1`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and `Color240` is weird so RGB conversion is baked in
-- The styles are applied with the `withStyle` function, which takes an attribute (which is `Read`) and a style. The style are a type alias for `Word8`, which is `Read` too. `withStyle` is turned into the constructor `WithStyle`
+- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `ISO Red`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and `Color240` is weird so RGB conversion is baked in
+- In Brick, the styles are applied with the `withStyle` function, which takes an attribute (which is `Read`) and a style. `withStyle` is turned into the constructor `WithStyle`, which derives `Read`. Auxiliary type constructors are used too (eg, `WithStyle (...) Bold`) to make writing the file easier. 
 
 - PS: The eval function is very cute
 
@@ -121,6 +122,7 @@ data StyleAux = Standout
 - The only contents of the file is the list-of-tuples (**no assignments**, nothing else)
 - You cannot use `$` to replace parenthesis, because no functions are evaluated, the entire file is passed to the Haskell `read` function
 - Whitespace and newline rules follow normal Haskell rules for expressions
+- To be clear, the config and theme files are not valid Haskell modules that can be compiled.
 
 ### Attributes
 
@@ -148,7 +150,7 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
     - Internally, `kpxhs` converts the rgb values into `Color240`
     - The `RGB` constructor is exposed instead `Color240` because `Color240` is extremely weird
     - Note that it doesn't support the entire rgb palette, so some colors can throw an error. `kpxhs` allows it to be thrown, because some attributes might be a hassle to navigate to, so aborting the program will let the user know their color is invalid as early as possible.
-- (You can write an integer literal for `Word8`)
+    - Use integer literals for `Word8`
 
 
 ### Styles
@@ -157,7 +159,7 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 - The `WithStyle` constructor mirrors the `withStyle` function, which takes an attribute and applies a style to it
 - The `WithStyle` constructor takes one other constructor; they are the variants of StyleAux
 - Can be nested arbitrarily, but of course has to terminate with a non-recursive variant
-- Best explained with examples
+- See the examples
 
 ## Examples
 
