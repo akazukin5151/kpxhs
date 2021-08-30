@@ -14,7 +14,7 @@ import qualified Data.Map.Strict      as M
 import           Data.Text            (Text)
 import           Data.Word            (Word8)
 import           GHC.IO.Exception     (ExitCode)
-import           Graphics.Vty         (Attr, Style)
+import           Graphics.Vty         (Attr)
 import           Lens.Micro.TH        (makeLenses)
 
 
