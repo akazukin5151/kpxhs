@@ -32,7 +32,7 @@ data AttrAux = Fg ColorAux
              | WithStyle AttrAux StyleAux
              deriving (Show, Read)
 
--- | An external representation of either an ISO color code or an RGB color
+-- | An external representation of either an ISO color (code) or an RGB color
 -- Needs to be converted into a Vty Color
 -- This is because the Vty Color240 is extremely weird
 data ColorAux = Black
@@ -54,6 +54,7 @@ data ColorAux = Black
               | RGB Word8 Word8 Word8
               deriving (Show, Read)
 
+-- | An external representation of the text styles available
 data StyleAux = Standout
               | Underline
               | ReverseVideo
