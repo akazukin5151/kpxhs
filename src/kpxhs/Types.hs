@@ -35,8 +35,26 @@ data AttrAux = Fg ColorAux
 -- | An external representation of either an ISO color code or an RGB color
 -- Needs to be converted into a Vty Color
 -- This is because the Vty Color240 is extremely weird
-data ColorAux = ISO Word8 | RGB Word8 Word8 Word8
+data ColorAux = ISO ISOAux | RGB Word8 Word8 Word8
   deriving (Show, Read)
+
+data ISOAux = Black
+            | Red
+            | Green
+            | Yellow
+            | Blue
+            | Magenta
+            | Cyan
+            | White
+            | BrightBlack
+            | BrightRed
+            | BrightGreen
+            | BrightYellow
+            | BrightBlue
+            | BrightMagenta
+            | BrightCyan
+            | BrightWhite
+            deriving (Show, Read)
 
 data Timeout = Seconds Int | DoNotClear
   deriving (Show, Read)

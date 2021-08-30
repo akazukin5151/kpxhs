@@ -13,6 +13,7 @@ import           Data.Functor                  ((<&>))
 import           Data.Maybe                    (fromMaybe)
 import           Data.Text                     (Text, unpack)
 import           Data.Text.Encoding            (decodeUtf8')
+import           Data.Word                     (Word8)
 import           Graphics.Vty                  (Attr, Color (ISOColor))
 import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
@@ -20,10 +21,11 @@ import           Text.Read                     (readMaybe)
 
 import Defaults (defaultConfig, defaultTheme)
 import Types
-    ( AttrAux (Bg, Fg, On, WithStyle)
-    , ColorAux (ISO, RGB)
+    ( AttrAux (..)
+    , ColorAux (..)
     , Config (dbPath, keyfilePath, timeout)
     , Field (KeyfileField, PasswordField, PathField)
+    , ISOAux (..)
     , Theme
     , Timeout (DoNotClear, Seconds)
     )
@@ -51,10 +53,28 @@ parseConfig cfgdir = do
     timeoutToMaybe (Seconds t) = Just t
     timeoutToMaybe DoNotClear  = Nothing
 
+evalISO :: ISOAux -> Word8
+evalISO Black         = 0
+evalISO Red           = 1
+evalISO Green         = 2
+evalISO Yellow        = 3
+evalISO Blue          = 4
+evalISO Magenta       = 5
+evalISO Cyan          = 6
+evalISO White         = 7
+evalISO BrightBlack   = 8
+evalISO BrightRed     = 9
+evalISO BrightGreen   = 10
+evalISO BrightYellow  = 11
+evalISO BrightBlue    = 12
+evalISO BrightMagenta = 13
+evalISO BrightCyan    = 14
+evalISO BrightWhite   = 15
+
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended
 evalColor :: ColorAux -> Color
-evalColor (ISO i)     = ISOColor i
+evalColor (ISO i)     = ISOColor (evalISO i)
 evalColor (RGB r g b) = rgbColor r g b
 
 -- | Evaluates the dumb representation using their respective functions
