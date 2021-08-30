@@ -25,11 +25,7 @@
     - [Attributes for the Login dialog](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-Edit.html#g:7)
     - [Attributes for the Progress bar](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-ProgressBar.html#g:1)
     - [Attributes for borders](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-Border.html#g:5)
-    - [ISO Color codes](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes-Color.html)
-        - NOTE: the ISOColor numbers are zero-indexed, but the hackage docs show the bullet points starting at 1. Double check [the source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.Color.html#Color)
     - `AttrName` [docs](https://hackage.haskell.org/package/brick-0.64/docs/Brick-AttrMap.html#t:AttrName)
-    - [Styles](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes.html#t:Style)
-    - [Styles source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.html#Style)
 
 ## Reasons for design decisions
 
@@ -67,7 +63,7 @@ eval :: AttrAux -> Attr
 eval (Fg c)          = fg (evalColor c)
 eval (Bg c)          = bg (evalColor c)
 eval (On f b)        = evalColor f `on` evalColor b
-eval (WithStyle a s) = withStyle (eval a) s
+eval (WithStyle a s) = withStyle (eval a) (evalStyle s)
 ```
     
 ## Writing the theme file
@@ -86,11 +82,39 @@ type ThemeAux = [(AttrName, AttrAux)]
 data AttrAux = Fg ColorAux
              | Bg ColorAux
              | On ColorAux ColorAux
-             | WithStyle AttrAux Style
+             | WithStyle AttrAux StyleAux
              deriving (Show, Read)
 
-data ColorAux = ISO Word8 | RGB Word8 Word8 Word8
+data ColorAux = ISO ISOAux | RGB Word8 Word8 Word8
   deriving (Show, Read)
+
+data ISOAux = Black
+            | Red
+            | Green
+            | Yellow
+            | Blue
+            | Magenta
+            | Cyan
+            | White
+            | BrightBlack
+            | BrightRed
+            | BrightGreen
+            | BrightYellow
+            | BrightBlue
+            | BrightMagenta
+            | BrightCyan
+            | BrightWhite
+            deriving (Show, Read)
+
+data StyleAux = Standout
+              | Underline
+              | ReverseVideo
+              | Blink
+              | Dim
+              | Bold
+              | Italic
+              | Strikethrough
+              deriving (Show, Read)
 ```
 
 - **The type of the expression is:** `ThemeAux`
@@ -119,8 +143,7 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 ### Colors
 
 - Use either the `ISO` or `RGB` constructor
-- `ISO` takes one `Word8` from 0 to 15 inclusive. The exact colors depend on your terminal configuration, but they are essentially "simplified" colors like "black"
-    - [Color codes](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes-Color.html)
+- `ISO` takes one other constructor; they are the variants of ISOAux
 - `RGB` takes three `Word8`, each from 0 to 255 inclusive.
     - Internally, `kpxhs` converts the rgb values into `Color240`
     - The `RGB` constructor is exposed instead `Color240` because `Color240` is extremely weird
@@ -131,33 +154,32 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 ### Styles
 
 - Text styles includes bold, italic, underline, reverse, etc
-    - [Styles](https://hackage.haskell.org/package/vty-5.33/docs/Graphics-Vty-Attributes.html#t:Style)
 - The `WithStyle` constructor mirrors the `withStyle` function, which takes an attribute and applies a style to it
-- The `Style` type from `Graphics.Vty` is a type alias of `Word8`. In the [source code](https://hackage.haskell.org/package/vty-5.33/docs/src/Graphics.Vty.Attributes.html#Style), it is written like `0x01`, `0x02`, etc
+- The `WithStyle` constructor takes one other constructor; they are the variants of StyleAux
 - Can be nested arbitrarily, but of course has to terminate with a non-recursive variant
 - Best explained with examples
 
 ## Examples
 
-1. Set the background color of `kpxhs.key` to white
+1. Set the background color of `kpxhs.key` to red
 ```hs
-, (AttrName ["kpxhs", "key"],      Bg (ISO 7))
+, (AttrName ["kpxhs", "key"],      Bg (ISO Red))
 ```
 
-2. Set the background color of `kpxhs.key` to white and make it bold
+2. Set the background color of `kpxhs.key` to red and make it bold
 
 ```hs
-, (AttrName ["kpxhs", "key"],      WithStyle (Bg (ISO 7)) 0x20)
+, (AttrName ["kpxhs", "key"],      WithStyle (Bg (ISO Red)) Bold)
 ```
 
-3. Set the background color of `kpxhs.key` to white and make it bold-italic
+3. Set the background color of `kpxhs.key` to red and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (Bg (ISO 7)) 0x20) 0x40)
+, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (Bg (ISO Red)) Bold) Italic)
 ```
 
-4. Set the background color of `kpxhs.key` to white, the foreground color to RGB(51, 187, 204) and make it bold-italic
+4. Set the background color of `kpxhs.key` to red, the foreground color to RGB(51, 187, 204) and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (On (RGB 51 187 204) (ISO 7)) 0x20) 0x40)
+, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (On (RGB 51 187 204) (ISO Red)) Bold) Italic)
 ```
