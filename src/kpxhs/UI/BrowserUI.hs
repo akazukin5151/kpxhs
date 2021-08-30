@@ -64,13 +64,13 @@ drawBrowserList st =
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
   where
-    label = foldr1 (<+>) $ txt <$> [currentPath_, " ", "(", cur, "/", total, ")"]
+    label = foldr1 (<+>) $ str <$> [currentPath_, " ", "(", cur, "/", total, ")"]
     currentPath_ =
       case pathToStr $ st^.currentPath of
         "" -> "(Root)"
-        x  -> TT.init x
-    cur = maybe "-" (pack . show . (+1)) (st^.visibleEntries.L.listSelectedL)
-    total = pack $ show $ Vec.length $ st^.visibleEntries.L.listElementsL
+        x  -> TT.unpack $ TT.init x
+    cur = maybe "-" (show . (+1)) (st^.visibleEntries.L.listSelectedL)
+    total = show $ Vec.length $ st^.visibleEntries.L.listElementsL
 
 drawBorderColor :: State -> Widget Field -> Widget Field
 drawBorderColor st = res
