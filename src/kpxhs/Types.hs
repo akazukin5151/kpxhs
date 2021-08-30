@@ -29,7 +29,7 @@ type Theme = [(AttrName, Attr)]
 data AttrAux = Fg ColorAux
              | Bg ColorAux
              | On ColorAux ColorAux
-             | WithStyle AttrAux Style
+             | WithStyle AttrAux StyleAux
              deriving (Show, Read)
 
 -- | An external representation of either an ISO color code or an RGB color
@@ -55,6 +55,16 @@ data ISOAux = Black
             | BrightCyan
             | BrightWhite
             deriving (Show, Read)
+
+data StyleAux = Standout
+              | Underline
+              | ReverseVideo
+              | Blink
+              | Dim
+              | Bold
+              | Italic
+              | Strikethrough
+              deriving (Show, Read)
 
 data Timeout = Seconds Int | DoNotClear
   deriving (Show, Read)

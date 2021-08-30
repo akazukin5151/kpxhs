@@ -21,11 +21,12 @@ import           Text.Read                     (readMaybe)
 
 import Defaults (defaultConfig, defaultTheme)
 import Types
-    ( AttrAux (..)
-    , ColorAux (..)
+    ( AttrAux (Bg, Fg, On, WithStyle)
+    , ColorAux (ISO, RGB)
     , Config (dbPath, keyfilePath, timeout)
     , Field (KeyfileField, PasswordField, PathField)
     , ISOAux (..)
+    , StyleAux (..)
     , Theme
     , Timeout (DoNotClear, Seconds)
     )
@@ -71,6 +72,16 @@ evalISO BrightMagenta = 13
 evalISO BrightCyan    = 14
 evalISO BrightWhite   = 15
 
+evalStyle :: StyleAux -> Word8
+evalStyle Standout      = 0x01
+evalStyle Underline     = 0x02
+evalStyle ReverseVideo  = 0x04
+evalStyle Blink         = 0x08
+evalStyle Dim           = 0x10
+evalStyle Bold          = 0x20
+evalStyle Italic        = 0x40
+evalStyle Strikethrough = 0x40
+
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended
 evalColor :: ColorAux -> Color
@@ -82,7 +93,7 @@ eval :: AttrAux -> Attr
 eval (Fg c)          = fg (evalColor c)
 eval (Bg c)          = bg (evalColor c)
 eval (On f b)        = evalColor f `on` evalColor b
-eval (WithStyle a s) = withStyle (eval a) s
+eval (WithStyle a s) = withStyle (eval a) (evalStyle s)
 
 parseTheme :: FilePath -> IO [(AttrName, Attr)]
 parseTheme theme_path = do
