@@ -21,11 +21,10 @@ import           Text.Read                     (readMaybe)
 
 import Defaults (defaultConfig, defaultTheme)
 import Types
-    ( AttrAux (Bg, Fg, On, WithStyle)
-    , ColorAux (ISO, RGB)
+    ( AttrAux (..)
+    , ColorAux (..)
     , Config (dbPath, keyfilePath, timeout)
     , Field (KeyfileField, PasswordField, PathField)
-    , ISOAux (..)
     , StyleAux (..)
     , Theme
     , Timeout (DoNotClear, Seconds)
@@ -54,24 +53,6 @@ parseConfig cfgdir = do
     timeoutToMaybe (Seconds t) = Just t
     timeoutToMaybe DoNotClear  = Nothing
 
-evalISO :: ISOAux -> Word8
-evalISO Black         = 0
-evalISO Red           = 1
-evalISO Green         = 2
-evalISO Yellow        = 3
-evalISO Blue          = 4
-evalISO Magenta       = 5
-evalISO Cyan          = 6
-evalISO White         = 7
-evalISO BrightBlack   = 8
-evalISO BrightRed     = 9
-evalISO BrightGreen   = 10
-evalISO BrightYellow  = 11
-evalISO BrightBlue    = 12
-evalISO BrightMagenta = 13
-evalISO BrightCyan    = 14
-evalISO BrightWhite   = 15
-
 evalStyle :: StyleAux -> Word8
 evalStyle Standout      = 0x01
 evalStyle Underline     = 0x02
@@ -85,8 +66,23 @@ evalStyle Strikethrough = 0x40
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended
 evalColor :: ColorAux -> Color
-evalColor (ISO i)     = ISOColor (evalISO i)
-evalColor (RGB r g b) = rgbColor r g b
+evalColor Black         = ISOColor 0
+evalColor Red           = ISOColor 1
+evalColor Green         = ISOColor 2
+evalColor Yellow        = ISOColor 3
+evalColor Blue          = ISOColor 4
+evalColor Magenta       = ISOColor 5
+evalColor Cyan          = ISOColor 6
+evalColor White         = ISOColor 7
+evalColor BrightBlack   = ISOColor 8
+evalColor BrightRed     = ISOColor 9
+evalColor BrightGreen   = ISOColor 10
+evalColor BrightYellow  = ISOColor 11
+evalColor BrightBlue    = ISOColor 12
+evalColor BrightMagenta = ISOColor 13
+evalColor BrightCyan    = ISOColor 14
+evalColor BrightWhite   = ISOColor 15
+evalColor (RGB r g b)   = rgbColor r g b
 
 -- | Evaluates the dumb representation using their respective functions
 eval :: AttrAux -> Attr

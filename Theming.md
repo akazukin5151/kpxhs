@@ -54,7 +54,7 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 
 - The attribute names are already `Read`, so the `read` function works out-of-the-box, albeit with a more verbose constructor
 - The attributes are trickier as the functions `fg`, `bg`, and `on` are used to convert colors into {fore, back}ground color attributes. They are turned into constructors for the theme file: `Fg`, `Bg`, and `On`
-- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `ISO Red`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and `Color240` is weird so RGB conversion is baked in
+- The colors are also `Read`, but auxiliary type constructors have to be used (eg, `Red`) instead of their convenience functions (eg, `red`) because of two reasons: functions cannot be evaluated, and `Color240` is weird so RGB conversion is baked in
 - In Brick, the styles are applied with the `withStyle` function, which takes an attribute (which is `Read`) and a style. `withStyle` is turned into the constructor `WithStyle`, which derives `Read`. Auxiliary type constructors are used too (eg, `WithStyle (...) Bold`) to make writing the file easier. 
 
 - PS: The eval function is very cute
@@ -86,26 +86,24 @@ data AttrAux = Fg ColorAux
              | WithStyle AttrAux StyleAux
              deriving (Show, Read)
 
-data ColorAux = ISO ISOAux | RGB Word8 Word8 Word8
-  deriving (Show, Read)
-
-data ISOAux = Black
-            | Red
-            | Green
-            | Yellow
-            | Blue
-            | Magenta
-            | Cyan
-            | White
-            | BrightBlack
-            | BrightRed
-            | BrightGreen
-            | BrightYellow
-            | BrightBlue
-            | BrightMagenta
-            | BrightCyan
-            | BrightWhite
-            deriving (Show, Read)
+data ColorAux = Black
+              | Red
+              | Green
+              | Yellow
+              | Blue
+              | Magenta
+              | Cyan
+              | White
+              | BrightBlack
+              | BrightRed
+              | BrightGreen
+              | BrightYellow
+              | BrightBlue
+              | BrightMagenta
+              | BrightCyan
+              | BrightWhite
+              | RGB Word8 Word8 Word8
+              deriving (Show, Read)
 
 data StyleAux = Standout
               | Underline
@@ -144,8 +142,8 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 
 ### Colors
 
-- Use either the `ISO` or `RGB` constructor
-- `ISO` takes one other constructor; they are the variants of ISOAux
+- Use either the color name constructors or `RGB` constructor
+- The color names such as `Red`, `Blue`, etc, take no extra arguments
 - `RGB` takes three `Word8`, each from 0 to 255 inclusive.
     - Internally, `kpxhs` converts the rgb values into `Color240`
     - The `RGB` constructor is exposed instead `Color240` because `Color240` is extremely weird
@@ -165,23 +163,23 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 
 1. Set the background color of `kpxhs.key` to red
 ```hs
-, (AttrName ["kpxhs", "key"],      Bg (ISO Red))
+, (AttrName ["kpxhs", "key"],      Bg Red)
 ```
 
 2. Set the background color of `kpxhs.key` to red and make it bold
 
 ```hs
-, (AttrName ["kpxhs", "key"],      WithStyle (Bg (ISO Red)) Bold)
+, (AttrName ["kpxhs", "key"],      WithStyle (Bg Red) Bold)
 ```
 
 3. Set the background color of `kpxhs.key` to red and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (Bg (ISO Red)) Bold) Italic)
+, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (Bg Red) Bold) Italic)
 ```
 
 4. Set the background color of `kpxhs.key` to red, the foreground color to RGB(51, 187, 204) and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (On (RGB 51 187 204) (ISO Red)) Bold) Italic)
+, (AttrName ["kpxhs", "key"],      WithStyle (WithStyle (On (RGB 51 187 204) Red) Bold) Italic)
 ```

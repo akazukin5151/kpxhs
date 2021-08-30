@@ -8,9 +8,8 @@ import Data.Text     (Text)
 
 import Types
     ( AttrAux (Bg, Fg, On)
-    , ColorAux (ISO)
+    , ColorAux (Black, Blue, Red, White, Yellow)
     , Config (Config, dbPath, keyfilePath, timeout)
-    , ISOAux (Black, Blue, Red, White, Yellow)
     , ThemeAux
     , Timeout (Seconds)
     )
@@ -31,15 +30,15 @@ defaultConfigText =
 
 defaultTheme :: ThemeAux
 defaultTheme =
-  [ (mkAttrName ["list","selected"],   Fg (ISO Red))
-  , (mkAttrName ["edit"],              On (ISO Black) (ISO White))
-  , (mkAttrName ["edit","focused"],    On (ISO White) (ISO Blue))
-  , (mkAttrName ["dialog"],            On (ISO White) (ISO Blue))
-  , (mkAttrName ["button"],            On (ISO Black) (ISO White))
-  , (mkAttrName ["button","selected"], Bg (ISO Yellow))
-  , (mkAttrName ["kpxhs","key"],       Bg (ISO White))
-  , (mkAttrName ["kpxhs","label"],     Fg (ISO Black))
-  , (mkAttrName ["progressComplete"],  On (ISO White) (ISO Blue))
+  [ (mkAttrName ["list","selected"],   Fg Red)
+  , (mkAttrName ["edit"],              On Black White)
+  , (mkAttrName ["edit","focused"],    On White Blue)
+  , (mkAttrName ["dialog"],            On White Blue)
+  , (mkAttrName ["button"],            On Black White)
+  , (mkAttrName ["button","selected"], Bg Yellow)
+  , (mkAttrName ["kpxhs","key"],       Bg White)
+  , (mkAttrName ["kpxhs","label"],     Fg Black)
+  , (mkAttrName ["progressComplete"],  On White Blue)
   ]
     where
       -- Use attrName to convert String -> AttrName then
@@ -50,15 +49,15 @@ defaultTheme =
 -- Alignments look off here but is actually fine due to the quote escapes
 defaultThemeText :: Text
 defaultThemeText =
-  "[ (AttrName [\"list\",\"selected\"],   Fg (ISO Red))\n\
-  \, (AttrName [\"edit\"],              On (ISO Black) (ISO White))\n\
-  \, (AttrName [\"edit\",\"focused\"],    On (ISO White) (ISO Blue))\n\
-  \, (AttrName [\"dialog\"],            On (ISO White) (ISO Blue))\n\
-  \, (AttrName [\"button\"],            On (ISO Black) (ISO White))\n\
-  \, (AttrName [\"button\",\"selected\"], Bg (ISO Yellow))\n\
-  \, (AttrName [\"kpxhs\", \"key\"],      Bg (ISO White))\n\
-  \, (AttrName [\"kpxhs\", \"label\"],    Fg (ISO Black))\n\
-  \, (AttrName [\"progressComplete\"],  On (ISO White) (ISO Blue))\n\
+  "[ (AttrName [\"list\",\"selected\"],   Fg Red)\n\
+  \, (AttrName [\"edit\"],              On Black White)\n\
+  \, (AttrName [\"edit\",\"focused\"],    On White Blue)\n\
+  \, (AttrName [\"dialog\"],            On White Blue)\n\
+  \, (AttrName [\"button\"],            On Black White)\n\
+  \, (AttrName [\"button\",\"selected\"], Bg Yellow)\n\
+  \, (AttrName [\"kpxhs\", \"key\"],      Bg White)\n\
+  \, (AttrName [\"kpxhs\", \"label\"],    Fg Black)\n\
+  \, (AttrName [\"progressComplete\"],  On White Blue)\n\
   \]"
 
 
