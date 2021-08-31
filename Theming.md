@@ -54,7 +54,12 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 import Brick        (AttrName)
 import Data.Word    (Word8)
 
-type UserFacingTheme = [(AttrName, Val)]
+newtype Name =
+    -- Stuff
+    AttrName
+    -- Stuff
+
+type UserFacingTheme = [(Name, Val)]
 
 data Val =
   Val { fg     :: Color
@@ -106,8 +111,8 @@ data Style = Standout
 
 There are two special attribute names exclusive to `kpxhs`. They are appropriately namespaced with `"kpxhs"`.
 
-- `AttrName ["kpxhs", "key"]`: The style of the key being bound (eg, "Esc")
-- `AttrName ["kpxhs", "label"]`: The style of the label bound (eg, "exit")
+- `Name ["kpxhs", "key"]`: The style of the key being bound (eg, "Esc")
+- `Name ["kpxhs", "label"]`: The style of the label bound (eg, "exit")
 
 In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. `kpxhs.key` would style the "Esc" text and `kpxhs.label` would style the "exit" text
 
@@ -150,28 +155,28 @@ Apart from those two, you can use any other attribute name of elements used in t
 
 0. Set the text of `kpxhs.key` to bold
 ```hs
-, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
+, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
 ```
 
 1. Set the background color of `kpxhs.key` to red
 ```hs
-, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [] } )
+, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [] } )
 ```
 
 2. Set the background color of `kpxhs.key` to red and make it bold
 
 ```hs
-, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
+, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
 ```
 
 3. Set the background color of `kpxhs.key` to red and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
+, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
 ```
 
 4. Set the background color of `kpxhs.key` to red, the foreground color to RGB(51, 187, 204) and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs","key"],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
+, (Name ["kpxhs","key"],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
 ```
