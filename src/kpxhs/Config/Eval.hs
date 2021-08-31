@@ -1,11 +1,37 @@
 module Config.Eval (eval, evalName) where
 
-import           Brick                   (AttrName)
-import qualified Brick                   as B
-import           Brick.AttrMap           (attrName)
-import           Brick.Util              (on)
-import           Graphics.Vty            (withStyle)
-import           Graphics.Vty.Attributes (Color (ISOColor), rgbColor)
+import           Brick         (AttrName)
+import qualified Brick         as B
+import           Brick.AttrMap (attrName)
+import           Brick.Util    (on)
+import           Graphics.Vty
+    ( black
+    , blink
+    , blue
+    , bold
+    , brightBlack
+    , brightBlue
+    , brightCyan
+    , brightGreen
+    , brightMagenta
+    , brightRed
+    , brightWhite
+    , brightYellow
+    , cyan
+    , dim
+    , green
+    , italic
+    , magenta
+    , red
+    , reverseVideo
+    , rgbColor
+    , standout
+    , strikethrough
+    , underline
+    , white
+    , withStyle
+    , yellow
+    )
 
 import Config.Types
     ( ActualAttrVal
@@ -21,35 +47,35 @@ import Config.Types
     )
 
 evalStyle :: UserFacingStyle -> ActualStyle
-evalStyle Standout      = 0x01
-evalStyle Underline     = 0x02
-evalStyle ReverseVideo  = 0x04
-evalStyle Blink         = 0x08
-evalStyle Dim           = 0x10
-evalStyle Bold          = 0x20
-evalStyle Italic        = 0x40
-evalStyle Strikethrough = 0x40
+evalStyle Standout      = standout
+evalStyle Underline     = underline
+evalStyle ReverseVideo  = reverseVideo
+evalStyle Blink         = blink
+evalStyle Dim           = dim
+evalStyle Bold          = bold
+evalStyle Italic        = italic
+evalStyle Strikethrough = strikethrough
 
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended
 evalColor :: UserFacingColor -> Maybe ActualColor
-evalColor Black         = Just $ ISOColor 0
-evalColor Red           = Just $ ISOColor 1
-evalColor Green         = Just $ ISOColor 2
-evalColor Yellow        = Just $ ISOColor 3
-evalColor Blue          = Just $ ISOColor 4
-evalColor Magenta       = Just $ ISOColor 5
-evalColor Cyan          = Just $ ISOColor 6
-evalColor White         = Just $ ISOColor 7
-evalColor BrightBlack   = Just $ ISOColor 8
-evalColor BrightRed     = Just $ ISOColor 9
-evalColor BrightGreen   = Just $ ISOColor 10
-evalColor BrightYellow  = Just $ ISOColor 11
-evalColor BrightBlue    = Just $ ISOColor 12
-evalColor BrightMagenta = Just $ ISOColor 13
-evalColor BrightCyan    = Just $ ISOColor 14
-evalColor BrightWhite   = Just $ ISOColor 15
-evalColor (RGB r g b)   = Just $ rgbColor r g b
+evalColor Black         = Just black
+evalColor Red           = Just red
+evalColor Green         = Just green
+evalColor Yellow        = Just yellow
+evalColor Blue          = Just blue
+evalColor Magenta       = Just magenta
+evalColor Cyan          = Just cyan
+evalColor White         = Just white
+evalColor BrightBlack   = Just brightBlack
+evalColor BrightRed     = Just brightRed
+evalColor BrightGreen   = Just brightGreen
+evalColor BrightYellow  = Just brightYellow
+evalColor BrightBlue    = Just brightBlue
+evalColor BrightMagenta = Just brightMagenta
+evalColor BrightCyan    = Just brightCyan
+evalColor BrightWhite   = Just brightWhite
+evalColor (RGB r g b)   = Just (rgbColor r g b)
 evalColor Def           = Nothing
 
 evalColorAttr :: Maybe ActualColor -> Maybe ActualColor -> ActualAttrVal
