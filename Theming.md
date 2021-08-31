@@ -38,7 +38,7 @@ A.attrMap V.defAttr [ (attrName1, attr1), (attrName2, attr2) ]
 
 ### Security
 
-While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `UserFacingTheme`. That means there's no way to cheat and successfully pass in something that's not `UserFacingTheme`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors and text styles. Colors must type check as `ColorAux`, and text styles type check as `StyleAux`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
+While it may seem insecure to evaluate a raw Haskell file, it cannot contain any functions, and it has to type check as the type `UserFacingTheme`. That means there's no way to cheat and successfully pass in something that's not `UserFacingTheme`. For example, writing `unsafePerformIO (writeFile "log" "boom")` does not work because two functions are used here. No matter where `unsafePerformIO` is placed in the list-of-tuples, it can't be evaluated. There's no mechanism in the kpxhs source to evaluate arbitrary functions, only {fore, back}ground colors and text styles. Colors must type check as `Color`, and text styles type check as `Style`. *As long as Haskell's read function does not evaluate and execute functions, it is secure*
 
 It is Turing incomplete because `read` is Turing incomplete. This means parsing and evaluation is guaranteed to terminate.
 
@@ -57,43 +57,43 @@ import Data.Word    (Word8)
 type UserFacingTheme = [(AttrName, Attr)]
 
 data Attr =
-  Attr { fg     :: ColorAux
-       , bg     :: ColorAux
-       , styles :: [StyleAux]
+  Attr { fg     :: Color
+       , bg     :: Color
+       , styles :: [Style]
        }
        deriving (Show, Read)
 
 -- List of valid colors
-data ColorAux = Black
-              | Red
-              | Green
-              | Yellow
-              | Blue
-              | Magenta
-              | Cyan
-              | White
-              | BrightBlack
-              | BrightRed
-              | BrightGreen
-              | BrightYellow
-              | BrightBlue
-              | BrightMagenta
-              | BrightCyan
-              | BrightWhite
-              | RGB Word8 Word8 Word8
-              | Def
-              deriving (Show, Read)
+data Color = Black
+           | Red
+           | Green
+           | Yellow
+           | Blue
+           | Magenta
+           | Cyan
+           | White
+           | BrightBlack
+           | BrightRed
+           | BrightGreen
+           | BrightYellow
+           | BrightBlue
+           | BrightMagenta
+           | BrightCyan
+           | BrightWhite
+           | RGB Word8 Word8 Word8
+           | Def
+           deriving (Show, Read)
 
 -- List of valid styles
-data StyleAux = Standout
-              | Underline
-              | ReverseVideo
-              | Blink
-              | Dim
-              | Bold
-              | Italic
-              | Strikethrough
-              deriving (Show, Read)
+data Style = Standout
+           | Underline
+           | ReverseVideo
+           | Blink
+           | Dim
+           | Bold
+           | Italic
+           | Strikethrough
+           deriving (Show, Read)
 ```
 
 - **The type of the expression is:** `UserFacingTheme`

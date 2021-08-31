@@ -8,10 +8,10 @@ import Data.Text     (Text)
 
 import Config.Types
     ( Attr (Attr, styles)
-    , ColorAux (Black, Blue, Def, Red, White, Yellow)
+    , Color (Black, Blue, Def, Red, White, Yellow)
     , Config (..)
-    , UserFacingTheme
     , Timeout (Seconds)
+    , UserFacingTheme
     , bg
     , fg
     )

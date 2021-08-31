@@ -22,13 +22,16 @@ import           Text.Read                     (readMaybe)
 import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Types
     ( ActualAttr
+    , ActualColor
     , ActualTheme
     , Attr (..)
-    , ColorAux (..)
+    , Color (..)
     , Config (dbPath, keyfilePath, timeout)
-    , UserFacingAttr
-    , StyleAux (..)
+    , Style (..)
     , Timeout (DoNotClear, Seconds)
+    , UserFacingAttr
+    , UserFacingColor
+    , UserFacingStyle
     )
 import Types           (Field (KeyfileField, PasswordField, PathField))
 
@@ -55,7 +58,7 @@ parseConfig cfgdir = do
     timeoutToMaybe (Seconds t) = Just t
     timeoutToMaybe DoNotClear  = Nothing
 
-evalStyle :: StyleAux -> Word8
+evalStyle :: UserFacingStyle -> Word8
 evalStyle Standout      = 0x01
 evalStyle Underline     = 0x02
 evalStyle ReverseVideo  = 0x04
@@ -67,7 +70,7 @@ evalStyle Strikethrough = 0x40
 
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended
-evalColor :: ColorAux -> Maybe Color
+evalColor :: UserFacingColor -> Maybe ActualColor
 evalColor Black         = Just $ ISOColor 0
 evalColor Red           = Just $ ISOColor 1
 evalColor Green         = Just $ ISOColor 2
@@ -87,7 +90,7 @@ evalColor BrightWhite   = Just $ ISOColor 15
 evalColor (RGB r g b)   = Just $ rgbColor r g b
 evalColor Def           = Nothing
 
-evalColorAttr :: Maybe Color -> Maybe Color -> ActualAttr
+evalColorAttr :: Maybe ActualColor -> Maybe ActualColor -> ActualAttr
 evalColorAttr (Just f) (Just b) = f `on` b
 evalColorAttr (Just f) _        = B.fg f
 evalColorAttr _        (Just b) = B.bg b
