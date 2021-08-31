@@ -22,17 +22,18 @@ import           System.Directory
 import           System.Environment (getArgs)
 import           System.Exit        (exitFailure)
 
-import Common   (annotate, defaultDialog, initialFooter, toBrowserList)
-import Config   (parseConfig)
-import Defaults (defaultConfigText, defaultThemeText, help)
-import Events   (appEvent)
+import Common          (annotate, defaultDialog, initialFooter, toBrowserList)
+import Config.Config   (parseConfig)
+import Config.Defaults (defaultConfigText, defaultThemeText)
+import Defaults        (help)
+import Events          (appEvent)
 import Types
     ( Event
     , Field (KeyfileField, PasswordField, PathField, SearchField)
     , State (..)
     , View (LoginView)
     )
-import UI       (drawUI)
+import UI              (drawUI)
 
 
 initialState :: F.FocusRing Field -> Text -> Text -> Maybe Int -> BChan Event -> State

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Config (parseConfig) where
+module Config.Config (parseConfig) where
 
 import           Brick                         (AttrName, bg, fg)
 import qualified Brick.Focus                   as F
@@ -19,16 +19,16 @@ import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
 import           Text.Read                     (readMaybe)
 
-import Defaults (defaultConfig, defaultTheme)
-import Types
+import Config.Defaults (defaultConfig, defaultTheme)
+import Config.Types
     ( AttrAux (..)
     , ColorAux (..)
     , Config (dbPath, keyfilePath, timeout)
-    , Field (KeyfileField, PasswordField, PathField)
     , StyleAux (..)
     , Theme
     , Timeout (DoNotClear, Seconds)
     )
+import Types (Field (PathField, PasswordField, KeyfileField))
 
 
 fallback :: IOException -> IO B.ByteString
