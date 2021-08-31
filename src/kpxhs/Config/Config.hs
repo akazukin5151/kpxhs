@@ -20,7 +20,7 @@ import           Text.Read                     (readMaybe)
 
 import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Types
-    ( ActualAttr
+    ( ActualAttrVal
     , ActualColor
     , ActualStyle
     , ActualTheme
@@ -29,7 +29,7 @@ import Config.Types
     , Config (dbPath, keyfilePath, timeout)
     , Style (..)
     , Timeout (DoNotClear, Seconds)
-    , UserFacingAttr
+    , UserFacingVal
     , UserFacingColor
     , UserFacingStyle
     )
@@ -90,13 +90,13 @@ evalColor BrightWhite   = Just $ ISOColor 15
 evalColor (RGB r g b)   = Just $ rgbColor r g b
 evalColor Def           = Nothing
 
-evalColorAttr :: Maybe ActualColor -> Maybe ActualColor -> ActualAttr
+evalColorAttr :: Maybe ActualColor -> Maybe ActualColor -> ActualAttrVal
 evalColorAttr (Just f) (Just b) = f `on` b
 evalColorAttr (Just f) _        = B.fg f
 evalColorAttr _        (Just b) = B.bg b
 evalColorAttr _        _        = mempty
 
-eval :: UserFacingAttr -> ActualAttr
+eval :: UserFacingVal -> ActualAttrVal
 eval r = res
   where
     mfg = evalColor (fg r)

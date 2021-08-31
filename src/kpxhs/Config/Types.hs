@@ -8,8 +8,8 @@ import qualified Graphics.Vty as V
 
 -- | Some type aliases to better distinguish the two
 -- (Val is used as the user-facing name because it's easier to type)
-type UserFacingAttr = Val
-type ActualAttr = V.Attr
+type UserFacingVal = Val
+type ActualAttrVal = V.Attr
 
 type UserFacingColor = Color
 type ActualColor = V.Color
@@ -22,7 +22,7 @@ type ActualStyle = V.Style
 type UserFacingTheme = [(AttrName, Val)]
 
 -- | Actual representation of the theme, using Brick types
-type ActualTheme = [(AttrName, ActualAttr)]
+type ActualTheme = [(AttrName, ActualAttrVal)]
 
 -- An external representation of an attribute
 data Val =
