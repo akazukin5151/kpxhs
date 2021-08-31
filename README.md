@@ -1,5 +1,7 @@
 # kpxhs
 
+[![commits since](https://img.shields.io/github/commits-since/twenty5151/kpxhs/latest)](https://GitHub.com/twenty5151/kpxhs/commit/)
+
 [Keepass](https://keepass.info/) database interactive TUI viewer based on `keepassxc-cli`
 
 ![unlock](pics/unlock.png)
