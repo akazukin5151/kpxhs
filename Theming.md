@@ -51,7 +51,7 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
     - No qualified imports, imagine that all constructor are in scope
 
 ```hs
-import Data.Word    (Word8)
+import Data.Word (Word8)
 
 newtype Name = Name [String]
     deriving (Show, Read)
