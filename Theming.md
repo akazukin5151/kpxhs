@@ -65,6 +65,7 @@ eval (Fg c)          = fg (evalColor c)
 eval (Bg c)          = bg (evalColor c)
 eval (On f b)        = evalColor f `on` evalColor b
 eval (WithStyle a s) = withStyle (eval a) (evalStyle s)
+eval Empty           = mempty
 ```
     
 ## Writing the theme file
@@ -84,6 +85,7 @@ data AttrAux = Fg ColorAux
              | Bg ColorAux
              | On ColorAux ColorAux
              | WithStyle AttrAux StyleAux
+             | Empty
              deriving (Show, Read)
 
 data ColorAux = Black
@@ -157,9 +159,15 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 - The `WithStyle` constructor mirrors the `withStyle` function, which takes an attribute and applies a style to it
 - The `WithStyle` constructor takes one other constructor; they are the variants of StyleAux
 - Can be nested arbitrarily, but of course has to terminate with a non-recursive variant
+- If only a style needs to be applied with no specified fg/bg color, use the `Empty` constructor
 - See the examples
 
 ## Examples
+
+0. Set the text of `kpxhs.key` to bold
+```hs
+, (AttrName ["kpxhs", "key"],      WithStyle Empty Bold)
+```
 
 1. Set the background color of `kpxhs.key` to red
 ```hs

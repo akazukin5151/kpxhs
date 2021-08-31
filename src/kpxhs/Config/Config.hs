@@ -90,6 +90,7 @@ eval (Fg c)          = fg (evalColor c)
 eval (Bg c)          = bg (evalColor c)
 eval (On f b)        = evalColor f `on` evalColor b
 eval (WithStyle a s) = withStyle (eval a) (evalStyle s)
+eval Empty           = mempty
 
 parseTheme :: FilePath -> IO [(AttrName, Attr)]
 parseTheme theme_path = do

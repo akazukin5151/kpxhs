@@ -18,6 +18,7 @@ data AttrAux = Fg ColorAux
              | Bg ColorAux
              | On ColorAux ColorAux
              | WithStyle AttrAux StyleAux
+             | Empty
              deriving (Show, Read)
 
 -- | An external representation of either an ISO color (code) or an RGB color
