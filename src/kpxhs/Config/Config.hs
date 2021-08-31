@@ -7,9 +7,8 @@ import qualified Brick.Focus                   as F
 import           Brick.Util                    (on)
 import           Control.Exception             (IOException)
 import           Control.Exception.Base        (catch)
-import           Data.Bifunctor                (second)
+import           Data.Bifunctor                (Bifunctor (bimap))
 import qualified Data.ByteString               as B
-import           Data.Functor                  ((<&>))
 import           Data.Maybe                    (fromMaybe)
 import           Data.Text                     (Text, unpack)
 import           Data.Text.Encoding            (decodeUtf8')
@@ -18,20 +17,21 @@ import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
 import           Text.Read                     (readMaybe)
 
+import Config.Common   (unwrapName)
 import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Types
     ( ActualAttrVal
     , ActualColor
     , ActualStyle
     , ActualTheme
-    , Val (..)
     , Color (..)
     , Config (dbPath, keyfilePath, timeout)
     , Style (..)
     , Timeout (DoNotClear, Seconds)
-    , UserFacingVal
     , UserFacingColor
     , UserFacingStyle
+    , UserFacingVal
+    , Val (..)
     )
 import Types           (Field (KeyfileField, PasswordField, PathField))
 
@@ -107,6 +107,7 @@ eval r = res
             [] -> colors
             xs -> foldr g colors xs
 
+-- type ActualTheme = [(AttrName, ActualAttrVal)]
 parseTheme :: FilePath -> IO ActualTheme
 parseTheme theme_path = do
   file <- catch (B.readFile theme_path) fallback
@@ -114,5 +115,5 @@ parseTheme theme_path = do
         (const defaultTheme)
         (fromMaybe defaultTheme . readMaybe . unpack)
         (decodeUtf8' file)
-  -- second eval === (\(a, b) -> (a, eval b))
-  pure $ theme_aux <&> second eval
+  -- bimap f g === (\(a, b) -> (f a, g b))
+  pure $ bimap unwrapName eval <$> theme_aux

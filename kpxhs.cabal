@@ -19,6 +19,7 @@ executable kpxhs
   other-modules:     Types,
                      Common,
                      Config.Config,
+                     Config.Common,
                      Config.Defaults,
                      Config.Types,
                      Defaults,

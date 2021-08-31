@@ -1,10 +1,11 @@
 module Config.Types where
 
-import           Brick        (AttrName)
-import           Data.Text    (Text)
-import           Data.Word    (Word8)
-import qualified Graphics.Vty as V
+import           Brick         (AttrName)
+import           Data.Text     (Text)
+import           Data.Word     (Word8)
+import qualified Graphics.Vty  as V
 
+import           Config.Common (Name)
 
 -- | Some type aliases to better distinguish the two
 -- (Val is used as the user-facing name because it's easier to type)
@@ -19,7 +20,7 @@ type ActualStyle = V.Style
 
 -- | An external representation of the theme
 -- (a mapping between attributes and styles)
-type UserFacingTheme = [(AttrName, Val)]
+type UserFacingTheme = [(Name, Val)]
 
 -- | Actual representation of the theme, using Brick types
 type ActualTheme = [(AttrName, ActualAttrVal)]
