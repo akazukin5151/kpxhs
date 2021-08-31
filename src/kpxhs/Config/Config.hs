@@ -2,38 +2,22 @@
 
 module Config.Config (parseConfig) where
 
-import           Brick                         (attrName)
-import qualified Brick                         as B
-import           Brick.AttrMap                 (AttrName)
-import qualified Brick.Focus                   as F
-import           Brick.Util                    (on)
-import           Control.Exception             (IOException)
-import           Control.Exception.Base        (catch)
-import           Data.Bifunctor                (Bifunctor (bimap))
-import qualified Data.ByteString               as B
-import           Data.Maybe                    (fromMaybe)
-import           Data.Text                     (Text, unpack)
-import           Data.Text.Encoding            (decodeUtf8')
-import           Graphics.Vty                  (Color (ISOColor))
-import           Graphics.Vty.Attributes       (withStyle)
-import           Graphics.Vty.Attributes.Color (rgbColor)
-import           Text.Read                     (readMaybe)
+import qualified Brick.Focus            as F
+import           Control.Exception      (IOException)
+import           Control.Exception.Base (catch)
+import           Data.Bifunctor         (Bifunctor (bimap))
+import qualified Data.ByteString        as B
+import           Data.Maybe             (fromMaybe)
+import           Data.Text              (Text, unpack)
+import           Data.Text.Encoding     (decodeUtf8')
+import           Text.Read              (readMaybe)
 
 import Config.Defaults (defaultConfig, defaultTheme)
+import Config.Eval     (eval, evalName)
 import Config.Types
-    ( ActualAttrVal
-    , ActualColor
-    , ActualStyle
-    , ActualTheme
-    , Color (..)
+    ( ActualTheme
     , Config (dbPath, keyfilePath, timeout)
-    , Name (Name)
-    , Style (..)
     , Timeout (DoNotClear, Seconds)
-    , UserFacingColor
-    , UserFacingStyle
-    , UserFacingVal
-    , Val (..)
     )
 import Types           (Field (KeyfileField, PasswordField, PathField))
 
@@ -59,58 +43,6 @@ parseConfig cfgdir = do
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
     timeoutToMaybe (Seconds t) = Just t
     timeoutToMaybe DoNotClear  = Nothing
-
-evalStyle :: UserFacingStyle -> ActualStyle
-evalStyle Standout      = 0x01
-evalStyle Underline     = 0x02
-evalStyle ReverseVideo  = 0x04
-evalStyle Blink         = 0x08
-evalStyle Dim           = 0x10
-evalStyle Bold          = 0x20
-evalStyle Italic        = 0x40
-evalStyle Strikethrough = 0x40
-
--- | Evaluates the colors, especially converting RGB into a Color240 code
--- Note that rgbColor might throw an error; this is intended
-evalColor :: UserFacingColor -> Maybe ActualColor
-evalColor Black         = Just $ ISOColor 0
-evalColor Red           = Just $ ISOColor 1
-evalColor Green         = Just $ ISOColor 2
-evalColor Yellow        = Just $ ISOColor 3
-evalColor Blue          = Just $ ISOColor 4
-evalColor Magenta       = Just $ ISOColor 5
-evalColor Cyan          = Just $ ISOColor 6
-evalColor White         = Just $ ISOColor 7
-evalColor BrightBlack   = Just $ ISOColor 8
-evalColor BrightRed     = Just $ ISOColor 9
-evalColor BrightGreen   = Just $ ISOColor 10
-evalColor BrightYellow  = Just $ ISOColor 11
-evalColor BrightBlue    = Just $ ISOColor 12
-evalColor BrightMagenta = Just $ ISOColor 13
-evalColor BrightCyan    = Just $ ISOColor 14
-evalColor BrightWhite   = Just $ ISOColor 15
-evalColor (RGB r g b)   = Just $ rgbColor r g b
-evalColor Def           = Nothing
-
-evalColorAttr :: Maybe ActualColor -> Maybe ActualColor -> ActualAttrVal
-evalColorAttr (Just f) (Just b) = f `on` b
-evalColorAttr (Just f) _        = B.fg f
-evalColorAttr _        (Just b) = B.bg b
-evalColorAttr _        _        = mempty
-
-eval :: UserFacingVal -> ActualAttrVal
-eval r = res
-  where
-    mfg = evalColor (fg r)
-    mbg = evalColor (bg r)
-    colors = evalColorAttr mfg mbg
-    g style acc = withStyle acc (evalStyle style)
-    res = case styles r of
-            [] -> colors
-            xs -> foldr g colors xs
-
-evalName :: Name -> AttrName
-evalName (Name n) = foldr (\x acc -> attrName x <> acc) mempty n
 
 -- type ActualTheme = [(AttrName, ActualAttrVal)]
 parseTheme :: FilePath -> IO ActualTheme
