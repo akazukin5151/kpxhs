@@ -7,7 +7,7 @@ import Brick.AttrMap (attrName)
 import Data.Text     (Text)
 
 import Config.Types
-    ( Attr (Attr, styles)
+    ( Val (Val, styles)
     , Color (Black, Blue, Def, Red, White, Yellow)
     , Config (..)
     , Timeout (Seconds)
@@ -32,15 +32,15 @@ defaultConfigText =
 
 defaultTheme :: UserFacingTheme
 defaultTheme =
-  [ (mkAttrName ["list","selected"],   Attr { fg = Red,   bg = Def,    styles = [] } )
-  , (mkAttrName ["edit"],              Attr { fg = Black, bg = White,  styles = [] } )
-  , (mkAttrName ["edit","focused"],    Attr { fg = White, bg = Blue,   styles = [] } )
-  , (mkAttrName ["dialog"],            Attr { fg = White, bg = Blue,   styles = [] } )
-  , (mkAttrName ["button"],            Attr { fg = Black, bg = White,  styles = [] } )
-  , (mkAttrName ["button","selected"], Attr { fg = Def,   bg = Yellow, styles = [] } )
-  , (mkAttrName ["kpxhs","key"],       Attr { fg = Def,   bg = White,  styles = [] } )
-  , (mkAttrName ["kpxhs","label"],     Attr { fg = Black, bg = Def,    styles = [] } )
-  , (mkAttrName ["progressComplete"],  Attr { fg = White, bg = Blue,   styles = [] } )
+  [ (mkAttrName ["list","selected"],   Val { fg = Red,   bg = Def,    styles = [] } )
+  , (mkAttrName ["edit"],              Val { fg = Black, bg = White,  styles = [] } )
+  , (mkAttrName ["edit","focused"],    Val { fg = White, bg = Blue,   styles = [] } )
+  , (mkAttrName ["dialog"],            Val { fg = White, bg = Blue,   styles = [] } )
+  , (mkAttrName ["button"],            Val { fg = Black, bg = White,  styles = [] } )
+  , (mkAttrName ["button","selected"], Val { fg = Def,   bg = Yellow, styles = [] } )
+  , (mkAttrName ["kpxhs","key"],       Val { fg = Def,   bg = White,  styles = [] } )
+  , (mkAttrName ["kpxhs","label"],     Val { fg = Black, bg = Def,    styles = [] } )
+  , (mkAttrName ["progressComplete"],  Val { fg = White, bg = Blue,   styles = [] } )
   ]
     where
       -- Use attrName to convert String -> AttrName then
@@ -51,13 +51,13 @@ defaultTheme =
 -- Alignments look off here but is actually fine due to the quote escapes
 defaultThemeText :: Text
 defaultThemeText =
-  "[ (AttrName [\"list\",\"selected\"],   Attr { fg = Red,   bg = Def,    styles = [] } )\n\
-  \, (AttrName [\"edit\"],              Attr { fg = Black, bg = White,  styles = [] } )\n\
-  \, (AttrName [\"edit\",\"focused\"],    Attr { fg = White, bg = Blue,   styles = [] } )\n\
-  \, (AttrName [\"dialog\"],            Attr { fg = White, bg = Blue,   styles = [] } )\n\
-  \, (AttrName [\"button\"],            Attr { fg = Black, bg = White,  styles = [] } )\n\
-  \, (AttrName [\"button\",\"selected\"], Attr { fg = Def,   bg = Yellow, styles = [] } )\n\
-  \, (AttrName [\"kpxhs\",\"key\"],       Attr { fg = Def,   bg = White,  styles = [] } )\n\
-  \, (AttrName [\"kpxhs\",\"label\"],     Attr { fg = Black, bg = Def,    styles = [] } )\n\
-  \, (AttrName [\"progressComplete\"],  Attr { fg = White, bg = Blue,   styles = [] } )\n\
+  "[ (AttrName [\"list\",\"selected\"],   Val { fg = Red,   bg = Def,    styles = [] } )\n\
+  \, (AttrName [\"edit\"],              Val { fg = Black, bg = White,  styles = [] } )\n\
+  \, (AttrName [\"edit\",\"focused\"],    Val { fg = White, bg = Blue,   styles = [] } )\n\
+  \, (AttrName [\"dialog\"],            Val { fg = White, bg = Blue,   styles = [] } )\n\
+  \, (AttrName [\"button\"],            Val { fg = Black, bg = White,  styles = [] } )\n\
+  \, (AttrName [\"button\",\"selected\"], Val { fg = Def,   bg = Yellow, styles = [] } )\n\
+  \, (AttrName [\"kpxhs\",\"key\"],       Val { fg = Def,   bg = White,  styles = [] } )\n\
+  \, (AttrName [\"kpxhs\",\"label\"],     Val { fg = Black, bg = Def,    styles = [] } )\n\
+  \, (AttrName [\"progressComplete\"],  Val { fg = White, bg = Blue,   styles = [] } )\n\
   \]"

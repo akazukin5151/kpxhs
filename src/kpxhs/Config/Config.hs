@@ -24,7 +24,7 @@ import Config.Types
     , ActualColor
     , ActualStyle
     , ActualTheme
-    , Attr (..)
+    , Val (..)
     , Color (..)
     , Config (dbPath, keyfilePath, timeout)
     , Style (..)

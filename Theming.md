@@ -54,14 +54,14 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 import Brick        (AttrName)
 import Data.Word    (Word8)
 
-type UserFacingTheme = [(AttrName, Attr)]
+type UserFacingTheme = [(AttrName, Val)]
 
-data Attr =
-  Attr { fg     :: Color
-       , bg     :: Color
-       , styles :: [Style]
-       }
-       deriving (Show, Read)
+data Val =
+  Val { fg     :: Color
+      , bg     :: Color
+      , styles :: [Style]
+      }
+      deriving (Show, Read)
 
 -- List of valid colors
 data Color = Black
@@ -123,7 +123,7 @@ Apart from those two, you can use any other attribute name of elements used in t
 
 ### Attribute values
 
-- All you have to do is to construct the `Attr` record
+- All you have to do is to construct the `Val` record
 - `fg`: set the foreground color
 - `bg`: set the background color
 - `styles`: set the following styles (See [Styles](#Styles))
@@ -150,28 +150,28 @@ Apart from those two, you can use any other attribute name of elements used in t
 
 0. Set the text of `kpxhs.key` to bold
 ```hs
-, (AttrName ["kpxhs","key"],       Attr { fg = Def,   bg = Def,  styles = [Bold] } )
+, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
 ```
 
 1. Set the background color of `kpxhs.key` to red
 ```hs
-, (AttrName ["kpxhs","key"],       Attr { fg = Def,   bg = Red,  styles = [] } )
+, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [] } )
 ```
 
 2. Set the background color of `kpxhs.key` to red and make it bold
 
 ```hs
-, (AttrName ["kpxhs","key"],       Attr { fg = Def,   bg = Red,  styles = [Bold] } )
+, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
 ```
 
 3. Set the background color of `kpxhs.key` to red and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs","key"],       Attr { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
+, (AttrName ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
 ```
 
 4. Set the background color of `kpxhs.key` to red, the foreground color to RGB(51, 187, 204) and make it bold-italic
 
 ```hs
-, (AttrName ["kpxhs","key"],       Attr { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
+, (AttrName ["kpxhs","key"],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
 ```

@@ -7,8 +7,8 @@ import qualified Graphics.Vty as V
 
 
 -- | Some type aliases to better distinguish the two
--- (Attr is used as the user-facing name because it's easier to type)
-type UserFacingAttr = Attr
+-- (Val is used as the user-facing name because it's easier to type)
+type UserFacingAttr = Val
 type ActualAttr = V.Attr
 
 type UserFacingColor = Color
@@ -19,18 +19,18 @@ type ActualStyle = V.Style
 
 -- | An external representation of the theme
 -- (a mapping between attributes and styles)
-type UserFacingTheme = [(AttrName, Attr)]
+type UserFacingTheme = [(AttrName, Val)]
 
 -- | Actual representation of the theme, using Brick types
 type ActualTheme = [(AttrName, ActualAttr)]
 
 -- An external representation of an attribute
-data Attr =
-  Attr { fg     :: Color
-       , bg     :: Color
-       , styles :: [Style]
-       }
-       deriving (Show, Read)
+data Val =
+  Val { fg     :: Color
+         , bg     :: Color
+         , styles :: [Style]
+         }
+         deriving (Show, Read)
 
 -- | An external representation of either an ISO color (code) or an RGB color
 -- Needs to be converted into a Vty Color
