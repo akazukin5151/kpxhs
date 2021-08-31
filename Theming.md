@@ -54,10 +54,8 @@ Is it possible for an update to expose a vulnerability? Yes, either by malicious
 import Brick        (AttrName)
 import Data.Word    (Word8)
 
-newtype Name =
-    -- Stuff
-    AttrName
-    -- Stuff
+newtype Name = Name [String]
+    deriving (Show, Read)
 
 type UserFacingTheme = [(Name, Val)]
 
