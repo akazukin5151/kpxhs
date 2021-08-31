@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 module Config.Types where
 
 import Brick        (AttrName)
