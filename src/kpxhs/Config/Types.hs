@@ -3,23 +3,28 @@ module Config.Types where
 import Brick        (AttrName)
 import Data.Text    (Text)
 import Data.Word    (Word8)
-import Graphics.Vty (Attr)
+import qualified Graphics.Vty as V
 
 
--- | An external representation of the theme, replacing @fg@, @bg@, @on@ and @withStyle@
--- functions with constructors which can simply be @read@ in
-type ThemeAux = [(AttrName, AttrAux)]
+-- | An external representation of the theme
+-- (a mapping between attributes and styles)
+type ThemeAux = [(AttrName, Attr)]
 
 -- | Actual representation of the theme, using Brick types
-type Theme = [(AttrName, Attr)]
+type ActualTheme = [(AttrName, ActualAttr)]
 
--- | A 'dumb' representation of the @fg@, @bg@, @on@, and @withStyle@ functions
-data AttrAux = Fg ColorAux
-             | Bg ColorAux
-             | On ColorAux ColorAux
-             | WithStyle AttrAux StyleAux
-             | Empty
-             deriving (Show, Read)
+-- | Some type aliases to better distinguish the two
+-- (Attr is used as the user-facing name because it's easier to type)
+type ExternalAttr = Attr
+type ActualAttr = V.Attr
+
+-- An external representation of an attribute
+data Attr =
+  Attr { fg     :: ColorAux
+       , bg     :: ColorAux
+       , styles :: [StyleAux]
+       }
+       deriving (Show, Read)
 
 -- | An external representation of either an ISO color (code) or an RGB color
 -- Needs to be converted into a Vty Color
@@ -41,6 +46,7 @@ data ColorAux = Black
               | BrightCyan
               | BrightWhite
               | RGB Word8 Word8 Word8
+              | Def
               deriving (Show, Read)
 
 -- | An external representation of the text styles available

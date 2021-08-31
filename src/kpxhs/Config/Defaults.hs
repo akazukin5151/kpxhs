@@ -7,11 +7,13 @@ import Brick.AttrMap (attrName)
 import Data.Text     (Text)
 
 import Config.Types
-    ( AttrAux (Bg, Fg, On)
-    , ColorAux (Black, Blue, Red, White, Yellow)
+    ( Attr (Attr, styles)
+    , ColorAux (Black, Blue, Def, Red, White, Yellow)
     , Config (..)
     , ThemeAux
     , Timeout (Seconds)
+    , bg
+    , fg
     )
 
 defaultConfig :: Config
@@ -30,15 +32,15 @@ defaultConfigText =
 
 defaultTheme :: ThemeAux
 defaultTheme =
-  [ (mkAttrName ["list","selected"],   Fg Red)
-  , (mkAttrName ["edit"],              On Black White)
-  , (mkAttrName ["edit","focused"],    On White Blue)
-  , (mkAttrName ["dialog"],            On White Blue)
-  , (mkAttrName ["button"],            On Black White)
-  , (mkAttrName ["button","selected"], Bg Yellow)
-  , (mkAttrName ["kpxhs","key"],       Bg White)
-  , (mkAttrName ["kpxhs","label"],     Fg Black)
-  , (mkAttrName ["progressComplete"],  On White Blue)
+  [ (mkAttrName ["list","selected"],   Attr { fg = Red,   bg = Def,    styles = [] } )
+  , (mkAttrName ["edit"],              Attr { fg = Black, bg = White,  styles = [] } )
+  , (mkAttrName ["edit","focused"],    Attr { fg = White, bg = Blue,   styles = [] } )
+  , (mkAttrName ["dialog"],            Attr { fg = White, bg = Blue,   styles = [] } )
+  , (mkAttrName ["button"],            Attr { fg = Black, bg = White,  styles = [] } )
+  , (mkAttrName ["button","selected"], Attr { fg = Def,   bg = Yellow, styles = [] } )
+  , (mkAttrName ["kpxhs","key"],       Attr { fg = Def,   bg = White,  styles = [] } )
+  , (mkAttrName ["kpxhs","label"],     Attr { fg = Black, bg = Def,    styles = [] } )
+  , (mkAttrName ["progressComplete"],  Attr { fg = White, bg = Blue,   styles = [] } )
   ]
     where
       -- Use attrName to convert String -> AttrName then
@@ -49,13 +51,13 @@ defaultTheme =
 -- Alignments look off here but is actually fine due to the quote escapes
 defaultThemeText :: Text
 defaultThemeText =
-  "[ (AttrName [\"list\",\"selected\"],   Fg Red)\n\
-  \, (AttrName [\"edit\"],              On Black White)\n\
-  \, (AttrName [\"edit\",\"focused\"],    On White Blue)\n\
-  \, (AttrName [\"dialog\"],            On White Blue)\n\
-  \, (AttrName [\"button\"],            On Black White)\n\
-  \, (AttrName [\"button\",\"selected\"], Bg Yellow)\n\
-  \, (AttrName [\"kpxhs\", \"key\"],      Bg White)\n\
-  \, (AttrName [\"kpxhs\", \"label\"],    Fg Black)\n\
-  \, (AttrName [\"progressComplete\"],  On White Blue)\n\
+  "[ (AttrName [\"list\",\"selected\"],   Attr { fg = Red,   bg = Def,    styles = [] } )\n\
+  \, (AttrName [\"edit\"],              Attr { fg = Black, bg = White,  styles = [] } )\n\
+  \, (AttrName [\"edit\",\"focused\"],    Attr { fg = White, bg = Blue,   styles = [] } )\n\
+  \, (AttrName [\"dialog\"],            Attr { fg = White, bg = Blue,   styles = [] } )\n\
+  \, (AttrName [\"button\"],            Attr { fg = Black, bg = White,  styles = [] } )\n\
+  \, (AttrName [\"button\",\"selected\"], Attr { fg = Def,   bg = Yellow, styles = [] } )\n\
+  \, (AttrName [\"kpxhs\",\"key\"],       Attr { fg = Def,   bg = White,  styles = [] } )\n\
+  \, (AttrName [\"kpxhs\",\"label\"],     Attr { fg = Black, bg = Def,    styles = [] } )\n\
+  \, (AttrName [\"progressComplete\"],  Attr { fg = White, bg = Blue,   styles = [] } )\n\
   \]"

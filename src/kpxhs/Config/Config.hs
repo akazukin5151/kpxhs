@@ -2,7 +2,7 @@
 
 module Config.Config (parseConfig) where
 
-import           Brick                         (AttrName, bg, fg)
+import qualified Brick                         as B
 import qualified Brick.Focus                   as F
 import           Brick.Util                    (on)
 import           Control.Exception             (IOException)
@@ -14,27 +14,29 @@ import           Data.Maybe                    (fromMaybe)
 import           Data.Text                     (Text, unpack)
 import           Data.Text.Encoding            (decodeUtf8')
 import           Data.Word                     (Word8)
-import           Graphics.Vty                  (Attr, Color (ISOColor))
+import           Graphics.Vty                  (Color (ISOColor))
 import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
 import           Text.Read                     (readMaybe)
 
 import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Types
-    ( AttrAux (..)
+    ( ActualAttr
+    , ActualTheme
+    , Attr (..)
     , ColorAux (..)
     , Config (dbPath, keyfilePath, timeout)
+    , ExternalAttr
     , StyleAux (..)
-    , Theme
     , Timeout (DoNotClear, Seconds)
     )
-import Types (Field (PathField, PasswordField, KeyfileField))
+import Types           (Field (KeyfileField, PasswordField, PathField))
 
 
 fallback :: IOException -> IO B.ByteString
 fallback _ = pure ""
 
-parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, Theme)
+parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, ActualTheme)
 parseConfig cfgdir = do
   file <- catch (B.readFile $ cfgdir <> "config.hs") fallback
   attrMap <- parseTheme $ cfgdir <> "theme.hs"
@@ -65,34 +67,44 @@ evalStyle Strikethrough = 0x40
 
 -- | Evaluates the colors, especially converting RGB into a Color240 code
 -- Note that rgbColor might throw an error; this is intended
-evalColor :: ColorAux -> Color
-evalColor Black         = ISOColor 0
-evalColor Red           = ISOColor 1
-evalColor Green         = ISOColor 2
-evalColor Yellow        = ISOColor 3
-evalColor Blue          = ISOColor 4
-evalColor Magenta       = ISOColor 5
-evalColor Cyan          = ISOColor 6
-evalColor White         = ISOColor 7
-evalColor BrightBlack   = ISOColor 8
-evalColor BrightRed     = ISOColor 9
-evalColor BrightGreen   = ISOColor 10
-evalColor BrightYellow  = ISOColor 11
-evalColor BrightBlue    = ISOColor 12
-evalColor BrightMagenta = ISOColor 13
-evalColor BrightCyan    = ISOColor 14
-evalColor BrightWhite   = ISOColor 15
-evalColor (RGB r g b)   = rgbColor r g b
+evalColor :: ColorAux -> Maybe Color
+evalColor Black         = Just $ ISOColor 0
+evalColor Red           = Just $ ISOColor 1
+evalColor Green         = Just $ ISOColor 2
+evalColor Yellow        = Just $ ISOColor 3
+evalColor Blue          = Just $ ISOColor 4
+evalColor Magenta       = Just $ ISOColor 5
+evalColor Cyan          = Just $ ISOColor 6
+evalColor White         = Just $ ISOColor 7
+evalColor BrightBlack   = Just $ ISOColor 8
+evalColor BrightRed     = Just $ ISOColor 9
+evalColor BrightGreen   = Just $ ISOColor 10
+evalColor BrightYellow  = Just $ ISOColor 11
+evalColor BrightBlue    = Just $ ISOColor 12
+evalColor BrightMagenta = Just $ ISOColor 13
+evalColor BrightCyan    = Just $ ISOColor 14
+evalColor BrightWhite   = Just $ ISOColor 15
+evalColor (RGB r g b)   = Just $ rgbColor r g b
+evalColor Def           = Nothing
 
--- | Evaluates the dumb representation using their respective functions
-eval :: AttrAux -> Attr
-eval (Fg c)          = fg (evalColor c)
-eval (Bg c)          = bg (evalColor c)
-eval (On f b)        = evalColor f `on` evalColor b
-eval (WithStyle a s) = withStyle (eval a) (evalStyle s)
-eval Empty           = mempty
+evalColorAttr :: Maybe Color -> Maybe Color -> ActualAttr
+evalColorAttr (Just f) (Just b) = f `on` b
+evalColorAttr (Just f) _        = B.fg f
+evalColorAttr _        (Just b) = B.bg b
+evalColorAttr _        _        = mempty
 
-parseTheme :: FilePath -> IO [(AttrName, Attr)]
+eval :: ExternalAttr -> ActualAttr
+eval r = res
+  where
+    mfg = evalColor (fg r)
+    mbg = evalColor (bg r)
+    colors = evalColorAttr mfg mbg
+    g style acc = withStyle acc (evalStyle style)
+    res = case styles r of
+            [] -> colors
+            xs -> foldr g colors xs
+
+parseTheme :: FilePath -> IO ActualTheme
 parseTheme theme_path = do
   file <- catch (B.readFile theme_path) fallback
   let theme_aux = either
