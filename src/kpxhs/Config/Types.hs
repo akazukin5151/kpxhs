@@ -1,14 +1,15 @@
 module Config.Types where
 
-import           Brick         (AttrName)
-import           Data.Text     (Text)
-import           Data.Word     (Word8)
-import qualified Graphics.Vty  as V
-
-import           Config.Common (Name)
+import           Brick        (AttrName)
+import           Data.Text    (Text)
+import           Data.Word    (Word8)
+import qualified Graphics.Vty as V
 
 -- | Some type aliases to better distinguish the two
 -- (Val is used as the user-facing name because it's easier to type)
+newtype Name = Name [String]
+  deriving (Show, Read)
+
 type UserFacingVal = Val
 type ActualAttrVal = V.Attr
 

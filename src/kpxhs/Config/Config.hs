@@ -2,7 +2,9 @@
 
 module Config.Config (parseConfig) where
 
+import           Brick                         (attrName)
 import qualified Brick                         as B
+import           Brick.AttrMap                 (AttrName)
 import qualified Brick.Focus                   as F
 import           Brick.Util                    (on)
 import           Control.Exception             (IOException)
@@ -17,7 +19,6 @@ import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
 import           Text.Read                     (readMaybe)
 
-import Config.Common   (unwrapName)
 import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Types
     ( ActualAttrVal
@@ -26,6 +27,7 @@ import Config.Types
     , ActualTheme
     , Color (..)
     , Config (dbPath, keyfilePath, timeout)
+    , Name (Name)
     , Style (..)
     , Timeout (DoNotClear, Seconds)
     , UserFacingColor
@@ -107,6 +109,9 @@ eval r = res
             [] -> colors
             xs -> foldr g colors xs
 
+evalName :: Name -> AttrName
+evalName (Name n) = foldr (\x acc -> attrName x <> acc) mempty n
+
 -- type ActualTheme = [(AttrName, ActualAttrVal)]
 parseTheme :: FilePath -> IO ActualTheme
 parseTheme theme_path = do
@@ -116,4 +121,4 @@ parseTheme theme_path = do
         (fromMaybe defaultTheme . readMaybe . unpack)
         (decodeUtf8' file)
   -- bimap f g === (\(a, b) -> (f a, g b))
-  pure $ bimap unwrapName eval <$> theme_aux
+  pure $ bimap evalName eval <$> theme_aux
