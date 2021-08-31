@@ -10,7 +10,7 @@ import Config.Types
     ( Attr (Attr, styles)
     , ColorAux (Black, Blue, Def, Red, White, Yellow)
     , Config (..)
-    , ThemeAux
+    , ExternalTheme
     , Timeout (Seconds)
     , bg
     , fg
@@ -30,7 +30,7 @@ defaultConfigText =
   \       }"
 
 
-defaultTheme :: ThemeAux
+defaultTheme :: ExternalTheme
 defaultTheme =
   [ (mkAttrName ["list","selected"],   Attr { fg = Red,   bg = Def,    styles = [] } )
   , (mkAttrName ["edit"],              Attr { fg = Black, bg = White,  styles = [] } )

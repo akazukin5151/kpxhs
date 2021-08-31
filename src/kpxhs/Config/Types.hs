@@ -8,7 +8,7 @@ import qualified Graphics.Vty as V
 
 -- | An external representation of the theme
 -- (a mapping between attributes and styles)
-type ThemeAux = [(AttrName, Attr)]
+type ExternalTheme = [(AttrName, Attr)]
 
 -- | Actual representation of the theme, using Brick types
 type ActualTheme = [(AttrName, ActualAttr)]
