@@ -8,14 +8,14 @@ import qualified Graphics.Vty as V
 
 -- | An external representation of the theme
 -- (a mapping between attributes and styles)
-type ExternalTheme = [(AttrName, Attr)]
+type UserFacingTheme = [(AttrName, Attr)]
 
 -- | Actual representation of the theme, using Brick types
 type ActualTheme = [(AttrName, ActualAttr)]
 
 -- | Some type aliases to better distinguish the two
 -- (Attr is used as the user-facing name because it's easier to type)
-type ExternalAttr = Attr
+type UserFacingAttr = Attr
 type ActualAttr = V.Attr
 
 -- An external representation of an attribute

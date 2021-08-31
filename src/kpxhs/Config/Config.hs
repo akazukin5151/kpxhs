@@ -26,7 +26,7 @@ import Config.Types
     , Attr (..)
     , ColorAux (..)
     , Config (dbPath, keyfilePath, timeout)
-    , ExternalAttr
+    , UserFacingAttr
     , StyleAux (..)
     , Timeout (DoNotClear, Seconds)
     )
@@ -93,7 +93,7 @@ evalColorAttr (Just f) _        = B.fg f
 evalColorAttr _        (Just b) = B.bg b
 evalColorAttr _        _        = mempty
 
-eval :: ExternalAttr -> ActualAttr
+eval :: UserFacingAttr -> ActualAttr
 eval r = res
   where
     mfg = evalColor (fg r)
