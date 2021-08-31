@@ -11,14 +11,12 @@ import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core
     ( hLimitPercent
     , str
-    , txt
     , updateAttrMap
     , vBox
     , vLimitPercent
     , (<+>)
     )
 import qualified Brick.Widgets.List   as L
-import           Data.Text            (pack)
 import qualified Data.Text            as TT
 import qualified Data.Vector          as Vec
 import qualified Graphics.Vty         as V

@@ -2,19 +2,17 @@
 
 module Config.Defaults where
 
-import Brick         (AttrName)
-import Brick.AttrMap (attrName)
-import Data.Text     (Text)
+import Data.Text (Text)
 
 import Config.Types
     ( Color (Black, Blue, Def, Red, White, Yellow)
     , Config (..)
+    , Name (Name)
     , Timeout (Seconds)
     , UserFacingTheme
     , Val (Val, styles)
     , bg
     , fg
-    , Name (Name)
     )
 
 defaultConfig :: Config
