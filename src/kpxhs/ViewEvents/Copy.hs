@@ -42,10 +42,9 @@ copyEntryCommon :: State -> Text -> CopyType -> IO State
 copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
-  let bg_cmd = do
-        (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
-        writeBChan (st^.chan) $ Copying (code, stderr)
-  void $ forkIO bg_cmd
+  void $ forkIO $ do
+    (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
+    writeBChan (st^.chan) $ Copying (code, stderr)
   pure $ st & footer .~ txt "Copying..."
 
 handleCopy :: State -> (ExitCode, Text) -> IO State
@@ -77,24 +76,27 @@ handleClipCount st count =
     Nothing       -> pure st
     Just timeout' -> handleClipCountInner st count timeout'
 
+-- Even if the footer shouldn't be changed (eg, in another view),
+-- the countdown should proceed, because if the view is updated to something
+-- where the footer should change, then the progress bar should appear again
 handleClipCountInner :: State -> Int -> Int -> IO State
 handleClipCountInner st count timeout' = do
-  -- Even if the footer shouldn't be changed, the countdown should proceed
-  let bg_cmd = threadDelay 1000000
-              >> writeBChan (st^.chan) (ClearClipCount (count - 1))
   -- Save the tid in case if it needs to be cancelled later
-  tid <- forkIO bg_cmd
-  let label = mkCountdownLabel count
-  -- https://github.com/NorfairKing/haskell-dangerous-functions#fromintegral
-  -- I think Int -> Float is fine because Float is larger than Int
-  -- so an int shouldn't be truncated
-  let v = fromIntegral count / fromIntegral timeout'
-  let f = if st^.activeView == BrowserView || st^.activeView == SearchView
-             then footer .~ P.progressBar label v
-             else id
+  tid <- forkIO $ do
+    threadDelay 1000000
+    writeBChan (st^.chan) (ClearClipCount (count - 1))
   pure $ st & f
             & countdownThreadId ?~ tid
             & counterValue      ?~ v
+  where
+    label = mkCountdownLabel count
+    -- https://github.com/NorfairKing/haskell-dangerous-functions#fromintegral
+    -- I think Int -> Float is fine because Float is larger than Int
+    -- so an int shouldn't be truncated
+    v = fromIntegral count / fromIntegral timeout'
+    f = if st^.activeView == BrowserView || st^.activeView == SearchView
+               then footer .~ P.progressBar label v
+               else id
 
 mkCountdownLabel :: Show a => a -> Maybe String
 mkCountdownLabel count =
