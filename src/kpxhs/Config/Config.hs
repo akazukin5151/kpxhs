@@ -13,7 +13,6 @@ import           Data.Functor                  ((<&>))
 import           Data.Maybe                    (fromMaybe)
 import           Data.Text                     (Text, unpack)
 import           Data.Text.Encoding            (decodeUtf8')
-import           Data.Word                     (Word8)
 import           Graphics.Vty                  (Color (ISOColor))
 import           Graphics.Vty.Attributes       (withStyle)
 import           Graphics.Vty.Attributes.Color (rgbColor)
@@ -23,6 +22,7 @@ import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Types
     ( ActualAttr
     , ActualColor
+    , ActualStyle
     , ActualTheme
     , Attr (..)
     , Color (..)
@@ -58,7 +58,7 @@ parseConfig cfgdir = do
     timeoutToMaybe (Seconds t) = Just t
     timeoutToMaybe DoNotClear  = Nothing
 
-evalStyle :: UserFacingStyle -> Word8
+evalStyle :: UserFacingStyle -> ActualStyle
 evalStyle Standout      = 0x01
 evalStyle Underline     = 0x02
 evalStyle ReverseVideo  = 0x04
