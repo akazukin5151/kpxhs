@@ -62,6 +62,10 @@ No superuser permissions are needed (unless if you need to install stack itself)
 3. `stack build` (compile)
 4. `stack install` (move binary to `~/.local/bin/`)
 
+## Manual
+
+The manual is not installed automatically. You can do it manually using `cp docs/kpxhs.1 ~/.local/share/man/man1/kpxhs.1`. Alternatively, view the rendered markdown online in https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
+
 # Configure (optional)
 
 - Hint: run `kpxhs --write-config` to generate the default config for further editing
