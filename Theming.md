@@ -32,9 +32,21 @@ A.attrMap V.defAttr [ (attrName1, attr1), (attrName2, attr2) ]
 
 - The idea is to move that list-of-tuples into a file to be read and evaluated at launch
 - The goals are **flexibility of theming, minimal internal processing, and to avoid extra dependencies or use of another configuration language**
-- If the theme file is a valid Haskell expression, it can just be `read`, avoiding building a DSL, writing a parser, or using Aeson/Dhall which doubles/triples the binary size respectively. The expression can be passed into `A.attrMap V.defAttr`, maintaining full flexibility.
+- There are several advantages in using a Haskell expression as a config and theme file:
+    - It can just be `read` natively, no parsing needed, no need to have Haskell installed
+    - No need to build a DSL
+    - Aeson and Dhall doubled and tripled the binary size respectively
+    - Dhall might require the user to install dhall binaries or tooling
+    - Anything that `A.attrMap V.defAttr` accepts is valid, maintaining full flexibility.
+    - [Brick.Themes](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Themes.html) are not flexible enough. For example, a default must be given to the function `newTheme`. Themes must provide a default attribute or get the exception "serializeCustomColor does not support KeepCurrent". It distinguishes between a customization and a theme but I want everything to be customizable.
 
-- [Brick.Themes](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Themes.html) are not used here because it's not flexible enough. For example, a default must be given to the function `newTheme`. Themes must provide a default attribute or get the exception "serializeCustomColor does not support KeepCurrent". It distinguishes between a customization and a theme but I want everything to be customizable.
+- There are however a few disadvantages:
+    - The config and theme files are fragile and failure intolerant. Although Haskell syntax is relatively lenient for expressions, any error will cause a fallback to the default, even if just one small part cannot be parsed.
+    - If parsing fails, it doesn't let the user know where the error is
+    - Requires some knowledge of Haskell to be fully confident in editing.
+    - Enums are used extensively anyway (the list of valid colors and styles), so having a dhall-like tooling and type checking is better than nothing.
+        - But essentially only applies to Dhall, because JSON and YAML cannot type check your enum variants anyway. How many linux terminal utilities use Dhall for their configs? A vast majority of them relies on textually listing out the valid values anyway.
+        - Actually, there is one prominent Haskell program on linux that uses Haskell for configuration - XMonad. And it actually uses a proper Haskell module, so it's not like it's unprecended.
 
 ### Security
 
