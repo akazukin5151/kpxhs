@@ -119,23 +119,25 @@ See [Theming.md](Theming.md)
 $ kpxhs -h
 kpxhs - Interactive Keepass database TUI viewer
   Usage
-    kpxhs                  Start the program
-    kpxhs [-h | --help]    Show this help
-    kpxhs --write-config   Write the default configs to ~/.config/kpxhs/
+    kpxhs                   Start the program
+    kpxhs [-v | --version]  Print the version number
+    kpxhs [-h | --help]     Show this help
+    kpxhs --write-config    Write the default configs to ~/.config/kpxhs/
 
   TUI keybindings (in general)
-    Esc                    Quit
-    Tab                    Cycle focus
-    Enter                  Show entry details
-    u                      Copy username
-    p                      Copy password
+    Esc                     Quit
+    Tab                     Cycle focus
+    Enter                   Show entry details
+    u                       Copy username
+    p                       Copy password
+
   Navigation
-    j, s                   Move down
-    k, w                   Move up
-    g                      Move to top
-    G                      Move to bottom
-    q                      Page up
-    e                      Page down
+    j, s                    Move down
+    k, w                    Move up
+    g                       Move to top
+    G                       Move to bottom
+    q                       Page up
+    e                       Page down
 ```
 
 ## Keybindings

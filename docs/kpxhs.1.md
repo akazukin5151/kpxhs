@@ -6,7 +6,7 @@
 
 # SYNOPSIS
 
-**kpxhs** [\-h | \--help] [\--write-config]
+**kpxhs** [\-h | \--help] [\-v | \--version] [\--write-config]
 
 # DESCRIPTION
 
@@ -17,6 +17,10 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 `h, help`
 
 : Prints the help message and exit. Ignores number of dashes.
+
+`v, version`
+
+: Prints the version number and exit. Ignores number of dashes.
 
 `write-config`
 

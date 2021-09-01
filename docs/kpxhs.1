@@ -7,7 +7,7 @@
 \f[B]kpxhs\f[R] - Interactive Keepass database TUI viewer
 .SH SYNOPSIS
 .PP
-\f[B]kpxhs\f[R] [-h | --help] [--write-config]
+\f[B]kpxhs\f[R] [-h | --help] [-v | --version] [--write-config]
 .SH DESCRIPTION
 .PP
 Interactive Keepass (https://keepass.info/) database TUI viewer.
@@ -22,6 +22,10 @@ with a progress bar that counts down to clear.
 .TP
 \f[B]\f[CB]h, help\f[B]\f[R]
 Prints the help message and exit.
+Ignores number of dashes.
+.TP
+\f[B]\f[CB]v, version\f[B]\f[R]
+Prints the version number and exit.
 Ignores number of dashes.
 .TP
 \f[B]\f[CB]write-config\f[B]\f[R]
@@ -319,9 +323,9 @@ color to RGB(51, 187, 204) and make it bold-italic
 .fi
 .SH ENVIRONMENT
 .PP
-Requires a keepass client with \[ga]keepassxc-cli\[ga] in PATH.
-I recommend keepassxc (https://github.com/keepassxreboot/keepassxc/)
-.SH FILES
+Requires keepassxc (https://github.com/keepassxreboot/keepassxc/)
+installed with \[ga]keepassxc-cli\[ga] in PATH.
+# FILES
 .TP
 \f[B]\f[CB]Configuration\f[B]\f[R]
 \[ga]\[ti]/.config/kpxhs/config.hs\[ga]

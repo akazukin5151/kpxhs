@@ -25,7 +25,7 @@ import           System.Exit        (exitFailure)
 import Common          (annotate, defaultDialog, initialFooter, toBrowserList)
 import Config.Config   (parseConfig)
 import Config.Defaults (defaultConfigText, defaultThemeText)
-import Defaults        (help)
+import Defaults        (help, version)
 import Events          (appEvent)
 import Types
     ( Event
@@ -78,6 +78,7 @@ main = do
   args <- getArgs
   case args of
     []                           -> tui
+    [x] | isCmd "version" x      -> print version
     [x] | isCmd "help" x         -> putStrLn help
     [x] | isCmd "write-config" x -> writeConfig
     _                            -> putStrLn help >> exitFailure
