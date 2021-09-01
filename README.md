@@ -44,8 +44,7 @@
 
 
 # Usage requirements
-- A keepass client with `keepassxc-cli` in PATH
-    - I recommend [keepassxc](https://github.com/keepassxreboot/keepassxc/)
+You need to install [keepassxc](https://github.com/keepassxreboot/keepassxc/) with `keepassxc-cli` and have it available in PATH. The few most recent versions should work, but if there are incompatibilities in future versions it will be noted here.
 
 # Installing
 
