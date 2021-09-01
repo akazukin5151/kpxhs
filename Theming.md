@@ -5,17 +5,17 @@
 1. [Introduction](#Introduction)
 2. [Reasons for design decisions](#Reasons-for-design-decisions)
     - [Security](#Security)
-3. [How it works]
-4. [Writing the theme file](#Writing-the-theme-file)
+3. [Writing the theme file](#Writing-the-theme-file)
     - [Attribute names](#Attribute-names)
     - [Attribute values](#Attribute-values)
     - [Colors](#Colors)
     - [Styles](#Styles)
-5. [Examples](#Examples)
+4. [Examples](#Examples)
 
 ## Introduction
 
 - The theme file is located in `~/.config/kpxhs/theme.hs`
+- Make sure it is encoded as UTF-8
 - Refer to [test/default_theme.hs](test/default_theme.hs) for reference; it is also the default theme if you don't provide any
 - You should probably edit the default theme instead of writing from scratch, because if you write from scratch, all the colors in the default theme are lost.
 - You can theme almost every element because the entire attribute map is exposed
