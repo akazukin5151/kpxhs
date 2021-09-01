@@ -9,6 +9,7 @@ import           Data.Text            (Text)
 import qualified Data.Text            as TT
 import           Lens.Micro           ((^.))
 
+import Constants (version)
 import Types
     ( Field
     , State
@@ -18,7 +19,6 @@ import Types
     , passwordField
     )
 import UI.Common (getEditor)
-import Defaults (version)
 
 
 hidePassword :: [Text] -> Text

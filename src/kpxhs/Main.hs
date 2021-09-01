@@ -25,7 +25,7 @@ import           System.Exit        (exitFailure)
 import Common          (annotate, defaultDialog, initialFooter, toBrowserList)
 import Config.Config   (parseConfig)
 import Config.Defaults (defaultConfigText, defaultThemeText)
-import Defaults        (help, version)
+import Constants       (help, version)
 import Events          (appEvent)
 import Types
     ( Event

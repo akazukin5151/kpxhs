@@ -22,7 +22,7 @@ executable kpxhs
                      Config.Eval,
                      Config.Defaults,
                      Config.Types,
-                     Defaults,
+                     Constants,
                      UI,
                      UI.Common,
                      UI.BrowserUI,

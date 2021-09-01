@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Defaults where
+module Constants where
 
 version :: Double
 version = 1.7
