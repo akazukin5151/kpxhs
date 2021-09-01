@@ -34,7 +34,7 @@ A.attrMap V.defAttr [ (attrName1, attr1), (attrName2, attr2) ]
 - The goals are **flexibility of theming, minimal internal processing, and to avoid extra dependencies or use of another configuration language**
 - If the theme file is a valid Haskell expression, it can just be `read`, avoiding building a DSL, writing a parser, or using Aeson/Dhall which doubles/triples the binary size respectively. The expression can be passed into `A.attrMap V.defAttr`, maintaining full flexibility.
 
-- [Brick.Themes](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Themes.html) are not used here because it's not flexible enough. For example, a default must be given to the function `newTheme`
+- [Brick.Themes](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Themes.html) are not used here because it's not flexible enough. For example, a default must be given to the function `newTheme`. Themes must provide a default attribute or get the exception "serializeCustomColor does not support KeepCurrent". It distinguishes between a customization and a theme but I want everything to be customizable.
 
 ### Security
 
