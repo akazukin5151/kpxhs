@@ -55,6 +55,8 @@ Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page an
 
 ## Build from source using [Stack](https://docs.haskellstack.org/en/stable/README/)
 
+No superuser permissions are needed (unless if you need to install stack itself)
+
 1. `git clone https://github.com/twenty5151/kpxhs`
 2. `cd kpxhs`
 3. `stack build` (compile)

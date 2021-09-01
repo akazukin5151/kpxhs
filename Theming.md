@@ -56,6 +56,8 @@ It is Turing incomplete because `read` is Turing incomplete. This means parsing 
 
 Is it possible for an update to expose a vulnerability? Yes, either by maliciously or accidentally. But as with any FOSS software, you can always review the source code or at least the changes yourself. It doesn't auto-update, and is not in any package repositories where an update can sneak in, so every update has to be installed manually. If you find a security flaw, please do report it.
 
+PS: no superuser permissions are required for the *binary installation* as well as usage. Installing stack probably requires it, but not compilation (`stack build` *and* `stack install`) either.
+
 ## Writing the theme file
 
 - **The theme file must be a valid Haskell expression**
