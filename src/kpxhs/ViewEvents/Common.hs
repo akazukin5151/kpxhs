@@ -93,10 +93,12 @@ viewDefaultFooter st =
     BrowserView      ->
       let extra = if isCopyable st then [username, password] else [] in
       case st^.currentPath of
-        [] -> [exit, focus_search] <> extra
-        _  -> [back, focus_search] <> extra
+        [] -> [exitq, focus_search] <> extra
+        _  -> [backq, focus_search] <> extra
   where
+    exitq = ("q", " exit  ")
     back = ("Esc", " back  ")
+    backq = ("q", " back  ")
     username = ("u", " copy username  ")
     password = ("p", " copy password")
 

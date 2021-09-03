@@ -13,7 +13,8 @@ help = "kpxhs - Interactive Keepass database TUI viewer\n\
         \    kpxhs [-h | --help]     Show this help\n\
         \    kpxhs --write-config    Write the default configs to ~/.config/kpxhs/\n\n\
         \  TUI keybindings (in general)\n\
-        \    Esc                     Quit\n\
+        \    Esc                     Quit, back (elsewhere)\n\
+        \    q                       Quit, back (in browser)\n\
         \    Tab                     Cycle focus\n\
         \    Enter                   Show entry details\n\
         \    u                       Copy username\n\

@@ -43,6 +43,7 @@ browserEvent =
     ( \st e ->
         case e of
           T.VtyEvent (V.EvKey V.KEsc [])        -> handleEsc st
+          T.VtyEvent (V.EvKey (V.KChar 'q') []) -> handleQuit st
           T.VtyEvent (V.EvKey V.KEnter [])      -> handleEnter st
           T.VtyEvent (V.EvKey (V.KChar 'p') []) | isCopyable st -> copyPassword st
           T.VtyEvent (V.EvKey (V.KChar 'u') []) | isCopyable st -> copyUsername st
@@ -53,6 +54,12 @@ browserEvent =
 
 handleEsc :: State -> T.EventM Field (T.Next State)
 handleEsc st =
+  M.continue $ case st^.currentCmd of
+    "" -> st
+    _  -> st & currentCmd .~ ""
+
+handleQuit :: State -> T.EventM Field (T.Next State)
+handleQuit st =
   case (st^.currentPath, st^.isClipboardCleared) of
     ([], False) -> M.continue $ prepareExit st
     ([], True)  -> M.halt st
@@ -87,8 +94,6 @@ handleNav e st = new_st & updateFooterGuarded
         V.EvKey V.KPageDown []               -> g listMovePageDown
         V.EvKey V.KPageUp []                 -> g listMovePageUp
         -- Additional keys that are not affected by vim commands
-        V.EvKey (V.KChar 'e') []             -> g listMovePageDown
-        V.EvKey (V.KChar 'q') []             -> g listMovePageUp
         V.EvKey (V.KChar 'g') []             -> g listMoveToBeginning
         V.EvKey (V.KChar 'G') []             -> g listMoveToEnd
         -- Keys that take an optional count before them

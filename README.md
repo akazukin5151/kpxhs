@@ -125,7 +125,8 @@ kpxhs - Interactive Keepass database TUI viewer
     kpxhs --write-config    Write the default configs to ~/.config/kpxhs/
 
   TUI keybindings (in general)
-    Esc                     Quit
+    Esc                     Quit, back (elsewhere)
+    q                       Quit, back (in browser)
     Tab                     Cycle focus
     Enter                   Show entry details
     u                       Copy username

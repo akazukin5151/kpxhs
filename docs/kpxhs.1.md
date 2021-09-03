@@ -28,8 +28,11 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 
 # KEYBINDINGS
 
+`q`
+: Go up a directory, or attempt to quit if in root directory.
+
 `Esc`
-: Go up a directory, or attempt to quit if in root directory. If in entry details view, go back to browser
+: In entry details view, go back to browser
 
 `Tab, Ctrl-Tab`
 : Cycle focus between elements (eg: list and search bar; login fields; exit dialog)
