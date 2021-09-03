@@ -7,3 +7,6 @@ build:
 copy:
 	mkdir -p ~/.local/share/man/man1/
 	cp kpxhs.1 ~/.local/share/man/man1/kpxhs.1
+	# note that mandb might need to be refreshed, eg for `whatis` to work
+	# just run `mandb`
+	# commented out because this is a copy command, not an install command

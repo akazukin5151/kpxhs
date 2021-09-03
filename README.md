@@ -92,7 +92,9 @@ kpxhs - Interactive Keepass database TUI viewer
 
 Read the man page for more details. The rendered markdown is available online at https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
 
-Alternatively, it can be installed for offline reading manually. No superuser permissions are required. Copy the pre-built man page in [docs/kpxhs.1](https://github.com/twenty5151/kpxhs/raw/master/docs/kpxhs.1) to, eg, `~/.local/share/man/man1/`. View with `man kpxhs`. The man page can also be manually built with `cd docs && make && make copy`. `pandoc` is required for this manual build.
+Alternatively, it can be installed for offline reading manually. No superuser permissions are required. Copy the pre-built man page in [docs/kpxhs.1](https://github.com/twenty5151/kpxhs/raw/master/docs/kpxhs.1) to somewhere in your `manpath` (eg, `~/.local/share/man/man1/`). View with `man kpxhs`.
+
+The man page can also be manually built with `cd docs && make && make copy`. `pandoc` is required for this manual build. For the `whatis` program to work with `kpxhs`, refresh the mandb with `mandb` after `make copy`
 
 # License
 
