@@ -58,8 +58,9 @@ No superuser permissions are needed (unless if you need to install stack itself)
 
 1. `git clone https://github.com/twenty5151/kpxhs`
 2. `cd kpxhs`
-3. `stack build` (compile)
-4. `stack install` (move binary to `~/.local/bin/`)
+3. Optional: `git checkout` your desired stable version tag (otherwise you will be using the unstable master branch)
+4. `stack build` (compile)
+5. `stack install` (move binary to `~/.local/bin/`)
 
 # Manual (Usage, Configuration, Theming)
 
