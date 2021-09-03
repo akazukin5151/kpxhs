@@ -141,39 +141,7 @@ kpxhs - Interactive Keepass database TUI viewer
     e                       Page down
 ```
 
-## Keybindings
-
-- Initial screen:
-    - `Esc`: quit
-    - `Tab`: switch focus between database path, password, and keyfile path fields
-    - `Enter`: attempt unlock
-- Browser view:
-    - `Esc`: quit
-    - If search bar is focused:
-        - Just type and the list will be filtered in real-time
-        - `Tab`: focus the list
-    - If an entry in the list is focused:
-        - `u`: copy username
-        - `p`: copy the password
-        - `Enter`: view entry details
-        - `Tab` to focus search
-        - Use `j`, `k`, `w`, and `s` to navigate
-        - Prefixing digits before up/down keys will scroll up/down by the given number
-- Inside entry details:
-    - `u`: copy username
-    - `p`: copy the password
-    - `Esc`: return to browser view
-
-## Example usage
-
-1. `kpxhs`
-2. `YOUR_PASSWORD<Enter>` (Assuming database path stored in config and no keyfile)
-3. (Focus is on search bar by default) `git` (List filtered to items with "git" in title)
-4. `Tab` (Focus to list)
-5. `j` (Focus one entry below)
-6. `p` (Copy password)
-7. `Esc` (quit)
-8. (Focus is on clear clipboard and exit by default) `Enter` (clear clipboard and exit)
+See the [man page](./docs/kpxhs.1.md)
 
 # License
 

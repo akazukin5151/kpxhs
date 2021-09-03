@@ -28,13 +28,46 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 
 # KEYBINDINGS
 
+The following table shows a summary of the keybindings and their effects in each mode
+
+----------------------------------------------------------------------
+Key    Browser       Search   Entry details        Login   Exit dialog
+----   ------------  -------  ------------------   -----   -----------
+q      Go up dir     -        -                    -       -
+       or quit
+
+Esc    Clear vim     Quit     Go back to browser   Quit    -
+       command
+
+Tab    Focus         Focus    -                    Cycle   Cycle
+       Search        Browser                       Focus   Focus
+
+Enter  Show          -        -                    Unlock  -
+       entry
+       details
+
+j      Move down     -        -                    -       -
+
+k      Move up       -        -                    -       -
+
+u      Copy          -        -                    -       -
+       username
+
+p      Copy          -        -                    -       -
+       password
+
+g      Go to top     -        -                    -       -
+
+G      Go to bottom  -        -                    -       -
+----------------------------------------------------------------------
+
 `q`
 : Go up a directory, or attempt to quit if in root directory.
 
 `Esc`
 : In entry details view, go back to browser
 
-`Tab, Ctrl-Tab`
+`Tab, Shift-Tab`
 : Cycle focus between elements (eg: list and search bar; login fields; exit dialog)
 
 `Enter`
@@ -58,11 +91,6 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 `G`
 : Move to the bottom of the list
 
-`q`
-: Move 5 items up the list
-
-`e`
-: Move 5 items down the list
 
 # EXAMPLE USAGE
 
