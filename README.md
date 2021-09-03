@@ -63,7 +63,7 @@ No superuser permissions are needed (unless if you need to install stack itself)
 
 ## Manual
 
-The manual is not installed automatically. You can do it manually using `cp docs/kpxhs.1 ~/.local/share/man/man1/kpxhs.1`. Alternatively, view the rendered markdown online in https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
+The manual is not installed automatically. If you have downloaded the source code, it can be installed with `cd docs && make && make copy`. Alternatively, view the rendered markdown online in https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
 
 # Configure (optional)
 
