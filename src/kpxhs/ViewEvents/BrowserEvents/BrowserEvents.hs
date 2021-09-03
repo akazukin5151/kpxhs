@@ -76,20 +76,21 @@ handleNav e st = new_st & updateFooterGuarded
   where
     noCmd = null $ st ^. currentCmd
     f x = st & visibleEntries %~ x
+    g x = f x & currentCmd .~ ""
     new_st =
       case e of
-        -- Keys from handleListEvent
-        V.EvKey V.KUp []                     -> f L.listMoveUp
-        V.EvKey V.KDown []                   -> f L.listMoveDown
-        V.EvKey V.KHome []                   -> f listMoveToBeginning
-        V.EvKey V.KEnd []                    -> f listMoveToEnd
-        V.EvKey V.KPageDown []               -> f listMovePageDown
-        V.EvKey V.KPageUp []                 -> f listMovePageUp
-        -- Keys that are not affected by vim commands
-        V.EvKey (V.KChar 'e') []             -> f listMovePageDown
-        V.EvKey (V.KChar 'q') []             -> f listMovePageUp
-        V.EvKey (V.KChar 'g') []             -> f listMoveToBeginning
-        V.EvKey (V.KChar 'G') []             -> f listMoveToEnd
+        -- Keys from handleListEvent (not affected by vim commands)
+        V.EvKey V.KUp []                     -> g L.listMoveUp
+        V.EvKey V.KDown []                   -> g L.listMoveDown
+        V.EvKey V.KHome []                   -> g listMoveToBeginning
+        V.EvKey V.KEnd []                    -> g listMoveToEnd
+        V.EvKey V.KPageDown []               -> g listMovePageDown
+        V.EvKey V.KPageUp []                 -> g listMovePageUp
+        -- Additional keys that are not affected by vim commands
+        V.EvKey (V.KChar 'e') []             -> g listMovePageDown
+        V.EvKey (V.KChar 'q') []             -> g listMovePageUp
+        V.EvKey (V.KChar 'g') []             -> g listMoveToBeginning
+        V.EvKey (V.KChar 'G') []             -> g listMoveToEnd
         -- Keys that take an optional count before them
         V.EvKey (V.KChar 'w') [] | noCmd     -> f L.listMoveUp
         V.EvKey (V.KChar 's') [] | noCmd     -> f L.listMoveDown
