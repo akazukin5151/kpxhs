@@ -11,12 +11,15 @@ import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core
     ( hLimitPercent
     , str
+    , txt
     , updateAttrMap
     , vBox
     , vLimitPercent
     , (<+>)
     )
 import qualified Brick.Widgets.List   as L
+import           Data.Functor         ((<&>))
+import           Data.Maybe           (fromMaybe)
 import qualified Data.Text            as TT
 import qualified Data.Vector          as Vec
 import qualified Graphics.Vty         as V
@@ -59,6 +62,21 @@ drawBrowserList st =
      & drawBrowserLabel st
      & drawBorderColor st
 
+listDrawElement :: State -> Int -> Bool -> TT.Text -> Widget n
+listDrawElement _  _ True  x = txt $ ">  " <> x
+listDrawElement st i False x = txt $ diff <> " " <> x
+  where
+    diff =
+      st^.visibleEntries . L.listSelectedL
+      <&> abs . (i -)
+      <&> (\d -> (if d >= 10 then "" else " ") <> show d)
+      <&> TT.pack
+      & fromMaybe " "
+
+drawBrowserListInner :: State -> Widget Field
+drawBrowserListInner st =
+  L.renderListWithIndex (listDrawElement st) True (st^.visibleEntries)
+
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
   where
@@ -77,10 +95,3 @@ drawBorderColor st = res
       Just BrowserField -> V.blue
       _                 -> V.black
     res = updateAttrMap (A.applyAttrMappings [(B.borderAttr, fg borderColor)])
-
-listDrawElement :: (Show a) => Bool -> a -> Widget Field
-listDrawElement _ a = str $ show a
-
-drawBrowserListInner :: State -> Widget Field
-drawBrowserListInner st =
-  L.renderList listDrawElement True (st^.visibleEntries)

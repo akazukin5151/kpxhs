@@ -4,9 +4,10 @@ module ViewEvents.BrowserEvents.BrowserEvents (browserEvent) where
 
 import qualified Brick.Main         as M
 import qualified Brick.Types        as T
-import           Brick.Util         (clamp)
 import           Brick.Widgets.Core (str)
+import           Brick.Widgets.List (listMoveToBeginning, listMoveToEnd)
 import qualified Brick.Widgets.List as L
+import           Data.Char          (isDigit)
 import           Data.Maybe         (fromMaybe)
 import qualified Graphics.Vty       as V
 import           Lens.Micro         ((%~), (&), (.~), (^.))
@@ -16,22 +17,25 @@ import Types
     , Event
     , Field
     , State
+    , currentCmd
     , currentPath
     , footer
     , isClipboardCleared
     , visibleEntries
     )
-import ViewEvents.BrowserEvents.Event (handleAppEvent)
-import ViewEvents.BrowserEvents.Fork  (handleEnter)
-import ViewEvents.BrowserEvents.Utils (goUpParent)
+import ViewEvents.BrowserEvents.Core       (goUpParent)
+import ViewEvents.BrowserEvents.Event      (handleAppEvent)
+import ViewEvents.BrowserEvents.Fork       (handleEnter)
+import ViewEvents.BrowserEvents.Utils      (listMovePageDown, listMovePageUp)
+import ViewEvents.BrowserEvents.VimCommand (handleVimDigit, handleVimMotion)
 import ViewEvents.Common
     ( commonTabEvent
     , liftContinue2
     , prepareExit
     , updateFooterGuarded
     )
-import ViewEvents.Copy                (copyEntryCommon)
-import ViewEvents.Utils               (getSelectedEntry, isCopyable)
+import ViewEvents.Copy                     (copyEntryCommon)
+import ViewEvents.Utils                    (getSelectedEntry, isCopyable)
 
 browserEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
 browserEvent =
@@ -70,33 +74,28 @@ copyEntryFromBrowser st ctype =
 handleNav :: V.Event -> State -> State
 handleNav e st = new_st & updateFooterGuarded
   where
-    new_st = st & visibleEntries %~
+    noCmd = null $ st ^. currentCmd
+    f x = st & visibleEntries %~ x
+    new_st =
       case e of
         -- Keys from handleListEvent
-        V.EvKey V.KUp []         -> L.listMoveUp
-        V.EvKey V.KDown []       -> L.listMoveDown
-        V.EvKey V.KHome []       -> listMoveToBeginning
-        V.EvKey V.KEnd []        -> listMoveToEnd
-        V.EvKey V.KPageDown []   -> listMovePageDown
-        V.EvKey V.KPageUp []     -> listMovePageUp
-        -- WASD
-        V.EvKey (V.KChar 'w') [] -> L.listMoveUp
-        V.EvKey (V.KChar 's') [] -> L.listMoveDown
-        V.EvKey (V.KChar 'e') [] -> listMovePageDown
-        V.EvKey (V.KChar 'q') [] -> listMovePageUp
-        -- Vi
-        V.EvKey (V.KChar 'k') [] -> L.listMoveUp
-        V.EvKey (V.KChar 'j') [] -> L.listMoveDown
-        V.EvKey (V.KChar 'g') [] -> listMoveToBeginning
-        V.EvKey (V.KChar 'G') [] -> listMoveToEnd
-        _                        -> id
-    -- Default page up and down functions too fast for me
-    listMovePageUp l = listMoveBy (subtract 5) l
-    listMovePageDown l = listMoveBy (5 +) l
-    listMoveBy f l = L.listMoveTo clamped l
-      where
-        clamped = clamp 0 (length $ L.listElements l) num
-        num = f (fromMaybe 0 $ L.listSelected l)
-    -- Not exported by Brick.Widgets.List for me
-    listMoveToBeginning = L.listMoveTo 0
-    listMoveToEnd l = L.listMoveTo (length $ L.listElements l) l
+        V.EvKey V.KUp []                     -> f L.listMoveUp
+        V.EvKey V.KDown []                   -> f L.listMoveDown
+        V.EvKey V.KHome []                   -> f listMoveToBeginning
+        V.EvKey V.KEnd []                    -> f listMoveToEnd
+        V.EvKey V.KPageDown []               -> f listMovePageDown
+        V.EvKey V.KPageUp []                 -> f listMovePageUp
+        -- Keys that are not affected by vim commands
+        V.EvKey (V.KChar 'e') []             -> f listMovePageDown
+        V.EvKey (V.KChar 'q') []             -> f listMovePageUp
+        V.EvKey (V.KChar 'g') []             -> f listMoveToBeginning
+        V.EvKey (V.KChar 'G') []             -> f listMoveToEnd
+        -- Keys that take an optional count before them
+        V.EvKey (V.KChar 'w') [] | noCmd     -> f L.listMoveUp
+        V.EvKey (V.KChar 's') [] | noCmd     -> f L.listMoveDown
+        V.EvKey (V.KChar 'k') [] | noCmd     -> f L.listMoveUp
+        V.EvKey (V.KChar 'j') [] | noCmd     -> f L.listMoveDown
+        -- Vim commands
+        V.EvKey (V.KChar x) []   | isDigit x -> handleVimDigit st x
+        V.EvKey (V.KChar x) []               -> handleVimMotion st x
+        _                                    -> st

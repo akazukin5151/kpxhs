@@ -17,9 +17,7 @@ import           Data.Maybe         (fromMaybe)
 import           Data.Text          (Text)
 import           Lens.Micro         ((&), (.~), (?~), (^.))
 
-import Common
-    ( pathToStr
-    )
+import Common                        (pathToStr)
 import Types
     ( CmdAction (Ls, Show)
     , Event (EnterDir, ShowEntry)
@@ -28,12 +26,16 @@ import Types
     , allEntryNames
     , chan
     , currentPath
-    , selectedEntryName
     , footer
+    , selectedEntryName
     )
-import ViewEvents.Common (liftContinue1)
-import ViewEvents.Utils  (getCreds, getSelectedEntry, isDir, runCmd)
-import ViewEvents.BrowserEvents.Utils (enterDirSuccess, showEntryWithCache, goUpParent)
+import ViewEvents.BrowserEvents.Core
+    ( enterDirSuccess
+    , goUpParent
+    , showEntryWithCache
+    )
+import ViewEvents.Common             (liftContinue1)
+import ViewEvents.Utils              (getCreds, getSelectedEntry, isDir, runCmd)
 
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st = liftContinue1 f st

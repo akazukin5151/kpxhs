@@ -15,9 +15,9 @@ import Types
     , State
     , footer
     )
-import ViewEvents.BrowserEvents.Utils (enterDirSuccess, showEntrySuccess)
-import ViewEvents.Copy                (handleCopy)
-import ViewEvents.Utils               (processStdout)
+import ViewEvents.BrowserEvents.Core (enterDirSuccess, showEntrySuccess)
+import ViewEvents.Copy               (handleCopy)
+import ViewEvents.Utils              (processStdout)
 
 handleAppEvent :: State -> Event -> IO State
 handleAppEvent st (ShowEntry entry out)  = pure $ handleShowEntryEvent st entry out
