@@ -5,6 +5,7 @@ module UI.BrowserUI (drawBrowser) where
 import           Brick                (Padding (Pad), padLeft)
 import qualified Brick.AttrMap        as A
 import qualified Brick.Focus          as F
+import           Brick.Markup         (markup, (@?))
 import           Brick.Types          (Widget)
 import           Brick.Util           (fg)
 import qualified Brick.Widgets.Border as B
@@ -74,9 +75,10 @@ drawBrowserList st =
      & drawBorderColor st
 
 listDrawElement :: State -> Int -> Bool -> TT.Text -> Widget n
-listDrawElement _  _ True  x = txt $ ">  " <> x
-listDrawElement st i False x = txt $ diff <> " " <> x
+listDrawElement st i isCurrent x = num <+> txt (" " <> x)
   where
+    num = markup $ marker @? ("kpxhs" <> "line_number")
+    marker = if isCurrent then "> " else diff
     diff =
       st^.visibleEntries . L.listSelectedL
       <&> abs . (i -)

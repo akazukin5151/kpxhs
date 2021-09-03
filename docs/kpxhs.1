@@ -334,15 +334,16 @@ This is the default theme if you don\[cq]t provide any:
 .IP
 .nf
 \f[C]
-[ (Name [\[dq]list\[dq],\[dq]selected\[dq]],   Val { fg = Red,   bg = Def,    styles = [] } )
-, (Name [\[dq]edit\[dq]],              Val { fg = Black, bg = White,  styles = [] } )
-, (Name [\[dq]edit\[dq],\[dq]focused\[dq]],    Val { fg = White, bg = Blue,   styles = [] } )
-, (Name [\[dq]dialog\[dq]],            Val { fg = White, bg = Blue,   styles = [] } )
-, (Name [\[dq]button\[dq]],            Val { fg = Black, bg = White,  styles = [] } )
-, (Name [\[dq]button\[dq],\[dq]selected\[dq]], Val { fg = Def,   bg = Yellow, styles = [] } )
-, (Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = White,  styles = [] } )
-, (Name [\[dq]kpxhs\[dq],\[dq]label\[dq]],     Val { fg = Black, bg = Def,    styles = [] } )
-, (Name [\[dq]progressComplete\[dq]],  Val { fg = White, bg = Blue,   styles = [] } )
+[ ( Name [\[dq]list\[dq],\[dq]selected\[dq]],     Val { fg = Red,    bg = Def,    styles = [] } )
+, ( Name [\[dq]edit\[dq]],                Val { fg = Black,  bg = White,  styles = [] } )
+, ( Name [\[dq]edit\[dq],\[dq]focused\[dq]],      Val { fg = White,  bg = Blue,   styles = [] } )
+, ( Name [\[dq]dialog\[dq]],              Val { fg = White,  bg = Blue,   styles = [] } )
+, ( Name [\[dq]button\[dq]],              Val { fg = Black,  bg = White,  styles = [] } )
+, ( Name [\[dq]button\[dq],\[dq]selected\[dq]],   Val { fg = Def,    bg = Yellow, styles = [] } )
+, ( Name [\[dq]progressComplete\[dq]],    Val { fg = White,  bg = Blue,   styles = [] } )
+, ( Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],         Val { fg = Def,    bg = White,  styles = [] } )
+, ( Name [\[dq]kpxhs\[dq],\[dq]label\[dq]],       Val { fg = Black,  bg = Def,    styles = [] } )
+, ( Name [\[dq]kpxhs\[dq],\[dq]line_number\[dq]], Val { fg = Yellow, bg = Def,    styles = [] } )
 ]
 \f[R]
 .fi
@@ -360,7 +361,8 @@ styles is a list-of-styles, and also only accept certain style names.
 \f[B]\f[CB]Name xs\f[B]\f[R]
 Constructs an attribute name using the list-of-strings xs.
 .PP
-There are also two special attribute names exclusive to \f[I]kpxhs\f[R].
+There are also three special attribute names exclusive to
+\f[I]kpxhs\f[R].
 They are appropriately namespaced with \[ga]\[lq]kpxhs\[rq]\[ga].
 .TP
 \f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]key\[dq]]\f[B]\f[R]
@@ -375,8 +377,11 @@ For example, \[lq]Esc exit\[rq] to indicate that pressing the Esc key
 will exit.
 \[ga]kpxhs.key\[ga] would style the \[lq]Esc\[rq] text and
 \[ga]kpxhs.label\[ga] would style the \[lq]exit\[rq] text
+.TP
+\f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]line_number\[dq]]\f[B]\f[R]
+The style of the relative line numbers on the left side of the list
 .PP
-Apart from those two, you can use any other attribute name of elements
+Apart from those three, you can use any other attribute name of elements
 used in the program.
 Here are the Brick docs for the attribute names of the elements used in
 \f[I]kpxhs\f[R]:
