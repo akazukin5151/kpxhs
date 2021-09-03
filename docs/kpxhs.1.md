@@ -28,21 +28,6 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 
 # KEYBINDINGS
 
-The following table shows a summary of the keybindings and their effects in each mode
-
-|Key  | Browser           | Search       | Entry details| Login      | Exit dialog
-|-----|-------------------|--------------|--------------|------------|------------
-|q    | Go up dir or quit | -            | -            | -          | -
-|Esc  | Clear command     | Quit         | Back         | Quit       | -
-|Tab  | Focus Search      | Focus Browser| -            | Cycle Focus| Cycle Focus
-|Enter| Show details      | -            | -            | Unlock     | -
-|j    | Move down         | -            | -            | -          | -
-|k    | Move up           | -            | -            | -          | -
-|u    | Copy username     | -            | -            | -          | -
-|p    | Copy password     | -            | -            | -          | -
-|g    | Go to top         | -            | -            | -          | -
-|G    | Go to bottom      | -            | -            | -          | -
-
 `q`
 : Go up a directory, or attempt to quit if in root directory.
 
@@ -73,6 +58,21 @@ The following table shows a summary of the keybindings and their effects in each
 `G`
 : Move to the bottom of the list
 
+The following table shows a summary of the keybindings and their effects in each mode
+
+|Key  | Browser           | Search       | Entry details| Login      | Exit dialog
+|-----|-------------------|--------------|--------------|------------|------------
+|q    | Go up dir or quit | -            | -            | -          | -
+|Esc  | Clear command     | Quit         | Back         | Quit       | -
+|Tab  | Focus Search      | Focus Browser| -            | Cycle Focus| Cycle Focus
+|Enter| Show details      | -            | -            | Unlock     | -
+|j    | Move down         | -            | -            | -          | -
+|k    | Move up           | -            | -            | -          | -
+|u    | Copy username     | -            | -            | -          | -
+|p    | Copy password     | -            | -            | -          | -
+|g    | Go to top         | -            | -            | -          | -
+|G    | Go to bottom      | -            | -            | -          | -
+
 
 # EXAMPLE USAGE
 
@@ -87,19 +87,13 @@ The following table shows a summary of the keybindings and their effects in each
 
 # CONFIGURATION
 
-## GENERAL
+## INTRODUCTION
 
-The only contents of the file is the single expression; assignments, imports, statements, and comments are not allowed. You cannot use \`$\` to replace parenthesis, because no arbitrary functions are evaluated. Whitespace and newline rules follow normal Haskell rules for expressions. The config and theme files are not valid Haskell modules that can be compiled; they are interpreted at launch.
-
-The records must match their specified number of fields; omission or addition of any fields will result in an invalid config, and the default will be used instead.
-
-Type constructors must be written verbatim with no changes in capitalization. They include: \`Just\`, \`Nothing\`, \`Seconds\`, \`DoNotClear\`, all the color names (eg, \`Red\`), and all the style names (eg, \`Bold\`)
+You can set the database and keyfile fields to be auto-filled with any path, so you only need to enter your password on launch. You can also customize the automatic clipboard clearing: change the number of seconds to wait before clearing the clipboard; or disable the feature altogether.
 
 Hint: run \`kpxhs --write-config\` to generate the default config and theme for further editing
 
 ## SETTINGS
-
-You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default. The paths can be any UTF-8 string; no validation is performed on them.
 
 The config file is located in \`~/.config/kpxhs/config.hs\`. Make sure it is encoded as UTF-8. Write something like:
 
@@ -112,12 +106,14 @@ Config { timeout = Just (Seconds 10)
 
 **It must be a valid Haskell expression** of a record with three fields: timeout, dbPath, and keyfilePath. All three are Maybe types - they are optional and you can always omit specifying them by writing \`Nothing\`. Do not delete a field however, as it will result in an invalid config.
 
+The paths can be any UTF-8 string; no validation is performed on them.
+
 ### timeout
 
 After copying a username or password, *kpxhs* can automatically clear the clipboard after a set number of seconds. There are three valid values for the timeout field:
 
 `Just (Seconds t)`
-: Set the number of seconds to wait before clearing the clipboard to \`t\` seconds. The number of seconds must be an integer.
+: Set the number of seconds to wait for \`t\` seconds after the copy for clearing the clipboard. The number of seconds must be an integer.
 
 `Just DoNotClear`
 : Disable automatic clipboard clearing.
@@ -165,7 +161,7 @@ This is the default theme if you don't provide any:
 ]
 ```
 
-**The theme file must be a valid Haskell expression**. It is a list-of-2-tuples, where the first item is an attribute name made of a list-of-strings, and the second item is a record with three fields: fg, bg, and styles. fg and bg are of type Color, while styles is a list-of-styles
+**The theme file must be a valid Haskell expression**. It is a list-of-2-tuples; for every tuple, the first item is an attribute name made of a list-of-strings, and the second item is the attribute value. The attribute value is represented as a record with three fields: fg, bg, and styles. The fg and bg fields only accept certain color names. styles is a list-of-styles, and also only accept certain style names.
 
 ### Attribute names
 
@@ -207,13 +203,13 @@ The record has three fields:
 
 
 `Black, Red, Green, Yellow, Blue, Magenta, Cyan, White, BrightBlack, BrightRed, BrightGreen, BrightYellow, BrightBlue, BrightMagenta, BrightCyan, BrightWhite`
-: Uses the 16 colors configured through your terminal
+: Set the color to one of those 16 colors. Their exact values are configured through your terminal
 
 `Def`
-: Use the default color for that element
+: Use the default color for that element. Essentially means a color is not specified
 
 `RGB r g b`
-: Use an RGB color given by the three integers, from 0 to 255 inclusive. Note that it doesn't support the entire rgb palette, so some colors can throw an error. *kpxhs* allows it to be thrown, because some attributes might be a hassle to navigate to, so aborting the program will let the user know their color is invalid as early as possible.
+: Use an RGB color given by the three integers, from 0 to 255 inclusive. Note that Brick doesn't support the entire rgb palette, so some colors can throw an error. *kpxhs* allows it to be thrown, because some attributes might be a hassle to navigate to, so aborting the program will let the user know their color is invalid as early as possible.
 
 ### Styles
 
@@ -251,6 +247,14 @@ If you don't want to specify a style, leave the list empty.
 ```hs
 , (Name ["kpxhs","key"],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
 ```
+
+## CONFIGURATION NOTES
+
+The only contents of the config and theme files is the single expression; assignments, imports, statements, and comments are not allowed. You cannot use \`$\` to replace parenthesis, because no arbitrary functions are evaluated. Whitespace and newline rules follow normal Haskell rules for expressions. The config and theme files are not valid Haskell modules that can be compiled; they are interpreted at launch.
+
+Any records must match their specified number of fields; omission or addition of any fields will result in an invalid config, and the default will be used instead.
+
+Type constructors must be written verbatim with no changes in capitalization. They include: \`Just\`, \`Nothing\`, \`Seconds\`, \`DoNotClear\`, \`Name\`, \`Val\`, all the color names (eg, \`Red\`), and all the style names (eg, \`Bold\`)
 
 
 # ENVIRONMENT

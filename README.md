@@ -61,59 +61,7 @@ No superuser permissions are needed (unless if you need to install stack itself)
 3. `stack build` (compile)
 4. `stack install` (move binary to `~/.local/bin/`)
 
-## Manual
-
-The manual is not installed automatically. If you have downloaded the source code, it can be installed with `cd docs && make && make copy`. Alternatively, view the rendered markdown online in https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
-
-# Configure (optional)
-
-- Hint: run `kpxhs --write-config` to generate the default config for further editing
-- You can fill your database path in using a config file, so you only need to enter your password upon running. This is how keepassxc works by default. The paths can be any string
-    - Default: `""`
-    - `Just "xxx"` will fill in the database path with the string "xxx"
-    - `Nothing` will fall back to the default
-- You can also have `kpxhs` auto-fill a path to the keyfile
-    - Default: `""`
-    - `Just "xxx"` will fill in the keyfile path with the string "xxx"
-    - `Nothing` will fall back to the default
-- You can also change the clipboard clear timeout (the number of seconds before the clipboard is cleared)
-    - Default: `Seconds 10`
-    - `Just (Seconds t)` will clear the clipboard `t` seconds after copying
-    - `Just DoNotClear` will disable automatic clipboard clearing
-    - `Nothing` will fall back to the default
-- See also [test/example_config.hs](test/example_config.hs)
-
-Write something like this in `~/.config/kpxhs/config.hs`:
-
-```hs
-Config { timeout = Just (Seconds 10)
-       , dbPath = Just "/home/me/kpxhs/test/kpxhs_test.kdbx"
-       , keyfilePath = Just "/home/me/kpxhs/test/keyfile.key"
-       }
-```
-
-- Must be a valid Haskell expression
-- Construct the `Config` record (don't worry about String vs Text)
-
-```hs
--- Timeout is isomorphic to Maybe; Used for clarity
-data Timeout = Seconds Int | DoNotClear
-
-data Config = Config { timeout     :: Maybe Timeout
-                     , dbPath      :: Maybe Text
-                     , keyfilePath :: Maybe Text
-                     }
-```
-
-- See [Theming.md](Theming.md) for rationale and details on "Haskell expression"
-- To be clear, while it has to be a valid Haskell expression, it is indeed not a valid Haskell file/module. It is not supposed to be compiled, but interpreted at launch.
-- Why not use Dhall or Aeson? Aeson doubled the size of the binary while Dhall tripled (!) it
-
-## Theming
-
-See [Theming.md](Theming.md)
-
-# Usage
+# Manual (Usage, Configuration, Theming)
 
 ```sh
 $ kpxhs -h
@@ -141,7 +89,7 @@ kpxhs - Interactive Keepass database TUI viewer
     e                       Page down
 ```
 
-See the [man page](./docs/kpxhs.1.md)
+Read the man page for more details. The manual is not installed automatically. If you have downloaded the source code, it can be installed with `cd docs && make && make copy` and then viewed with `man kpxhs`. Alternatively, view the rendered markdown online in https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
 
 # License
 
