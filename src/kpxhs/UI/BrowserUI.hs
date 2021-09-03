@@ -2,6 +2,7 @@
 
 module UI.BrowserUI (drawBrowser) where
 
+import           Brick                (Padding (Pad), padLeft)
 import qualified Brick.AttrMap        as A
 import qualified Brick.Focus          as F
 import           Brick.Types          (Widget)
@@ -33,7 +34,7 @@ import Types
     , focusRing
     , footer
     , searchField
-    , visibleEntries
+    , visibleEntries, currentCmd
     )
 import UI.Common (getEditor)
 
@@ -44,10 +45,20 @@ drawBrowser st = [ui]
     ui =
       C.vCenter $
         vBox
-          [  C.hCenter $ drawSearchBox st,
+          [  C.hCenter $ drawHeader st,
              C.hCenter $ drawBrowserList st,
              C.hCenter $ st ^. footer
           ]
+
+drawHeader :: State -> Widget Field
+drawHeader st = drawSearchBox st <+> drawCmd st
+
+drawCmd :: State -> Widget Field
+drawCmd st = padLeft (Pad 2) $ str x
+  where
+    x = case st^.currentCmd of
+          "" -> " "
+          y  -> y
 
 drawSearchBox :: State -> Widget Field
 drawSearchBox st = str "Search: " <+> hLimitPercent 75 ed

@@ -9,7 +9,6 @@ import Types                          (State, currentCmd, visibleEntries)
 import ViewEvents.BrowserEvents.Utils (listMoveWith)
 import ViewEvents.Common              (updateFooterGuarded)
 
--- TODO: show indicator of key press
 handleVimDigit :: State -> Char -> State
 handleVimDigit st x =
   st & currentCmd %~ (<> [x])
