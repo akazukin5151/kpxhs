@@ -89,7 +89,9 @@ kpxhs - Interactive Keepass database TUI viewer
     e                       Page down
 ```
 
-Read the man page for more details. The manual is not installed automatically. If you have downloaded the source code, it can be installed with `cd docs && make && make copy` and then viewed with `man kpxhs`. Alternatively, view the rendered markdown online in https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
+Read the man page for more details. The rendered markdown is available online at https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
+
+Alternatively, it can be installed for offline reading manually. No superuser permissions are required. Downloaded the source code and install with `cd docs && make && make copy`; view with `man kpxhs`
 
 # License
 
