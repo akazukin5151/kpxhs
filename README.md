@@ -131,9 +131,9 @@ kpxhs - Interactive Keepass database TUI viewer
     u                       Copy username
     p                       Copy password
 
-  Navigation
-    j, s                    Move down
-    k, w                    Move up
+  Navigation ([n] means optional digit)
+    [n]j, [n]s              Move down n items (default: 1)
+    [n]k, [n]w              Move up n items   (default: 1)
     g                       Move to top
     G                       Move to bottom
     q                       Page up
@@ -157,6 +157,7 @@ kpxhs - Interactive Keepass database TUI viewer
         - `Enter`: view entry details
         - `Tab` to focus search
         - Use `j`, `k`, `w`, and `s` to navigate
+        - Prefixing digits before up/down keys will scroll up/down by the given number
 - Inside entry details:
     - `u`: copy username
     - `p`: copy the password

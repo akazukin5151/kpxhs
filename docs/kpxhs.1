@@ -51,11 +51,27 @@ Copy username of selected/current entry
 \f[B]\f[CB]p\f[B]\f[R]
 Copy password of selected/current entry
 .TP
-\f[B]\f[CB]j, s\f[B]\f[R]
-Move down the list
+\f[B]\f[CB][n]j, [n]s\f[B]\f[R]
+Move down the list by \[ga]n\[ga] items, default is 1.
+\[ga]n\[ga] is an optional series of digits (0-9), that terminates when
+\[ga]j\[ga] or \[ga]s\[ga] is pressed.
+This resembles the vim motion commands.
+Leading zeros are stripped.
+For example, \[ga]4j\[ga] will move four items down and \[ga]10j\[ga]
+will move ten items down.
+Use the relative line numbers to help; the number shown is the exact
+number needed for the digit \[ga]n\[ga]
 .TP
-\f[B]\f[CB]k, w\f[B]\f[R]
-Move up the list
+\f[B]\f[CB][n]k, [n]w\f[B]\f[R]
+Move up the list by \[ga]n\[ga] items, default is 1.
+\[ga]n\[ga] is an optional series of digits (0-9), that terminates when
+\[ga]k\[ga] or \[ga]w\[ga] is pressed.
+Leading zeros are stripped.
+This resembles the vim motion commands.
+For example, \[ga]4k\[ga] will move four items down and \[ga]10k\[ga]
+will move ten items down.
+Use the relative line numbers to help; the number shown is the exact
+number needed for the digit \[ga]n\[ga]
 .TP
 \f[B]\f[CB]g\f[B]\f[R]
 Move to the top of the list

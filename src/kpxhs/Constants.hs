@@ -18,9 +18,9 @@ help = "kpxhs - Interactive Keepass database TUI viewer\n\
         \    Enter                   Show entry details\n\
         \    u                       Copy username\n\
         \    p                       Copy password\n\n\
-        \  Navigation\n\
-        \    j, s                    Move down\n\
-        \    k, w                    Move up\n\
+        \  Navigation ([n] means optional digit)\n\
+        \    [n]j, [n]s              Move down n items (default: 1)\n\
+        \    [n]k, [n]w              Move up n items   (default: 1)\n\
         \    g                       Move to top\n\
         \    G                       Move to bottom\n\
         \    q                       Page up\n\

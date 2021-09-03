@@ -43,11 +43,11 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 `p`
 : Copy password of selected/current entry
 
-`j, s`
-: Move down the list
+`[n]j, [n]s`
+: Move down the list by \`n\` items, default is 1. \`n\` is an optional series of digits (0-9), that terminates when \`j\` or \`s\` is pressed. This resembles the vim motion commands. Leading zeros are stripped. For example, \`4j\` will move four items down and \`10j\` will move ten items down. Use the relative line numbers to help; the number shown is the exact number needed for the digit \`n\`
 
-`k, w`
-: Move up the list
+`[n]k, [n]w`
+: Move up the list by \`n\` items, default is 1. \`n\` is an optional series of digits (0-9), that terminates when \`k\` or \`w\` is pressed. Leading zeros are stripped. This resembles the vim motion commands. For example, \`4k\` will move four items down and \`10k\` will move ten items down. Use the relative line numbers to help; the number shown is the exact number needed for the digit \`n\`
 
 `g`
 : Move to the top of the list
