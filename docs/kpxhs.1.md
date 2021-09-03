@@ -243,6 +243,7 @@ If you don't want to specify a style, leave the list empty.
 # ENVIRONMENT
 
 Requires [keepassxc](https://github.com/keepassxreboot/keepassxc/) installed with \`keepassxc-cli\` in PATH.
+
 # FILES
 
 `Configuration`
