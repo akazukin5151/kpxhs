@@ -30,36 +30,18 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 
 The following table shows a summary of the keybindings and their effects in each mode
 
-----------------------------------------------------------------------
-Key    Browser       Search   Entry details        Login   Exit dialog
-----   ------------  -------  ------------------   -----   -----------
-q      Go up dir     -        -                    -       -
-       or quit
-
-Esc    Clear vim     Quit     Go back to browser   Quit    -
-       command
-
-Tab    Focus         Focus    -                    Cycle   Cycle
-       Search        Browser                       Focus   Focus
-
-Enter  Show          -        -                    Unlock  -
-       entry
-       details
-
-j      Move down     -        -                    -       -
-
-k      Move up       -        -                    -       -
-
-u      Copy          -        -                    -       -
-       username
-
-p      Copy          -        -                    -       -
-       password
-
-g      Go to top     -        -                    -       -
-
-G      Go to bottom  -        -                    -       -
-----------------------------------------------------------------------
+|Key  | Browser           | Search       | Entry details| Login      | Exit dialog
+|-----|-------------------|--------------|--------------|------------|------------
+|q    | Go up dir or quit | -            | -            | -          | -
+|Esc  | Clear command     | Quit         | Back         | Quit       | -
+|Tab  | Focus Search      | Focus Browser| -            | Cycle Focus| Cycle Focus
+|Enter| Show details      | -            | -            | Unlock     | -
+|j    | Move down         | -            | -            | -          | -
+|k    | Move up           | -            | -            | -          | -
+|u    | Copy username     | -            | -            | -          | -
+|p    | Copy password     | -            | -            | -          | -
+|g    | Go to top         | -            | -            | -          | -
+|G    | Go to bottom      | -            | -            | -          | -
 
 `q`
 : Go up a directory, or attempt to quit if in root directory.
