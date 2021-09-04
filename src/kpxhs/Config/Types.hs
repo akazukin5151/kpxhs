@@ -7,9 +7,6 @@ import qualified Graphics.Vty as V
 
 -- | Some type aliases to better distinguish user facing types
 -- and actual types (user-facing type names are easier to type)
-newtype Name = Name [String]
-  deriving (Show, Read)
-
 type UserFacingVal = Val
 type ActualAttrVal = V.Attr
 
@@ -21,7 +18,7 @@ type ActualStyle = V.Style
 
 -- | An external representation of the theme
 -- (a mapping between attributes and styles)
-type UserFacingTheme = [(Name, Val)]
+type UserFacingTheme = [([String], Val)]
 
 -- | Actual representation of the theme, using Brick types
 type ActualTheme = [(AttrName, ActualAttrVal)]

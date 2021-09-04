@@ -38,7 +38,6 @@ import Config.Types
     , ActualColor
     , ActualStyle
     , Color (..)
-    , Name (Name)
     , Style (..)
     , UserFacingColor
     , UserFacingStyle
@@ -84,8 +83,8 @@ evalColorAttr (Just f) _        = B.fg f
 evalColorAttr _        (Just b) = B.bg b
 evalColorAttr _        _        = mempty
 
-evalName :: Name -> AttrName
-evalName (Name n) = foldr (\x acc -> attrName x <> acc) mempty n
+evalName :: [String] -> AttrName
+evalName = foldr (\x acc -> attrName x <> acc) mempty
 
 eval :: UserFacingVal -> ActualAttrVal
 eval r = res
