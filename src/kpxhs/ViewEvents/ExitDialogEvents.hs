@@ -25,16 +25,14 @@ exitEvent st (T.VtyEvent (V.EvKey V.KEnter [])) = handleEnter st
 exitEvent st (T.VtyEvent e)                     = handleDialog st e
 exitEvent st _                                  = M.continue st
 
--- | handleDialogEvent returns (EventM f (Dialog a)),
--- but (>>= M.continue) needs (EventM f State),
--- so a function is needed to transform
--- (EventM f (Dialog a)) to (EventM f State)
+-- handleDialogEvent returns EventM (Dialog a)
+-- setDialog transforms that inner Dialog back into a State
 handleDialog :: State -> V.Event -> T.EventM Field (T.Next State)
 handleDialog st e =
-  handleDialogEvent e (st ^. exitDialog) >>= modifyDialog st >>= M.continue
+  handleDialogEvent e (st ^. exitDialog) >>= M.continue . setDialog
     where
-      modifyDialog :: State -> D.Dialog ExitDialog -> T.EventM Field State
-      modifyDialog st' x = pure $ st' & exitDialog .~ x
+      setDialog :: D.Dialog ExitDialog -> State
+      setDialog x = st & exitDialog .~ x
 
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st =
