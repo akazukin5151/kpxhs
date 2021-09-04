@@ -49,8 +49,8 @@ commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next S
                -> T.EventM Field (T.Next State)
 commonTabEvent fallback st e =
   case e of
-    T.VtyEvent (V.EvKey (V.KChar '\t') []) -> f focusNext
-    T.VtyEvent (V.EvKey V.KBackTab [])     -> f focusPrev
+    T.VtyEvent (V.EvKey (V.KChar '\t') []) -> f focusNextWithView
+    T.VtyEvent (V.EvKey V.KBackTab [])     -> f focusPrevWithView
     T.AppEvent (ClearClipCount count)      -> liftContinue2 handleClipCount st count
     _                                      -> fallback st e
   where
@@ -60,17 +60,17 @@ _handleTab :: State -> (State -> View -> State) -> View -> State
 _handleTab st f BrowserView = f st SearchView
 _handleTab st f _           = f st BrowserView
 
-focus :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
-focus f st view =
+focusWithView :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
+focusWithView f st view =
   st & focusRing  %~ f
      & activeView .~ view
      & updateFooterGuarded
 
-focusNext :: State -> View -> State
-focusNext = focus F.focusNext
+focusNextWithView :: State -> View -> State
+focusNextWithView = focusWithView F.focusNext
 
-focusPrev :: State -> View -> State
-focusPrev = focus F.focusPrev
+focusPrevWithView :: State -> View -> State
+focusPrevWithView = focusWithView F.focusPrev
 
 -- | Restores the default footer for the current view
 --  Should be only used when transitioning to a new view or field
