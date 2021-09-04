@@ -27,3 +27,8 @@ jobs:
         curl -sSL https://raw.github.com/ndmitchell/hlint/master/misc/run.sh | sh -s src/kpxhs
     - name: Build
       run: stack install
+    - name: Build docs
+      run: |
+        apt-cache search pandoc
+        cd docs
+        make
