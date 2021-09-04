@@ -32,8 +32,13 @@ jobs:
         curl -sSL https://raw.github.com/ndmitchell/hlint/master/misc/run.sh | sh -s src/kpxhs
     - name: Build docs
       run: |
-        sudo apt-get update
-        sudo apt-get install pandoc
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install pandoc
+        else
+          brew update
+          brew install pandoc
+        fi
         cd docs
         make
     - name: Build
