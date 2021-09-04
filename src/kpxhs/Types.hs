@@ -2,6 +2,7 @@
 
 module Types where
 
+import           Brick.AttrMap        (AttrMap)
 import           Brick.BChan          (BChan)
 import qualified Brick.Focus          as F
 import           Brick.Types          (Widget)
@@ -93,7 +94,9 @@ data State = State
     -- There is no need to store the direction/motion command, because
     -- as soon as it is pressed, the list can be scrolled and this setting
     -- cleared
-    _currentCmd         :: String
+    _currentCmd         :: String,
+    -- | The app's attribute map
+    _theMap             :: AttrMap
   }
 
 makeLenses ''State

@@ -3,11 +3,11 @@
 module UI.BrowserUI (drawBrowser) where
 
 import           Brick                (Padding (Pad), padLeft)
+import           Brick.AttrMap        (attrMapLookup)
 import qualified Brick.AttrMap        as A
 import qualified Brick.Focus          as F
 import           Brick.Markup         (markup, (@?))
 import           Brick.Types          (Widget)
-import           Brick.Util           (fg)
 import qualified Brick.Widgets.Border as B
 import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core
@@ -24,7 +24,6 @@ import           Data.Functor         ((<&>))
 import           Data.Maybe           (fromMaybe)
 import qualified Data.Text            as TT
 import qualified Data.Vector          as Vec
-import qualified Graphics.Vty         as V
 import           Lens.Micro           ((&), (^.))
 
 import Common    (pathToStr)
@@ -35,7 +34,7 @@ import Types
     , focusRing
     , footer
     , searchField
-    , visibleEntries, currentCmd
+    , visibleEntries, currentCmd, theMap
     )
 import UI.Common (getEditor)
 
@@ -104,7 +103,8 @@ drawBrowserLabel st = B.borderWithLabel label
 drawBorderColor :: State -> Widget Field -> Widget Field
 drawBorderColor st = res
   where
-    borderColor = case F.focusGetCurrent (st ^. focusRing) of
-      Just BrowserField -> V.blue
-      _                 -> V.black
-    res = updateAttrMap (A.applyAttrMappings [(B.borderAttr, fg borderColor)])
+    name = case F.focusGetCurrent (st ^. focusRing) of
+      Just BrowserField -> "list_border_f"
+      _                 -> "list_border_nf"
+    borderColor = attrMapLookup ("kpxhs" <> name) $ st^.theMap
+    res = updateAttrMap (A.applyAttrMappings [(B.borderAttr, borderColor)])

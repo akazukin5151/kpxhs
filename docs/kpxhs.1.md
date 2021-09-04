@@ -149,16 +149,18 @@ The theme file is located in \`~/.config/kpxhs/theme.hs\`. Make sure it is encod
 This is the default theme if you don't provide any:
 
 ```hs
-[ ( Name ["list","selected"],     Val { fg = Red,    bg = Def,    styles = [] } )
-, ( Name ["edit"],                Val { fg = Black,  bg = White,  styles = [] } )
-, ( Name ["edit","focused"],      Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name ["dialog"],              Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name ["button"],              Val { fg = Black,  bg = White,  styles = [] } )
-, ( Name ["button","selected"],   Val { fg = Def,    bg = Yellow, styles = [] } )
-, ( Name ["progressComplete"],    Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name ["kpxhs","key"],         Val { fg = Def,    bg = White,  styles = [] } )
-, ( Name ["kpxhs","label"],       Val { fg = Black,  bg = Def,    styles = [] } )
-, ( Name ["kpxhs","line_number"], Val { fg = Yellow, bg = Def,    styles = [] } )
+[ ( Name ["list","selected"],        Val { fg = Red,    bg = Def,    styles = [] } )
+, ( Name ["edit"],                   Val { fg = Black,  bg = White,  styles = [] } )
+, ( Name ["edit","focused"],         Val { fg = White,  bg = Blue,   styles = [] } )
+, ( Name ["dialog"],                 Val { fg = White,  bg = Blue,   styles = [] } )
+, ( Name ["button"],                 Val { fg = Black,  bg = White,  styles = [] } )
+, ( Name ["button","selected"],      Val { fg = Def,    bg = Yellow, styles = [] } )
+, ( Name ["progressComplete"],       Val { fg = White,  bg = Blue,   styles = [] } )
+, ( Name ["kpxhs","key"],            Val { fg = Def,    bg = White,  styles = [] } )
+, ( Name ["kpxhs","label"],          Val { fg = Black,  bg = Def,    styles = [] } )
+, ( Name ["kpxhs","line_number"],    Val { fg = Yellow, bg = Def,    styles = [] } )
+, ( Name ["kpxhs","list_border_f"],  Val { fg = Blue,   bg = Def,    styles = [] } )
+, ( Name ["kpxhs","list_border_nf"], Val { fg = Black,  bg = Def,    styles = [] } )
 ]
 ```
 
@@ -169,7 +171,7 @@ This is the default theme if you don't provide any:
 `Name xs`
 : Constructs an attribute name using the list-of-strings xs.
 
-There are also three special attribute names exclusive to *kpxhs*. They are appropriately namespaced with \`"kpxhs"\`.
+There are also a few special attribute names exclusive to *kpxhs*. They are appropriately namespaced with \`"kpxhs"\`.
 
 `Name ["kpxhs", "key"]`
 : The style of the key being bound (eg, "Esc")
@@ -182,7 +184,13 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 `Name ["kpxhs", "line_number"]`
 : The style of the relative line numbers on the left side of the list
 
-Apart from those three, you can use any other attribute name of elements used in the program. Here are the Brick docs for the attribute names of the elements used in *kpxhs*:
+`Name ["kpxhs", "list_border_f"]`
+: The style of the list/browser border when it is focused. Only foreground color is used.
+
+`Name ["kpxhs", "list_border_nf"]`
+: The style of the list/browser border when it is not focused (ie, focus is on search bar). Only foreground color is used.
+
+Apart from those, you can use any other attribute name of elements used in the program. Here are the Brick docs for the attribute names of the elements used in *kpxhs*:
 
 - [List widget](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-List.html#g:7)
 - [Exit dialog](https://hackage.haskell.org/package/brick-0.64/docs/Brick-Widgets-Dialog.html#g:4)

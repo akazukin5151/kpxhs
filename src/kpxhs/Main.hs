@@ -37,8 +37,9 @@ import Types
 import UI              (drawUI)
 
 
-initialState :: F.FocusRing Field -> Text -> Text -> Maybe Int -> BChan Event -> State
-initialState ring dbdir kfdir timeout' chan =
+initialState :: F.FocusRing Field
+             -> Text -> Text -> Maybe Int -> BChan Event -> A.AttrMap -> State
+initialState ring dbdir kfdir timeout' chan theMap =
   State
     { _visibleEntries     = toBrowserList [],
       _allEntryNames      = Map.empty,
@@ -59,20 +60,21 @@ initialState ring dbdir kfdir timeout' chan =
       _clearTimeout       = timeout',
       _countdownThreadId  = Nothing,
       _counterValue       = Nothing,
-      _currentCmd         = ""
+      _currentCmd         = "",
+      _theMap             = theMap
     }
 
 mkMap :: [(A.AttrName, V.Attr)] -> A.AttrMap
 mkMap = A.attrMap V.defAttr
 
-theApp :: [(A.AttrName, V.Attr)] -> M.App State Event Field
-theApp theme =
+theApp :: A.AttrMap -> M.App State Event Field
+theApp theMap =
   M.App
     { M.appDraw = drawUI,
       M.appChooseCursor = M.showFirstCursor,
       M.appHandleEvent = appEvent,
       M.appStartEvent = pure,
-      M.appAttrMap = const $ mkMap theme
+      M.appAttrMap = const theMap
     }
 
 main :: IO ()
@@ -90,14 +92,15 @@ tui = do
   home <- getHomeDirectory
   let cfgdir = home </> ".config/kpxhs/"
   (timeout', dbdir, kfdir, ring, theme) <- parseConfig cfgdir
+  let theMap = mkMap theme
 
   chan <- newBChan 10
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
 
   void $
-    M.customMain initialVty buildVty (Just chan) (theApp theme)
-      (initialState ring dbdir kfdir timeout' chan)
+    M.customMain initialVty buildVty (Just chan) (theApp theMap)
+      (initialState ring dbdir kfdir timeout' chan theMap)
 
 isCmd :: String -> String -> Bool
 isCmd cmd string = s == pure (head cmd) || s == cmd
