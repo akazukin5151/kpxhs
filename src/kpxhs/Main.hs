@@ -21,7 +21,7 @@ import           System.Directory
     )
 import           System.Environment (getArgs)
 import           System.Exit        (exitFailure)
-import           System.FilePath    ((</>))
+import           System.FilePath    (takeFileName, (</>))
 
 import Common          (annotate, defaultDialog, initialFooter, toBrowserList)
 import Config.Config   (parseConfig)
@@ -104,24 +104,24 @@ isCmd cmd string = s == pure (head cmd) || s == cmd
   where
     s = dropWhile (== '-') string
 
--- | Aborts if either config or theme exists, to prevent inconsistency
+-- | Aborts if either config or theme exists, before writing, to prevent inconsistency
 writeConfig :: IO ()
 writeConfig = do
   home <- getHomeDirectory
   let cfgdir = home </> ".config/kpxhs/"
   dirExists <- doesDirectoryExist cfgdir
-  when (not dirExists) $
-    createDirectory cfgdir
 
   let cfgPath = cfgdir </> "config.hs"
-  configExists <- doesFileExist cfgPath
-  when configExists $
-    putStrLn "config.hs already exists, aborting" >> exitFailure
-
   let themePath = cfgdir </> "theme.hs"
-  themeExists <- doesFileExist themePath
-  when themeExists $
-     putStrLn "theme.hs already exists, aborting" >> exitFailure
+  if dirExists
+     then assertFileDoesntExist cfgPath >> assertFileDoesntExist themePath
+     else createDirectory cfgdir
 
   B.writeFile cfgPath $ encodeUtf8 defaultConfigText
   B.writeFile themePath $ encodeUtf8 defaultThemeText
+
+assertFileDoesntExist :: FilePath -> IO ()
+assertFileDoesntExist path = do
+  exists <- doesFileExist path
+  when exists $
+    putStrLn (takeFileName path <> " already exists, aborting") >> exitFailure
