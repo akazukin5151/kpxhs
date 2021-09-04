@@ -3,6 +3,7 @@ name: master
 on:
   push:
     branches: [ master ]
+    paths: src/*
 
 jobs:
   build:
