@@ -42,8 +42,8 @@ defaultTheme =
   , ( Name ["kpxhs","key"],            Val { fg = Def,    bg = White,  styles = [] } )
   , ( Name ["kpxhs","label"],          Val { fg = Black,  bg = Def,    styles = [] } )
   , ( Name ["kpxhs","line_number"],    Val { fg = Yellow, bg = Def,    styles = [] } )
-  , ( Name ["kpxhs","list_border_f"],  Val { fg = Blue,   bg = Def,    styles = [] } )
-  , ( Name ["kpxhs","list_border_nf"], Val { fg = Black,  bg = Def,    styles = [] } )
+  , ( Name ["kpxhs","list_border"], Val { fg = Black,  bg = Def,    styles = [] } )
+  , ( Name ["kpxhs","list_border","focused"],  Val { fg = Blue,   bg = Def,    styles = [] } )
   , ( Name ["kpxhs","directory"],      Val { fg = Black,  bg = Def,    styles = [Bold] } )
   , ( Name ["kpxhs","directory","focused"], Val { fg = Red,  bg = Def,    styles = [Bold] } )
   , ( Name ["kpxhs","entry"],          Val { fg = Black,  bg = Def,    styles = [] } )
@@ -63,8 +63,8 @@ defaultThemeText =
   \, ( Name [\"kpxhs\",\"key\"],            Val { fg = Def,    bg = White,  styles = [] } )\n\
   \, ( Name [\"kpxhs\",\"label\"],          Val { fg = Black,  bg = Def,    styles = [] } )\n\
   \, ( Name [\"kpxhs\",\"line_number\"],    Val { fg = Yellow, bg = Def,    styles = [] } )\n\
-  \, ( Name [\"kpxhs\",\"list_border_f\"],  Val { fg = Blue,   bg = Def,    styles = [] } )\n\
-  \, ( Name [\"kpxhs\",\"list_border_nf\"], Val { fg = Black,  bg = Def,    styles = [] } )\n\
+  \, ( Name [\"kpxhs\",\"list_border\"], Val { fg = Black,  bg = Def,    styles = [] } )\n\
+  \, ( Name [\"kpxhs\",\"list_border\",\"focused\"],  Val { fg = Blue,   bg = Def,    styles = [] } )\n\
   \, ( Name [\"kpxhs\",\"directory\"],      Val { fg = Black,  bg = Def,    styles = [Bold] } )\n\
   \, ( Name [\"kpxhs\",\"directory\",\"focused\"], Val { fg = Red,  bg = Def,    styles = [Bold] } )\n\
   \, ( Name [\"kpxhs\",\"entry\"],          Val { fg = Black,  bg = Def,    styles = [] } )\n\

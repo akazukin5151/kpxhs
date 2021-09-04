@@ -122,7 +122,7 @@ drawBorderColor :: State -> Widget Field -> Widget Field
 drawBorderColor st = res
   where
     name = case F.focusGetCurrent (st ^. focusRing) of
-      Just BrowserField -> "list_border_f"
-      _                 -> "list_border_nf"
+      Just BrowserField -> "list_border" <> "focused"
+      _                 -> "list_border"
     borderColor = attrMapLookup ("kpxhs" <> name) $ st^.theMap
     res = updateAttrMap (A.applyAttrMappings [(B.borderAttr, borderColor)])
