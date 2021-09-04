@@ -2,7 +2,7 @@ module ViewEvents.BrowserEvents.VimCommand (handleVimDigit, handleVimMotion) whe
 
 import Brick         (Direction (Down, Up))
 import Data.Function ((&))
-import Lens.Micro    ((%~), (.~), (^.))
+import Lens.Micro    ((%~), (.~), (^.), (<>~))
 import Text.Read     (readMaybe)
 
 import Types                          (State, currentCmd, visibleEntries)
@@ -11,7 +11,7 @@ import ViewEvents.Common              (updateFooterGuarded)
 
 handleVimDigit :: State -> Char -> State
 handleVimDigit st x =
-  st & currentCmd %~ (<> [x])
+  st & currentCmd <>~ [x]
 
 toDirection :: Char -> Maybe Direction
 toDirection 's' = Just Down

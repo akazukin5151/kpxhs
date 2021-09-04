@@ -11,7 +11,7 @@ import           Data.Map.Strict    ((!?))
 import qualified Data.Map.Strict    as M
 import           Data.Maybe         (fromMaybe)
 import           Data.Text          (Text)
-import           Lens.Micro         ((%~), (&), (.~), (?~), (^.))
+import           Lens.Micro         ((%~), (&), (.~), (<>~), (?~), (^.))
 
 import Common
     ( maybeGetEntryData
@@ -76,7 +76,7 @@ enterDirSuccess st entries_ rawDir =
   st & visibleEntries .~ toBrowserList entries_
      & allEntryNames  %~ M.insert rawDir entries_
      & searchField    .~ E.editor SearchField (Just 1) ""
-     & currentPath    %~ (++ [rawDir])
+     & currentPath    <>~ [rawDir]
      & updateFooter  -- clears any footers set when entering dir
 
 goUpParent :: State -> State
