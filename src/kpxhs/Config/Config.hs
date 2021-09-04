@@ -10,6 +10,7 @@ import qualified Data.ByteString        as B
 import           Data.Maybe             (fromMaybe)
 import           Data.Text              (Text, unpack)
 import           Data.Text.Encoding     (decodeUtf8')
+import           System.FilePath        ((</>))
 import           Text.Read              (readMaybe)
 
 import Config.Defaults (defaultConfig, defaultTheme)
@@ -27,8 +28,8 @@ fallback _ = pure ""
 
 parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, ActualTheme)
 parseConfig cfgdir = do
-  file <- catch (B.readFile $ cfgdir <> "config.hs") fallback
-  attrMap <- parseTheme $ cfgdir <> "theme.hs"
+  file <- catch (B.readFile $ cfgdir </> "config.hs") fallback
+  attrMap <- parseTheme $ cfgdir </> "theme.hs"
   let config = either
         (const defaultConfig)
         (fromMaybe defaultConfig . readMaybe . unpack)

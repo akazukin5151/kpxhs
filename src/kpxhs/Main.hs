@@ -21,6 +21,7 @@ import           System.Directory
     )
 import           System.Environment (getArgs)
 import           System.Exit        (exitFailure)
+import           System.FilePath    ((</>))
 
 import Common          (annotate, defaultDialog, initialFooter, toBrowserList)
 import Config.Config   (parseConfig)
@@ -87,7 +88,7 @@ main = do
 tui :: IO ()
 tui = do
   home <- getHomeDirectory
-  let cfgdir = home ++ "/.config/kpxhs/"
+  let cfgdir = home </> ".config/kpxhs/"
   (timeout', dbdir, kfdir, ring, theme) <- parseConfig cfgdir
 
   chan <- newBChan 10
@@ -107,17 +108,17 @@ isCmd cmd string = s == pure (head cmd) || s == cmd
 writeConfig :: IO ()
 writeConfig = do
   home <- getHomeDirectory
-  let cfgdir = home ++ "/.config/kpxhs/"
+  let cfgdir = home </> ".config/kpxhs/"
   dirExists <- doesDirectoryExist cfgdir
   when (not dirExists) $
     createDirectory cfgdir
 
-  let cfgPath = cfgdir <> "config.hs"
+  let cfgPath = cfgdir </> "config.hs"
   configExists <- doesFileExist cfgPath
   when configExists $
     putStrLn "config.hs already exists, aborting" >> exitFailure
 
-  let themePath = cfgdir <> "theme.hs"
+  let themePath = cfgdir </> "theme.hs"
   themeExists <- doesFileExist themePath
   when themeExists $
      putStrLn "theme.hs already exists, aborting" >> exitFailure
