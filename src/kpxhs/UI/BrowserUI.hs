@@ -93,7 +93,7 @@ drawLine st i isCurrent x = num <+> txt (" " <> x)
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
   where
-    label = foldr1 (<+>) $ str <$> [currentPath_, " ", "(", cur, "/", total, ")"]
+    label = str $ currentPath_ <> " (" <> cur <> "/" <> total <> ")"
     currentPath_ =
       case pathToStr $ st^.currentPath of
         "" -> "(Root)"
