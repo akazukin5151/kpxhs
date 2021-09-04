@@ -26,8 +26,6 @@ exitEvent st (T.VtyEvent (V.EvKey V.KEnter [])) = handleEnter st
 exitEvent st (T.VtyEvent e)                     = handleDialog st e
 exitEvent st _                                  = M.continue st
 
--- handleDialogEvent returns EventM (Dialog a)
--- setDialog transforms that inner Dialog back into a State
 handleDialog :: State -> V.Event -> T.EventM Field (T.Next State)
 handleDialog st e =
   handleDialogEventEsc e st >>= M.continue
@@ -38,6 +36,8 @@ handleDialogEventEsc ev st =
     V.EvKey V.KEsc [] -> pure $ cancelExit st
     _                 -> handleDialogEvent ev (st^.exitDialog) <&> setDialog
   where
+    -- handleDialogEvent returns EventM (Dialog a)
+    -- setDialog transforms that inner Dialog back into a State
     setDialog :: D.Dialog ExitDialog -> State
     setDialog x = st & exitDialog .~ x
 
