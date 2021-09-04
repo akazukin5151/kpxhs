@@ -30,10 +30,11 @@ jobs:
       continue-on-error: true
       run: |
         curl -sSL https://raw.github.com/ndmitchell/hlint/master/misc/run.sh | sh -s src/kpxhs
-    - name: Build
-      run: stack install
     - name: Build docs
       run: |
-        apt-cache search pandoc
+        sudo apt-get update
+        sudo apt-get install pandoc
         cd docs
         make
+    - name: Build
+      run: stack install
