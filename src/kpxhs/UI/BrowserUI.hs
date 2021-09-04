@@ -13,7 +13,6 @@ import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core
     ( hLimitPercent
     , str
-    , txt
     , updateAttrMap
     , vBox
     , vLimitPercent
@@ -78,7 +77,26 @@ drawBrowserListInner st =
   L.renderListWithIndex (drawLine st) True (st^.visibleEntries)
 
 drawLine :: State -> Int -> Bool -> TT.Text -> Widget n
-drawLine st i isCurrent x = num <+> txt (" " <> x)
+drawLine st i isCurrent x = num <+> entry
+  where
+    num = drawLineNums st i isCurrent
+    entry = drawEntry isCurrent x
+
+drawEntry :: Bool -> TT.Text -> Widget n
+drawEntry isCurrent x = res
+  where
+    padded = " " <> x
+    name = if isDir x then "directory" else "entry"
+    handleCurrent = if isCurrent then name <> "focused" else name
+    res = markup $ padded @? ("kpxhs" <> handleCurrent)
+
+-- | Differs from ViewEvents.Utils.isDir; that one takes an entire state and
+-- lookups the current selection; this one has access to the text
+isDir :: TT.Text -> Bool
+isDir = (== '/') . TT.last
+
+drawLineNums :: State -> Int -> Bool -> Widget n
+drawLineNums st i isCurrent = num
   where
     num = markup $ marker @? ("kpxhs" <> "line_number")
     marker = if isCurrent then "> " else diff
