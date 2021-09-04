@@ -5,6 +5,7 @@ import qualified Brick.Types            as T
 import           Brick.Widgets.Dialog   (handleDialogEvent)
 import qualified Brick.Widgets.Dialog   as D
 import           Control.Monad.IO.Class (MonadIO (liftIO))
+import           Data.Functor           ((<&>))
 import qualified Graphics.Vty           as V
 import           Lens.Micro             ((&), (.~), (^.))
 
@@ -29,16 +30,25 @@ exitEvent st _                                  = M.continue st
 -- setDialog transforms that inner Dialog back into a State
 handleDialog :: State -> V.Event -> T.EventM Field (T.Next State)
 handleDialog st e =
-  handleDialogEvent e (st ^. exitDialog) >>= M.continue . setDialog
-    where
-      setDialog :: D.Dialog ExitDialog -> State
-      setDialog x = st & exitDialog .~ x
+  handleDialogEventEsc e st >>= M.continue
+
+handleDialogEventEsc :: V.Event -> State -> T.EventM n State
+handleDialogEventEsc ev st =
+  case ev of
+    V.EvKey V.KEsc [] -> pure $ cancelExit st
+    _                 -> handleDialogEvent ev (st^.exitDialog) <&> setDialog
+  where
+    setDialog :: D.Dialog ExitDialog -> State
+    setDialog x = st & exitDialog .~ x
+
+cancelExit :: State -> State
+cancelExit st = st & activeView .~ (st^.previousView)
+                   & updateFooter
 
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st =
   case D.dialogSelection (st^.exitDialog) of
     Just Clear  -> liftIO clearClipboard >> M.halt st
-    Just Cancel -> M.continue $ st & activeView .~ (st^.previousView)
-                                   & updateFooter
+    Just Cancel -> M.continue $ cancelExit st
     Just Exit   -> M.halt st
     _           -> M.continue st
