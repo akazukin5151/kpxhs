@@ -21,17 +21,26 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Build
+    - name: Install pandoc
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install pandoc
+        else
+          brew update
+          brew install pandoc
+        fi
+    - name: Build docs
+      run: |
+        cd docs
+        make
+    - name: Build binary
       run: stack install
     - name: Copy binary and rename
       run: |
         mkdir dist
         cp ~/.local/bin/kpxhs dist
         mv dist/kpxhs dist/${{ matrix.asset_name }}
-    - name: Build docs
-      run: |
-        cd docs
-        make
     - uses: ncipollo/release-action@v1
       with:
         artifacts:
