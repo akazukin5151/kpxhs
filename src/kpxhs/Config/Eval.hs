@@ -1,8 +1,7 @@
 module Config.Eval (eval, evalName) where
 
-import           Brick         (AttrName)
 import qualified Brick         as B
-import           Brick.AttrMap (attrName)
+import           Brick.AttrMap (AttrName, attrName)
 import           Brick.Util    (on)
 import           Graphics.Vty
     ( black

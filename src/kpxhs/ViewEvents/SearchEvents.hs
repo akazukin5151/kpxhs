@@ -2,9 +2,9 @@
 
 module ViewEvents.SearchEvents (searchEvent) where
 
-import           Brick              (txt)
 import qualified Brick.Main         as M
 import qualified Brick.Types        as T
+import           Brick.Widgets.Core (txt)
 import qualified Brick.Widgets.Edit as E
 import           Data.Map.Strict    ((!?))
 import           Data.Maybe         (fromMaybe, listToMaybe)

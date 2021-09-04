@@ -1,8 +1,8 @@
 module UI.Common (getEditor) where
 
-import           Brick              (txt)
 import qualified Brick.Focus        as F
 import           Brick.Types        (Widget)
+import           Brick.Widgets.Core (txt)
 import qualified Brick.Widgets.Edit as E
 import           Data.Text          (Text)
 import           Lens.Micro         (Getting, (^.))

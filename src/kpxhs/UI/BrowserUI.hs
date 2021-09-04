@@ -2,17 +2,18 @@
 
 module UI.BrowserUI (drawBrowser) where
 
-import           Brick                (Padding (Pad), padLeft, txt)
 import           Brick.AttrMap        (attrMapLookup)
 import qualified Brick.AttrMap        as A
 import qualified Brick.Focus          as F
 import           Brick.Markup         (markup, (@?))
-import           Brick.Types          (Widget)
+import           Brick.Types          (Padding (Pad), Widget)
 import qualified Brick.Widgets.Border as B
 import qualified Brick.Widgets.Center as C
 import           Brick.Widgets.Core
     ( hLimitPercent
+    , padLeft
     , str
+    , txt
     , updateAttrMap
     , vBox
     , vLimitPercent
@@ -29,11 +30,13 @@ import Common    (pathToStr)
 import Types
     ( Field (BrowserField)
     , State
+    , currentCmd
     , currentPath
     , focusRing
     , footer
     , searchField
-    , visibleEntries, currentCmd, theMap
+    , theMap
+    , visibleEntries
     )
 import UI.Common (getEditor)
 

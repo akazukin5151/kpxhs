@@ -6,10 +6,9 @@
 
 module ViewEvents.BrowserEvents.Fork (handleEnter) where
 
-import           Brick              (txt)
 import           Brick.BChan        (writeBChan)
 import qualified Brick.Types        as T
-import           Brick.Widgets.Core (str)
+import           Brick.Widgets.Core (str, txt)
 import           Control.Concurrent (forkIO)
 import           Control.Monad      (void)
 import           Data.Map.Strict    ((!?))

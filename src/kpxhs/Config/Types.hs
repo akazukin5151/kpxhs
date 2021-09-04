@@ -1,9 +1,9 @@
 module Config.Types where
 
-import           Brick        (AttrName)
-import           Data.Text    (Text)
-import           Data.Word    (Word8)
-import qualified Graphics.Vty as V
+import           Brick.AttrMap (AttrName)
+import           Data.Text     (Text)
+import           Data.Word     (Word8)
+import qualified Graphics.Vty  as V
 
 -- | Some type aliases to better distinguish user facing types
 -- and actual types (user-facing type names are easier to type)

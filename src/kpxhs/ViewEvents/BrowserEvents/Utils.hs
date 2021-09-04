@@ -4,7 +4,7 @@
 module ViewEvents.BrowserEvents.Utils
     ( listMoveWith
     , listMovePageUp
-    , listMovePageDown) where
+    , listMovePageDown ) where
 
 import           Brick.Util         (clamp)
 import qualified Brick.Widgets.List as L

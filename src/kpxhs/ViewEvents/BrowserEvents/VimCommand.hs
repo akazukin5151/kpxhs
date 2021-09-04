@@ -1,8 +1,8 @@
 module ViewEvents.BrowserEvents.VimCommand (handleVimDigit, handleVimMotion) where
 
-import Brick         (Direction (Down, Up))
+import Brick.Types   (Direction (Down, Up))
 import Data.Function ((&))
-import Lens.Micro    ((%~), (.~), (^.), (<>~))
+import Lens.Micro    ((%~), (.~), (<>~), (^.))
 import Text.Read     (readMaybe)
 
 import Types                          (State, currentCmd, visibleEntries)
