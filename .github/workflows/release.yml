@@ -28,8 +28,14 @@ jobs:
         mkdir dist
         cp ~/.local/bin/kpxhs dist
         mv dist/kpxhs dist/${{ matrix.asset_name }}
+    - name: Build docs
+      run: |
+        cd docs
+        make
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: dist/${{ matrix.asset_name }}
+        artifacts:
+          - dist/${{ matrix.asset_name }}
+          - docs/kpxhs.1
         token: ${{ secrets.GITHUB_TOKEN }}
         allowUpdates: true
