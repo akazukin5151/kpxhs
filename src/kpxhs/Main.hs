@@ -105,6 +105,8 @@ isCmd cmd string = s == pure (head cmd) || s == cmd
     s = dropWhile (== '-') string
 
 -- | Aborts if either config or theme exists, before writing, to prevent inconsistency
+-- Logs the write because if one failed and the other succeeded for some reason,
+-- the user should be warned that the dir is potentially incomplete/inconsistent
 writeConfig :: IO ()
 writeConfig = do
   home <- getHomeDirectory
@@ -118,7 +120,9 @@ writeConfig = do
      else createDirectory cfgdir
 
   B.writeFile cfgPath $ encodeUtf8 defaultConfigText
+  putStrLn $ "Config written to " <> cfgPath
   B.writeFile themePath $ encodeUtf8 defaultThemeText
+  putStrLn $ "Theme written to " <> themePath
 
 assertFileDoesntExist :: FilePath -> IO ()
 assertFileDoesntExist path = do
