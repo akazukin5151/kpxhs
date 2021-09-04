@@ -5,8 +5,8 @@ import           Data.Text    (Text)
 import           Data.Word    (Word8)
 import qualified Graphics.Vty as V
 
--- | Some type aliases to better distinguish the two
--- (Val is used as the user-facing name because it's easier to type)
+-- | Some type aliases to better distinguish user facing types
+-- and actual types (user-facing type names are easier to type)
 newtype Name = Name [String]
   deriving (Show, Read)
 
@@ -29,10 +29,10 @@ type ActualTheme = [(AttrName, ActualAttrVal)]
 -- An external representation of an attribute
 data Val =
   Val { fg     :: Color
-         , bg     :: Color
-         , styles :: [Style]
-         }
-         deriving (Show, Read)
+      , bg     :: Color
+      , styles :: [Style]
+      }
+      deriving (Show, Read)
 
 -- | An external representation of either an ISO color (code) or an RGB color
 -- Needs to be converted into a Vty Color
@@ -68,6 +68,8 @@ data Style = Standout
            | Strikethrough
            deriving (Show, Read)
 
+-- Isomorphic to Maybe, used for users to make the nested maybe
+-- less confusing
 data Timeout = Seconds Int | DoNotClear
   deriving (Show, Read)
 
