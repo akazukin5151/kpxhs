@@ -3,7 +3,12 @@ name: master
 on:
   push:
     branches: [ master ]
-    paths: src/*
+    paths-ignore:
+      - README.md
+      - test/*
+      - pics/*
+      - LICENSE
+      - Theming.md
 
 jobs:
   build:
