@@ -74,8 +74,12 @@ drawBrowserList st =
      & drawBrowserLabel st
      & drawBorderColor st
 
-listDrawElement :: State -> Int -> Bool -> TT.Text -> Widget n
-listDrawElement st i isCurrent x = num <+> txt (" " <> x)
+drawBrowserListInner :: State -> Widget Field
+drawBrowserListInner st =
+  L.renderListWithIndex (drawLine st) True (st^.visibleEntries)
+
+drawLine :: State -> Int -> Bool -> TT.Text -> Widget n
+drawLine st i isCurrent x = num <+> txt (" " <> x)
   where
     num = markup $ marker @? ("kpxhs" <> "line_number")
     marker = if isCurrent then "> " else diff
@@ -85,10 +89,6 @@ listDrawElement st i isCurrent x = num <+> txt (" " <> x)
       <&> (\d -> (if d >= 10 then "" else " ") <> show d)
       <&> TT.pack
       & fromMaybe " "
-
-drawBrowserListInner :: State -> Widget Field
-drawBrowserListInner st =
-  L.renderListWithIndex (listDrawElement st) True (st^.visibleEntries)
 
 drawBrowserLabel :: State -> Widget Field -> Widget Field
 drawBrowserLabel st = B.borderWithLabel label
