@@ -2,7 +2,7 @@
 
 module UI.BrowserUI (drawBrowser) where
 
-import           Brick                (Padding (Pad), padLeft)
+import           Brick                (Padding (Pad), padLeft, txt)
 import           Brick.AttrMap        (attrMapLookup)
 import qualified Brick.AttrMap        as A
 import qualified Brick.Focus          as F
@@ -77,7 +77,7 @@ drawBrowserListInner st =
   L.renderListWithIndex (drawLine st) True (st^.visibleEntries)
 
 drawLine :: State -> Int -> Bool -> TT.Text -> Widget n
-drawLine st i isCurrent x = num <+> entry
+drawLine st i isCurrent x = num <+> txt " " <+> entry
   where
     num = drawLineNums st i isCurrent
     entry = drawEntry isCurrent x
@@ -85,10 +85,9 @@ drawLine st i isCurrent x = num <+> entry
 drawEntry :: Bool -> TT.Text -> Widget n
 drawEntry isCurrent x = res
   where
-    padded = " " <> x
     name = if isDir x then "directory" else "entry"
     handleCurrent = if isCurrent then name <> "focused" else name
-    res = markup $ padded @? ("kpxhs" <> handleCurrent)
+    res = markup $ x @? ("kpxhs" <> handleCurrent)
 
 -- | Differs from ViewEvents.Utils.isDir; that one takes an entire state and
 -- lookups the current selection; this one has access to the text
