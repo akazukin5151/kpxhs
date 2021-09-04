@@ -149,46 +149,61 @@ The theme file is located in \`~/.config/kpxhs/theme.hs\`. Make sure it is encod
 This is the default theme if you don't provide any:
 
 ```hs
-[ ( Name ["list","selected"],        Val { fg = Red,    bg = Def,    styles = [] } )
-, ( Name ["edit"],                   Val { fg = Black,  bg = White,  styles = [] } )
-, ( Name ["edit","focused"],         Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name ["dialog"],                 Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name ["button"],                 Val { fg = Black,  bg = White,  styles = [] } )
-, ( Name ["button","selected"],      Val { fg = Def,    bg = Yellow, styles = [] } )
-, ( Name ["progressComplete"],       Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name ["kpxhs","key"],            Val { fg = Def,    bg = White,  styles = [] } )
-, ( Name ["kpxhs","label"],          Val { fg = Black,  bg = Def,    styles = [] } )
-, ( Name ["kpxhs","line_number"],    Val { fg = Yellow, bg = Def,    styles = [] } )
-, ( Name ["kpxhs","list_border_f"],  Val { fg = Blue,   bg = Def,    styles = [] } )
-, ( Name ["kpxhs","list_border_nf"], Val { fg = Black,  bg = Def,    styles = [] } )
+[ (["edit"],                          Val { fg = Black,  bg = White,  styles = [] })
+, (["edit","focused"],                Val { fg = White,  bg = Blue,   styles = [] })
+, (["dialog"],                        Val { fg = White,  bg = Blue,   styles = [] })
+, (["button"],                        Val { fg = Black,  bg = White,  styles = [] })
+, (["button","selected"],             Val { fg = Def,    bg = Yellow, styles = [] })
+, (["progressComplete"],              Val { fg = White,  bg = Blue,   styles = [] })
+, (["kpxhs","key"],                   Val { fg = Def,    bg = White,  styles = [] })
+, (["kpxhs","label"],                 Val { fg = Black,  bg = Def,    styles = [] })
+, (["kpxhs","line_number"],           Val { fg = Yellow, bg = Def,    styles = [] })
+, (["kpxhs","list_border"],           Val { fg = Black,  bg = Def,    styles = [] })
+, (["kpxhs","list_border","focused"], Val { fg = Blue,   bg = Def,    styles = [] })
+, (["kpxhs","directory"],             Val { fg = Black,  bg = Def,    styles = [Bold]})
+, (["kpxhs","directory","focused"],   Val { fg = Red,    bg = Def,    styles = [Bold]})
+, (["kpxhs","entry"],                 Val { fg = Black,  bg = Def,    styles = [] } )
+, (["kpxhs","entry","focused"],       Val { fg = Red,    bg = Def,    styles = [] } )
 ]
 ```
 
-**The theme file must be a valid Haskell expression**. It is a list-of-2-tuples; for every tuple, the first item is an attribute name made of a list-of-strings, and the second item is the attribute value. The attribute value is represented as a record with three fields: fg, bg, and styles. The fg and bg fields only accept certain color names. styles is a list-of-styles, and also only accept certain style names.
+**The theme file must be a valid Haskell expression**. It is a list-of-2-tuples; for every tuple, the first item is a list-of-strings representing the attribute name, and the second item is the attribute value. The attribute value is represented as a record with three fields: fg, bg, and styles. The fg and bg fields only accept certain color names. styles is a list-of-styles, and also only accept certain style names.
 
 ### Attribute names
 
-`Name xs`
-: Constructs an attribute name using the list-of-strings xs.
+`["xxx", "yyy"]`
+: Represents an attribute name "xxx.yyy". Must have at least one item.
 
-There are also a few special attribute names exclusive to *kpxhs*. They are appropriately namespaced with \`"kpxhs"\`.
+There are a few special attribute names exclusive to *kpxhs*. They are appropriately namespaced with \`"kpxhs"\`.
 
-`Name ["kpxhs", "key"]`
-: The style of the key being bound (eg, "Esc")
+`["kpxhs", "key"]`
+: The key being bound (eg, "Esc")
 
-`Name ["kpxhs", "label"]`
-: The style of the label bound (eg, "exit")
+`["kpxhs", "label"]`
+: The label bound (eg, "exit")
 
 In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. \`kpxhs.key\` would style the "Esc" text and \`kpxhs.label\` would style the "exit" text
 
-`Name ["kpxhs", "line_number"]`
-: The style of the relative line numbers on the left side of the list
+`["kpxhs", "line_number"]`
+: The relative line numbers on the left side of the list
 
-`Name ["kpxhs", "list_border_f"]`
-: The style of the list/browser border when it is focused. Only foreground color is used.
+`["kpxhs", "list_border"]`
+: The list/browser border when it is not focused (ie, focus is on search bar). Only foreground color is used.
 
-`Name ["kpxhs", "list_border_nf"]`
-: The style of the list/browser border when it is not focused (ie, focus is on search bar). Only foreground color is used.
+`["kpxhs", "list_border", "focused"]`
+: The list/browser border when it is focused (ie, focus is on list). Only foreground color is used.
+
+`["kpxhs", "directory"]`
+: A directory that is not currently selected
+
+`["kpxhs", "directory", "focused"]`
+: A directory that is currently selected
+
+`["kpxhs", "directory"]`
+: An entry that is not currently selected
+
+`["kpxhs", "directory", "focused"]`
+: An entry that is currently selected
 
 Apart from those, you can use any other attribute name of elements used in the program. Here are the Brick docs for the attribute names of the elements used in *kpxhs*:
 
@@ -234,30 +249,30 @@ If you don't want to specify a style, leave the list empty.
 
 0. Set the text of \`kpxhs.key\` to bold
 ```hs
-, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
+, (["kpxhs","key"],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
 ```
 
 1. Set the background color of \`kpxhs.key\` to red
 ```hs
-, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [] } )
+, (["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [] } )
 ```
 
 2. Set the background color of \`kpxhs.key\` to red and make it bold
 
 ```hs
-, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
+, (["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
 ```
 
 3. Set the background color of \`kpxhs.key\` to red and make it bold-italic
 
 ```hs
-, (Name ["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
+, (["kpxhs","key"],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
 ```
 
 4. Set the background color of \`kpxhs.key\` to red, the foreground color to RGB(51, 187, 204) and make it bold-italic
 
 ```hs
-, (Name ["kpxhs","key"],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
+, (["kpxhs","key"],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
 ```
 
 ## CONFIGURATION NOTES
@@ -266,7 +281,7 @@ The only contents of the config and theme files is the single expression; assign
 
 Any records must match their specified number of fields; omission or addition of any fields will result in an invalid config, and the default will be used instead.
 
-Type constructors must be written verbatim with no changes in capitalization. They include: \`Just\`, \`Nothing\`, \`Seconds\`, \`DoNotClear\`, \`Name\`, \`Val\`, all the color names (eg, \`Red\`), and all the style names (eg, \`Bold\`)
+Type constructors must be written verbatim with no changes in capitalization. They include: \`Just\`, \`Nothing\`, \`Seconds\`, \`DoNotClear\`, \`Val\`, all the color names (eg, \`Red\`), and all the style names (eg, \`Bold\`)
 
 
 # ENVIRONMENT

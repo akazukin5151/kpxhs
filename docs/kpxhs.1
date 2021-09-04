@@ -334,44 +334,47 @@ This is the default theme if you don\[cq]t provide any:
 .IP
 .nf
 \f[C]
-[ ( Name [\[dq]list\[dq],\[dq]selected\[dq]],        Val { fg = Red,    bg = Def,    styles = [] } )
-, ( Name [\[dq]edit\[dq]],                   Val { fg = Black,  bg = White,  styles = [] } )
-, ( Name [\[dq]edit\[dq],\[dq]focused\[dq]],         Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name [\[dq]dialog\[dq]],                 Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name [\[dq]button\[dq]],                 Val { fg = Black,  bg = White,  styles = [] } )
-, ( Name [\[dq]button\[dq],\[dq]selected\[dq]],      Val { fg = Def,    bg = Yellow, styles = [] } )
-, ( Name [\[dq]progressComplete\[dq]],       Val { fg = White,  bg = Blue,   styles = [] } )
-, ( Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],            Val { fg = Def,    bg = White,  styles = [] } )
-, ( Name [\[dq]kpxhs\[dq],\[dq]label\[dq]],          Val { fg = Black,  bg = Def,    styles = [] } )
-, ( Name [\[dq]kpxhs\[dq],\[dq]line_number\[dq]],    Val { fg = Yellow, bg = Def,    styles = [] } )
-, ( Name [\[dq]kpxhs\[dq],\[dq]list_border_f\[dq]],  Val { fg = Blue,   bg = Def,    styles = [] } )
-, ( Name [\[dq]kpxhs\[dq],\[dq]list_border_nf\[dq]], Val { fg = Black,  bg = Def,    styles = [] } )
+[ ([\[dq]edit\[dq]],                          Val { fg = Black,  bg = White,  styles = [] })
+, ([\[dq]edit\[dq],\[dq]focused\[dq]],                Val { fg = White,  bg = Blue,   styles = [] })
+, ([\[dq]dialog\[dq]],                        Val { fg = White,  bg = Blue,   styles = [] })
+, ([\[dq]button\[dq]],                        Val { fg = Black,  bg = White,  styles = [] })
+, ([\[dq]button\[dq],\[dq]selected\[dq]],             Val { fg = Def,    bg = Yellow, styles = [] })
+, ([\[dq]progressComplete\[dq]],              Val { fg = White,  bg = Blue,   styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],                   Val { fg = Def,    bg = White,  styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]label\[dq]],                 Val { fg = Black,  bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]line_number\[dq]],           Val { fg = Yellow, bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]list_border\[dq]],           Val { fg = Black,  bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]list_border\[dq],\[dq]focused\[dq]], Val { fg = Blue,   bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]directory\[dq]],             Val { fg = Black,  bg = Def,    styles = [Bold]})
+, ([\[dq]kpxhs\[dq],\[dq]directory\[dq],\[dq]focused\[dq]],   Val { fg = Red,    bg = Def,    styles = [Bold]})
+, ([\[dq]kpxhs\[dq],\[dq]entry\[dq]],                 Val { fg = Black,  bg = Def,    styles = [] } )
+, ([\[dq]kpxhs\[dq],\[dq]entry\[dq],\[dq]focused\[dq]],       Val { fg = Red,    bg = Def,    styles = [] } )
 ]
 \f[R]
 .fi
 .PP
 \f[B]The theme file must be a valid Haskell expression\f[R].
-It is a list-of-2-tuples; for every tuple, the first item is an
-attribute name made of a list-of-strings, and the second item is the
-attribute value.
+It is a list-of-2-tuples; for every tuple, the first item is a
+list-of-strings representing the attribute name, and the second item is
+the attribute value.
 The attribute value is represented as a record with three fields: fg,
 bg, and styles.
 The fg and bg fields only accept certain color names.
 styles is a list-of-styles, and also only accept certain style names.
 .SS Attribute names
 .TP
-\f[B]\f[CB]Name xs\f[B]\f[R]
-Constructs an attribute name using the list-of-strings xs.
+\f[B]\f[CB][\[dq]xxx\[dq], \[dq]yyy\[dq]]\f[B]\f[R]
+Represents an attribute name \[lq]xxx.yyy\[rq].
+Must have at least one item.
 .PP
-There are also a few special attribute names exclusive to
-\f[I]kpxhs\f[R].
+There are a few special attribute names exclusive to \f[I]kpxhs\f[R].
 They are appropriately namespaced with \[ga]\[lq]kpxhs\[rq]\[ga].
 .TP
-\f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]key\[dq]]\f[B]\f[R]
-The style of the key being bound (eg, \[lq]Esc\[rq])
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]key\[dq]]\f[B]\f[R]
+The key being bound (eg, \[lq]Esc\[rq])
 .TP
-\f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]label\[dq]]\f[B]\f[R]
-The style of the label bound (eg, \[lq]exit\[rq])
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]label\[dq]]\f[B]\f[R]
+The label bound (eg, \[lq]exit\[rq])
 .PP
 In other words, the footer shows a nano-like grid of keys and their
 action.
@@ -380,17 +383,29 @@ will exit.
 \[ga]kpxhs.key\[ga] would style the \[lq]Esc\[rq] text and
 \[ga]kpxhs.label\[ga] would style the \[lq]exit\[rq] text
 .TP
-\f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]line_number\[dq]]\f[B]\f[R]
-The style of the relative line numbers on the left side of the list
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]line_number\[dq]]\f[B]\f[R]
+The relative line numbers on the left side of the list
 .TP
-\f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]list_border_f\[dq]]\f[B]\f[R]
-The style of the list/browser border when it is focused.
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]list_border\[dq]]\f[B]\f[R]
+The list/browser border when it is not focused (ie, focus is on search
+bar).
 Only foreground color is used.
 .TP
-\f[B]\f[CB]Name [\[dq]kpxhs\[dq], \[dq]list_border_nf\[dq]]\f[B]\f[R]
-The style of the list/browser border when it is not focused (ie, focus
-is on search bar).
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]list_border\[dq], \[dq]focused\[dq]]\f[B]\f[R]
+The list/browser border when it is focused (ie, focus is on list).
 Only foreground color is used.
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq]]\f[B]\f[R]
+A directory that is not currently selected
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq], \[dq]focused\[dq]]\f[B]\f[R]
+A directory that is currently selected
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq]]\f[B]\f[R]
+An entry that is not currently selected
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq], \[dq]focused\[dq]]\f[B]\f[R]
+An entry that is currently selected
 .PP
 Apart from those, you can use any other attribute name of elements used
 in the program.
@@ -454,7 +469,7 @@ Set the text of \[ga]kpxhs.key\[ga] to bold
 .IP
 .nf
 \f[C]
-, (Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Def,  styles = [Bold] } )
 \f[R]
 .fi
 .IP "1." 3
@@ -462,7 +477,7 @@ Set the background color of \[ga]kpxhs.key\[ga] to red
 .IP
 .nf
 \f[C]
-, (Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Red,  styles = [] } )
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Red,  styles = [] } )
 \f[R]
 .fi
 .IP "2." 3
@@ -470,7 +485,7 @@ Set the background color of \[ga]kpxhs.key\[ga] to red and make it bold
 .IP
 .nf
 \f[C]
-, (Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Red,  styles = [Bold] } )
 \f[R]
 .fi
 .IP "3." 3
@@ -479,7 +494,7 @@ bold-italic
 .IP
 .nf
 \f[C]
-, (Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = Def,   bg = Red,  styles = [Bold, Italic] } )
 \f[R]
 .fi
 .IP "4." 3
@@ -488,7 +503,7 @@ color to RGB(51, 187, 204) and make it bold-italic
 .IP
 .nf
 \f[C]
-, (Name [\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],       Val { fg = RGB 51 187 204,   bg = Red,  styles = [Bold, Italic] } )
 \f[R]
 .fi
 .SS CONFIGURATION NOTES
@@ -510,8 +525,8 @@ will be used instead.
 Type constructors must be written verbatim with no changes in
 capitalization.
 They include: \[ga]Just\[ga], \[ga]Nothing\[ga], \[ga]Seconds\[ga],
-\[ga]DoNotClear\[ga], \[ga]Name\[ga], \[ga]Val\[ga], all the color names
-(eg, \[ga]Red\[ga]), and all the style names (eg, \[ga]Bold\[ga])
+\[ga]DoNotClear\[ga], \[ga]Val\[ga], all the color names (eg,
+\[ga]Red\[ga]), and all the style names (eg, \[ga]Bold\[ga])
 .SH ENVIRONMENT
 .PP
 Requires keepassxc (https://github.com/keepassxreboot/keepassxc/)
