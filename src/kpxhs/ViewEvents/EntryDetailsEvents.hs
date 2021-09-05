@@ -7,11 +7,9 @@ import qualified Brick.Types               as T
 import           Brick.Widgets.Core        (str)
 import qualified Brick.Widgets.ProgressBar as P
 import           Data.Maybe                (fromMaybe)
-import qualified Data.Text                 as TT
 import qualified Graphics.Vty              as V
 import           Lens.Micro                ((&), (.~), (^.))
 
-import Common            (maybeGetEntryData)
 import Types
     ( CopyType (CopyPassword, CopyUsername)
     , Event (ClearClipCount, Copying)
@@ -22,6 +20,7 @@ import Types
     , clearTimeout
     , counterValue
     , footer
+    , selectedEntryName
     )
 import ViewEvents.Common (liftContinue2, updateFooterGuarded)
 import ViewEvents.Copy
@@ -63,10 +62,7 @@ copyEntryFromDetails st ctype = fromMaybe def (maybeCopy st ctype)
     def = pure $ st & footer .~ str "Failed to get entry name or details!"
 
 maybeCopy :: State -> CopyType -> Maybe (IO State)
-maybeCopy st ctype = do
-  entryData <- maybeGetEntryData st
-  -- Assumes that the title is always the first row
-  let splitted = TT.splitOn "Title: " $ head $ TT.lines entryData
-  case splitted of
-    [_, entry] -> Just $ copyEntryCommon st entry ctype
-    _          -> Nothing
+maybeCopy st ctype =
+  case st ^. selectedEntryName of
+    Just entry -> Just $ copyEntryCommon st entry ctype
+    Nothing -> Nothing

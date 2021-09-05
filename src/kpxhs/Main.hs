@@ -102,6 +102,8 @@ tui = do
     M.customMain initialVty buildVty (Just chan) (theApp theMap)
       (initialState ring dbdir kfdir timeout' chan theMap)
 
+-- `head` is safe because the cmd is hardcoded by me,
+-- not passed in by the user
 isCmd :: String -> String -> Bool
 isCmd cmd string = s == pure (head cmd) || s == cmd
   where
