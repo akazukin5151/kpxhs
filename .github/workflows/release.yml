@@ -50,15 +50,11 @@ jobs:
         else
           shasum -a 256 "$name" > "${name}.DIGEST"
         fi
-    - name: Logging
-      run:
-        echo name
-        cat dist/${{ matrix.asset_name }}.DIGEST
     - uses: ncipollo/release-action@v1
       with:
         artifacts:
           dist/${{ matrix.asset_name }},
           dist/${{ matrix.asset_name }}.DIGEST,
-          docs/kpxhs.1
+          docs/out/kpxhs.1
         token: ${{ secrets.GITHUB_TOKEN }}
         allowUpdates: true
