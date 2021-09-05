@@ -13,5 +13,4 @@ copy:
 	# commented out because this is a copy command, not an install command
 
 theme:
-	python3 --version
 	python3 src/section.py
