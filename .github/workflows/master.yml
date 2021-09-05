@@ -30,14 +30,5 @@ jobs:
       continue-on-error: true
       run: |
         curl -sSL https://raw.github.com/ndmitchell/hlint/master/misc/run.sh | sh -s src/kpxhs
-    - name: Install pandoc
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-          sudo apt-get update
-          sudo apt-get install pandoc
-        else
-          brew update
-          brew install pandoc
-        fi
     - name: Build
       run: make build

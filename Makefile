@@ -2,11 +2,11 @@ none:
 	$(error Run either `make build` or `make install`)
 
 build:
-	cd docs && make
+	cd docs && make theme
 	stack build
 
 install:
-	cd docs && make
+	cd docs && make theme
 	stack install
 
 clean:
