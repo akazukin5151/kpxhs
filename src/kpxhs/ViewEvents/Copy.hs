@@ -22,7 +22,7 @@ import Types
     , CopyType (CopyUsername)
     , Event (ClearClipCount, Copying)
     , State
-    , View (BrowserView, SearchView)
+    , View (BrowserView, EntryDetailsView, SearchView)
     , activeView
     , chan
     , clearTimeout
@@ -94,7 +94,7 @@ handleClipCountInner st count timeout' = do
     -- I think Int -> Float is fine because Float is larger than Int
     -- so an int shouldn't be truncated
     v = fromIntegral count / fromIntegral timeout'
-    f = if st^.activeView == BrowserView || st^.activeView == SearchView
+    f = if st^.activeView `elem` [BrowserView, SearchView, EntryDetailsView]
                then footer .~ P.progressBar label v
                else id
 
