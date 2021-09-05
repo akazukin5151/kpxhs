@@ -62,6 +62,8 @@ No superuser permissions are needed (unless if you need to install stack itself)
 4. `make build` (compile)
 5. `make install` (move binary to `~/.local/bin/`)
 
+The binary size can be reduced by enabling dynamic linking: add the`-dynamic` flag to `ghc-options` in [kpxhs.cabal](kpxhs.cabal).
+
 # Manual (Usage, Configuration, Theming)
 
 ```sh
