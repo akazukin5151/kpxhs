@@ -88,14 +88,20 @@ drawLine st i isCurrent x = num <+> txt " " <+> entry
 drawEntry :: Bool -> TT.Text -> Widget n
 drawEntry isCurrent x = res
   where
-    name = if isDir x then "directory" else "entry"
+    name = case x of
+             _ | isDir x        -> "directory"
+             _ | isGoUpParent x -> "go_up"
+             _                  -> "entry"
     handleCurrent = if isCurrent then name <> "focused" else name
     res = markup $ x @? ("kpxhs" <> handleCurrent)
 
--- | Differs from ViewEvents.Utils.isDir; that one takes an entire state and
--- lookups the current selection; this one has access to the text
+-- | Differs from ViewEvents.Utils; they take an entire state and
+-- lookups the current selection; the ones here has access to the text
 isDir :: TT.Text -> Bool
 isDir = (== '/') . TT.last
+
+isGoUpParent :: TT.Text -> Bool
+isGoUpParent = (== "-- (Go up parent) --")
 
 drawLineNums :: State -> Int -> Bool -> Widget n
 drawLineNums st i isCurrent = num
