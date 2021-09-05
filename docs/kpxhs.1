@@ -334,19 +334,20 @@ This is the default theme if you don\[cq]t provide any:
 .IP
 .nf
 \f[C]
-[ ([\[dq]edit\[dq]],                          Val {fg = Black,  bg = White,  styles = []})
-, ([\[dq]edit\[dq],\[dq]focused\[dq]],                Val {fg = White,  bg = Blue,   styles = []})
-, ([\[dq]dialog\[dq]],                        Val {fg = White,  bg = Blue,   styles = []})
-, ([\[dq]button\[dq]],                        Val {fg = Black,  bg = White,  styles = []})
-, ([\[dq]button\[dq],\[dq]selected\[dq]],             Val {fg = Def,    bg = Yellow, styles = []})
-, ([\[dq]progressComplete\[dq]],              Val {fg = White,  bg = Blue,   styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],                   Val {fg = Def,    bg = White,  styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]label\[dq]],                 Val {fg = Black,  bg = Def,    styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]line_number\[dq]],           Val {fg = Yellow, bg = Def,    styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]list_border\[dq]],           Val {fg = Black,  bg = Def,    styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]list_border\[dq],\[dq]focused\[dq]], Val {fg = Blue,   bg = Def,    styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]directory\[dq]],             Val {fg = Black,  bg = Def,    styles = [Bold]})
-, ([\[dq]kpxhs\[dq],\[dq]directory\[dq],\[dq]focused\[dq]],   Val {fg = Red,    bg = Def,    styles = [Bold]})
+[ ([\[dq]edit\[dq]],                          Val { fg = Black,  bg = White,  styles = [] })
+, ([\[dq]edit\[dq],\[dq]focused\[dq]],                Val { fg = White,  bg = Blue,   styles = [] })
+, ([\[dq]dialog\[dq]],                        Val { fg = White,  bg = Blue,   styles = [] })
+, ([\[dq]button\[dq]],                        Val { fg = Black,  bg = White,  styles = [] })
+, ([\[dq]button\[dq],\[dq]selected\[dq]],             Val { fg = Def,    bg = Yellow, styles = [] })
+, ([\[dq]progressComplete\[dq]],              Val { fg = White,  bg = Blue,   styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]key\[dq]],                   Val { fg = Def,    bg = White,  styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]label\[dq]],                 Val { fg = Black,  bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]line_number\[dq]],           Val { fg = Yellow, bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]line_number\[dq],\[dq]focused\[dq]], Val { fg = Red,    bg = Def,    styles = [Bold]})
+, ([\[dq]kpxhs\[dq],\[dq]list_border\[dq]],           Val { fg = Black,  bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]list_border\[dq],\[dq]focused\[dq]], Val { fg = Blue,   bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]directory\[dq]],             Val { fg = Black,  bg = Def,    styles = [Bold]})
+, ([\[dq]kpxhs\[dq],\[dq]directory\[dq],\[dq]focused\[dq]],   Val { fg = Red,    bg = Def,    styles = [Bold]})
 , ([\[dq]kpxhs\[dq],\[dq]go_up\[dq]],                 Val { fg = Green
                                           , bg = Def
                                           , styles = [Bold, Italic]
@@ -355,8 +356,8 @@ This is the default theme if you don\[cq]t provide any:
                                           , bg = Def
                                           , styles = [Bold, Italic]
                                           })
-, ([\[dq]kpxhs\[dq],\[dq]entry\[dq]],                 Val {fg = Black,  bg = Def,    styles = []})
-, ([\[dq]kpxhs\[dq],\[dq]entry\[dq],\[dq]focused\[dq]],       Val {fg = Red,    bg = Def,    styles = []})
+, ([\[dq]kpxhs\[dq],\[dq]entry\[dq]],                 Val { fg = Black,  bg = Def,    styles = [] })
+, ([\[dq]kpxhs\[dq],\[dq]entry\[dq],\[dq]focused\[dq]],       Val { fg = Red,    bg = Def,    styles = [] })
 ]
 \f[R]
 .fi
@@ -392,7 +393,12 @@ will exit.
 \[ga]kpxhs.label\[ga] would style the \[lq]exit\[rq] text
 .TP
 \f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]line_number\[dq]]\f[B]\f[R]
-The relative line numbers on the left side of the list
+The relative line numbers on the left side of the list, for entries that
+are not selected/in focus
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]line_number\[dq], \[dq]focused\[dq]]\f[B]\f[R]
+The relative line numbers on the left side of the list for the currently
+selected entry
 .TP
 \f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]list_border\[dq]]\f[B]\f[R]
 The list/browser border when it is not focused (ie, focus is on search
@@ -409,10 +415,17 @@ A directory that is not currently selected
 \f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq], \[dq]focused\[dq]]\f[B]\f[R]
 A directory that is currently selected
 .TP
-\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq]]\f[B]\f[R]
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]go_up\[dq]]\f[B]\f[R]
+The \[lq]-- (Go up directory) --\[rq] text when it is not
+focused/selected
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]go_up\[dq], \[dq]focused\[dq]]\f[B]\f[R]
+The \[lq]-- (Go up directory) --\[rq] text when it is focused/selected
+.TP
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]entry\[dq]]\f[B]\f[R]
 An entry that is not currently selected
 .TP
-\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]directory\[dq], \[dq]focused\[dq]]\f[B]\f[R]
+\f[B]\f[CB][\[dq]kpxhs\[dq], \[dq]entry\[dq], \[dq]focused\[dq]]\f[B]\f[R]
 An entry that is currently selected
 .PP
 Apart from those, you can use any other attribute name of elements used

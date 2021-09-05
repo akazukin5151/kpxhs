@@ -194,7 +194,10 @@ There are a few special attribute names exclusive to *kpxhs*. They are appropria
 In other words, the footer shows a nano-like grid of keys and their action. For example, "Esc exit" to indicate that pressing the Esc key will exit. \`kpxhs.key\` would style the "Esc" text and \`kpxhs.label\` would style the "exit" text
 
 `["kpxhs", "line_number"]`
-: The relative line numbers on the left side of the list
+: The relative line numbers on the left side of the list, for entries that are not selected/in focus
+
+`["kpxhs", "line_number", "focused"]`
+: The relative line numbers on the left side of the list for the currently selected entry
 
 `["kpxhs", "list_border"]`
 : The list/browser border when it is not focused (ie, focus is on search bar). Only foreground color is used.
@@ -208,10 +211,16 @@ In other words, the footer shows a nano-like grid of keys and their action. For 
 `["kpxhs", "directory", "focused"]`
 : A directory that is currently selected
 
-`["kpxhs", "directory"]`
+`["kpxhs", "go_up"]`
+: The "\-- (Go up directory) \--" text when it is not focused/selected
+
+`["kpxhs", "go_up", "focused"]`
+: The "\-- (Go up directory) \--" text when it is focused/selected
+
+`["kpxhs", "entry"]`
 : An entry that is not currently selected
 
-`["kpxhs", "directory", "focused"]`
+`["kpxhs", "entry", "focused"]`
 : An entry that is currently selected
 
 Apart from those, you can use any other attribute name of elements used in the program. Here are the Brick docs for the attribute names of the elements used in *kpxhs*:
