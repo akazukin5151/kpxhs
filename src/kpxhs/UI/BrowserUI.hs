@@ -124,7 +124,7 @@ drawBrowserLabel st = B.borderWithLabel label
     currentPath_ =
       case pathToStr $ st^.currentPath of
         "" -> "(Root)"
-        x  -> TT.unpack $ TT.init x
+        x  -> TT.unpack x
     cur = maybe "-" (show . (+1)) (st^.visibleEntries.L.listSelectedL)
     total = show $ Vec.length $ st^.visibleEntries.L.listElementsL
 
