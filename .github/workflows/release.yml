@@ -47,6 +47,10 @@ jobs:
         name=${{ matrix.asset_name }}
         cd dist
         sha256sum "$name" > "${name}.DIGEST"
+    - name: Logging
+      run:
+        echo name
+        cat dist/${{ matrix.asset_name }}.DIGEST
     - uses: ncipollo/release-action@v1
       with:
         artifacts:
