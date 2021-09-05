@@ -46,7 +46,11 @@ jobs:
       run: |
         name=${{ matrix.asset_name }}
         cd dist
-        sha256sum "$name" > "${name}.DIGEST"
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sha256sum "$name" > "${name}.DIGEST"
+        else
+          shasum -a 256 "$name" > "${name}.DIGEST"
+        fi
     - name: Logging
       run:
         echo name
