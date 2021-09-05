@@ -19,9 +19,9 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            asset_name: kpxhs-linux-amd64
+            asset_name: kpxhs-linux
           - os: macos-latest
-            asset_name: kpxhs-macos-amd64
+            asset_name: kpxhs-macos
 
     steps:
     - name: Checkout

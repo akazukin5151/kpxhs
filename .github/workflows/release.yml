@@ -14,9 +14,9 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            asset_name: kpxhs-linux-amd64
+            asset_name: kpxhs-linux
           - os: macos-latest
-            asset_name: kpxhs-macos-amd64
+            asset_name: kpxhs-macos
 
     steps:
     - name: Checkout
@@ -41,10 +41,16 @@ jobs:
         mkdir dist
         cp ~/.local/bin/kpxhs dist
         mv dist/kpxhs dist/${{ matrix.asset_name }}
+    - name: Generate digest
+      run: |
+        name=${{ matrix.asset_name }}
+        cd dist
+        sha256sum "$name" > "${name}.DIGEST"
     - uses: ncipollo/release-action@v1
       with:
         artifacts:
           - dist/${{ matrix.asset_name }}
+          - dist/${{ matrix.asset_name }}.DIGEST
           - docs/kpxhs.1
         token: ${{ secrets.GITHUB_TOKEN }}
         allowUpdates: true
