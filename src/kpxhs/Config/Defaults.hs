@@ -40,6 +40,7 @@ defaultTheme =
   , (["kpxhs","key"],                   Val { fg = Def,    bg = White,  styles = [] })
   , (["kpxhs","label"],                 Val { fg = Black,  bg = Def,    styles = [] })
   , (["kpxhs","line_number"],           Val { fg = Yellow, bg = Def,    styles = [] })
+  , (["kpxhs","line_number","focused"], Val { fg = Red,    bg = Def,    styles = [Bold]})
   , (["kpxhs","list_border"],           Val { fg = Black,  bg = Def,    styles = [] })
   , (["kpxhs","list_border","focused"], Val { fg = Blue,   bg = Def,    styles = [] })
   , (["kpxhs","directory"],             Val { fg = Black,  bg = Def,    styles = [Bold]})
@@ -60,19 +61,20 @@ defaultTheme =
 -- Not using `show defaultTheme` because of manual formatting and newlines
 defaultThemeText :: Text
 defaultThemeText =
-  "[ ([\"edit\"],                          Val {fg = Black,  bg = White,  styles = []})\n\
-  \, ([\"edit\",\"focused\"],                Val {fg = White,  bg = Blue,   styles = []})\n\
-  \, ([\"dialog\"],                        Val {fg = White,  bg = Blue,   styles = []})\n\
-  \, ([\"button\"],                        Val {fg = Black,  bg = White,  styles = []})\n\
-  \, ([\"button\",\"selected\"],             Val {fg = Def,    bg = Yellow, styles = []})\n\
-  \, ([\"progressComplete\"],              Val {fg = White,  bg = Blue,   styles = []})\n\
-  \, ([\"kpxhs\",\"key\"],                   Val {fg = Def,    bg = White,  styles = []})\n\
-  \, ([\"kpxhs\",\"label\"],                 Val {fg = Black,  bg = Def,    styles = []})\n\
-  \, ([\"kpxhs\",\"line_number\"],           Val {fg = Yellow, bg = Def,    styles = []})\n\
-  \, ([\"kpxhs\",\"list_border\"],           Val {fg = Black,  bg = Def,    styles = []})\n\
-  \, ([\"kpxhs\",\"list_border\",\"focused\"], Val {fg = Blue,   bg = Def,    styles = []})\n\
-  \, ([\"kpxhs\",\"directory\"],             Val {fg = Black,  bg = Def,    styles = [Bold]})\n\
-  \, ([\"kpxhs\",\"directory\",\"focused\"],   Val {fg = Red,    bg = Def,    styles = [Bold]})\n\
+  "[ ([\"edit\"],                          Val { fg = Black,  bg = White,  styles = [] })\n\
+  \, ([\"edit\",\"focused\"],                Val { fg = White,  bg = Blue,   styles = [] })\n\
+  \, ([\"dialog\"],                        Val { fg = White,  bg = Blue,   styles = [] })\n\
+  \, ([\"button\"],                        Val { fg = Black,  bg = White,  styles = [] })\n\
+  \, ([\"button\",\"selected\"],             Val { fg = Def,    bg = Yellow, styles = [] })\n\
+  \, ([\"progressComplete\"],              Val { fg = White,  bg = Blue,   styles = [] })\n\
+  \, ([\"kpxhs\",\"key\"],                   Val { fg = Def,    bg = White,  styles = [] })\n\
+  \, ([\"kpxhs\",\"label\"],                 Val { fg = Black,  bg = Def,    styles = [] })\n\
+  \, ([\"kpxhs\",\"line_number\"],           Val { fg = Yellow, bg = Def,    styles = [] })\n\
+  \, ([\"kpxhs\",\"line_number\",\"focused\"], Val { fg = Red,    bg = Def,    styles = [Bold]})\n\
+  \, ([\"kpxhs\",\"list_border\"],           Val { fg = Black,  bg = Def,    styles = [] })\n\
+  \, ([\"kpxhs\",\"list_border\",\"focused\"], Val { fg = Blue,   bg = Def,    styles = [] })\n\
+  \, ([\"kpxhs\",\"directory\"],             Val { fg = Black,  bg = Def,    styles = [Bold]})\n\
+  \, ([\"kpxhs\",\"directory\",\"focused\"],   Val { fg = Red,    bg = Def,    styles = [Bold]})\n\
   \, ([\"kpxhs\",\"go_up\"],                 Val { fg = Green\n\
   \                                          , bg = Def\n\
   \                                          , styles = [Bold, Italic]\n\
@@ -81,7 +83,7 @@ defaultThemeText =
   \                                          , bg = Def\n\
   \                                          , styles = [Bold, Italic]\n\
   \                                          })\n\
-  \, ([\"kpxhs\",\"entry\"],                 Val {fg = Black,  bg = Def,    styles = []})\n\
-  \, ([\"kpxhs\",\"entry\",\"focused\"],       Val {fg = Red,    bg = Def,    styles = []})\n\
+  \, ([\"kpxhs\",\"entry\"],                 Val { fg = Black,  bg = Def,    styles = [] })\n\
+  \, ([\"kpxhs\",\"entry\",\"focused\"],       Val { fg = Red,    bg = Def,    styles = [] })\n\
   \]"
 

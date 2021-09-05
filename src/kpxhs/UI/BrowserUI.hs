@@ -107,7 +107,8 @@ isGoUpParent = (== goUpText)
 drawLineNums :: State -> Int -> Bool -> Widget n
 drawLineNums st i isCurrent = num
   where
-    num = markup $ marker @? ("kpxhs" <> "line_number")
+    num = markup $ marker @? ("kpxhs" <> name)
+    name = if isCurrent then "line_number" <> "focused" else "line_number"
     marker = if isCurrent then "> " else diff
     diff =
       st^.visibleEntries . L.listSelectedL
