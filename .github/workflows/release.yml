@@ -50,8 +50,8 @@ jobs:
     - uses: ncipollo/release-action@v1
       with:
         artifacts:
-          - dist/${{ matrix.asset_name }}
-          - dist/${{ matrix.asset_name }}.DIGEST
-          - docs/kpxhs.1
+          dist/${{ matrix.asset_name }},
+          dist/${{ matrix.asset_name }}.DIGEST,
+          docs/kpxhs.1
         token: ${{ secrets.GITHUB_TOKEN }}
         allowUpdates: true
