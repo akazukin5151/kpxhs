@@ -4,8 +4,8 @@ module Constants where
 
 import Data.Text (Text)
 
-version :: Double
-version = 1.7
+version :: Text
+version = "1.7"
 
 goUpText :: Text
 goUpText = "-- (Go up directory) --"

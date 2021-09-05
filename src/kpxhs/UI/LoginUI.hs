@@ -19,6 +19,7 @@ import Types
     , passwordField
     )
 import UI.Common (getEditor)
+import Brick (txt)
 
 
 hidePassword :: [Text] -> Text
@@ -34,7 +35,7 @@ drawDialog st = [ui]
       C.vCenter $
         vBox
           [
-            C.hCenter $ str $ "kpxhs v" <> show version <> " (GPLv3)",
+            C.hCenter $ txt $ "kpxhs v" <> version <> " (GPLv3)",
             C.hCenter $ str " ",
             C.hCenter $ str "File:     " <+> hLimitPercent 75 e1,
             C.hCenter $ str " ",
