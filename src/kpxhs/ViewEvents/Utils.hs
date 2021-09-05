@@ -11,17 +11,19 @@ import qualified Data.Text.Zipper   as Z
 import           Lens.Micro         ((^.))
 import           System.Process     (readProcessWithExitCode)
 
-import Types
+import qualified Brick.Widgets.List as L
+import           Constants          (goUpText)
+import           Data.Maybe         (fromMaybe)
+import           Types
     ( CmdAction (..)
     , CmdOutput
     , Field
     , State
     , dbPathField
     , keyfileField
-    , passwordField, visibleEntries
+    , passwordField
+    , visibleEntries
     )
-import qualified Brick.Widgets.List as L
-import Data.Maybe (fromMaybe)
 
 
 getSelectedEntry :: (Text -> a) -> State -> Maybe a
@@ -56,7 +58,7 @@ isDir st = fromMaybe False (getSelectedEntry f st)
 isGoUpToParent :: State -> Bool
 isGoUpToParent st = fromMaybe False (getSelectedEntry f st)
   where
-    f = (== "-- (Go up parent) --")
+    f = (== goUpText)
 
 isCopyable :: State -> Bool
 isCopyable st = not (isDir st || isGoUpToParent st)

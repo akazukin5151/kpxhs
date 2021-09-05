@@ -17,6 +17,7 @@ import           Data.Text          (Text)
 import           Lens.Micro         ((&), (.~), (?~), (^.))
 
 import Common                        (pathToStr)
+import Constants                     (goUpText)
 import Types
     ( CmdAction (Ls, Show)
     , Event (EnterDir, ShowEntry)
@@ -45,8 +46,9 @@ showEntryFork :: State -> IO State
 showEntryFork st = fromMaybe def (getSelectedEntry f st)
   where
     def = pure $ st & footer .~ str "No entry selected!"
-    f "-- (Go up parent) --" = pure $ goUpParent st
-    f entry                  = fetchEntryInBackground st entry
+    f x = if x == goUpText
+             then pure $ goUpParent st
+             else fetchEntryInBackground st x
 
 fetchEntryInBackground :: State -> Text -> IO State
 fetchEntryInBackground st entry = maybe def pure (showEntryWithCache newst entry)

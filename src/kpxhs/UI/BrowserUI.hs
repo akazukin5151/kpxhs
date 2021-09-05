@@ -27,6 +27,7 @@ import qualified Data.Vector          as Vec
 import           Lens.Micro           ((&), (^.))
 
 import Common    (pathToStr)
+import Constants (goUpText)
 import Types
     ( Field (BrowserField)
     , State
@@ -101,7 +102,7 @@ isDir :: TT.Text -> Bool
 isDir = (== '/') . TT.last
 
 isGoUpParent :: TT.Text -> Bool
-isGoUpParent = (== "-- (Go up parent) --")
+isGoUpParent = (== goUpText)
 
 drawLineNums :: State -> Int -> Bool -> Widget n
 drawLineNums st i isCurrent = num

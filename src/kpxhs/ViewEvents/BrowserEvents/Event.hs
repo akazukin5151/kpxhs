@@ -9,6 +9,7 @@ import Data.Text          (Text)
 import GHC.IO.Exception   (ExitCode (ExitSuccess))
 import Lens.Micro         ((&), (.~))
 
+import Constants                     (goUpText)
 import Types
     ( CmdOutput
     , Event (Copying, EnterDir, ShowEntry)
@@ -27,7 +28,7 @@ handleAppEvent st _                      = pure st
 
 handleEnterDirEvent :: State -> Text -> CmdOutput -> State
 handleEnterDirEvent st entry (ExitSuccess, stdout, _) =
-  enterDirSuccess st ("-- (Go up parent) --" : processStdout stdout) entry
+  enterDirSuccess st (goUpText : processStdout stdout) entry
 handleEnterDirEvent st _ (_, _, stderr) =
   st & footer .~ txt stderr
 

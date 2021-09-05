@@ -2,8 +2,13 @@
 
 module Constants where
 
+import Data.Text (Text)
+
 version :: Double
 version = 1.7
+
+goUpText :: Text
+goUpText = "-- (Go up directory) --"
 
 help :: String
 help = "kpxhs - Interactive Keepass database TUI viewer\n\
