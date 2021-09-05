@@ -32,9 +32,8 @@ defaultConfigText =
   \       }"
 
 
--- The default theme only needs to be changed here;
--- it will be extracted to the docs when it is built.
--- the docs has to be built BEFORE the program can be compiled
+-- This is the single source of truth for the default theme
+-- The docs and defaultThemeText relies on this
 -- EMBED START
 defaultTheme :: UserFacingTheme
 defaultTheme =
@@ -68,6 +67,6 @@ defaultTheme =
 defaultThemeText :: Text
 defaultThemeText =
   -- the docs has to be built BEFORE the program can be compiled
-  -- Must compile (`stack install`) in repo's root dir
+  -- Must compile (`make install`) in repo's root dir
   -- Warning: if decodeUtf8 fails, it fails at runtime (but that's a big if)
   decodeUtf8 $(embedFile "docs/out/default_theme.hs")
