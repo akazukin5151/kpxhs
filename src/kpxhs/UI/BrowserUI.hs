@@ -99,7 +99,7 @@ drawEntry isCurrent x = res
 -- | Differs from ViewEvents.Utils; they take an entire state and
 -- lookups the current selection; the ones here has access to the text
 isDir :: TT.Text -> Bool
-isDir = (== '/') . TT.last
+isDir = maybe False ((== '/') . snd) . TT.unsnoc
 
 isGoUpParent :: TT.Text -> Bool
 isGoUpParent = (== goUpText)

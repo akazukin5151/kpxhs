@@ -53,7 +53,8 @@ getCreds st = (dir, pw, kf)
 isDir :: State -> Bool
 isDir st = fromMaybe False (getSelectedEntry f st)
   where
-    f = (== '/') . TT.last
+    -- snd <$> TT.unsnoc is like a maybeLast function
+    f = maybe False ((== '/') . snd) . TT.unsnoc
 
 isGoUpToParent :: State -> Bool
 isGoUpToParent st = fromMaybe False (getSelectedEntry f st)
