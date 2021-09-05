@@ -1,6 +1,5 @@
 -- | Functions that handles custom AppEvents (that the browser should handle),
 -- such as the completion of a shell command, or the copy countdown
-{-# LANGUAGE OverloadedStrings #-}
 
 module ViewEvents.BrowserEvents.Event (handleAppEvent) where
 
