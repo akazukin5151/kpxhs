@@ -1,11 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Config.Defaults where
 
-import Data.Text (Text)
+import Data.FileEmbed     (embedFile)
+import Data.Text          (Text)
+import Data.Text.Encoding (decodeUtf8)
 
 import Config.Types
-    ( Color (Black, Blue, Def, Red, White, Yellow, Green)
+    ( Color (Black, Blue, Def, Green, Red, White, Yellow)
     , Config (..)
     , Style (Bold, Italic)
     , Timeout (Seconds)
@@ -29,6 +32,10 @@ defaultConfigText =
   \       }"
 
 
+-- The default theme only needs to be changed here;
+-- it will be extracted to the docs when it is built.
+-- the docs has to be built BEFORE the program can be compiled
+-- EMBED START
 defaultTheme :: UserFacingTheme
 defaultTheme =
   [ (["edit"],                          Val { fg = Black,  bg = White,  styles = [] })
@@ -56,34 +63,11 @@ defaultTheme =
   , (["kpxhs","entry"],                 Val { fg = Black,  bg = Def,    styles = [] })
   , (["kpxhs","entry","focused"],       Val { fg = Red,    bg = Def,    styles = [] })
   ]
+-- EMBED END
 
--- Alignments look off here but is actually fine due to the quote escapes
--- Not using `show defaultTheme` because of manual formatting and newlines
 defaultThemeText :: Text
 defaultThemeText =
-  "[ ([\"edit\"],                          Val { fg = Black,  bg = White,  styles = [] })\n\
-  \, ([\"edit\",\"focused\"],                Val { fg = White,  bg = Blue,   styles = [] })\n\
-  \, ([\"dialog\"],                        Val { fg = White,  bg = Blue,   styles = [] })\n\
-  \, ([\"button\"],                        Val { fg = Black,  bg = White,  styles = [] })\n\
-  \, ([\"button\",\"selected\"],             Val { fg = Def,    bg = Yellow, styles = [] })\n\
-  \, ([\"progressComplete\"],              Val { fg = White,  bg = Blue,   styles = [] })\n\
-  \, ([\"kpxhs\",\"key\"],                   Val { fg = Def,    bg = White,  styles = [] })\n\
-  \, ([\"kpxhs\",\"label\"],                 Val { fg = Black,  bg = Def,    styles = [] })\n\
-  \, ([\"kpxhs\",\"line_number\"],           Val { fg = Yellow, bg = Def,    styles = [] })\n\
-  \, ([\"kpxhs\",\"line_number\",\"focused\"], Val { fg = Red,    bg = Def,    styles = [Bold]})\n\
-  \, ([\"kpxhs\",\"list_border\"],           Val { fg = Black,  bg = Def,    styles = [] })\n\
-  \, ([\"kpxhs\",\"list_border\",\"focused\"], Val { fg = Blue,   bg = Def,    styles = [] })\n\
-  \, ([\"kpxhs\",\"directory\"],             Val { fg = Black,  bg = Def,    styles = [Bold]})\n\
-  \, ([\"kpxhs\",\"directory\",\"focused\"],   Val { fg = Red,    bg = Def,    styles = [Bold]})\n\
-  \, ([\"kpxhs\",\"go_up\"],                 Val { fg = Green\n\
-  \                                          , bg = Def\n\
-  \                                          , styles = [Bold, Italic]\n\
-  \                                          })\n\
-  \, ([\"kpxhs\",\"go_up\",\"focused\"],       Val { fg = Blue\n\
-  \                                          , bg = Def\n\
-  \                                          , styles = [Bold, Italic]\n\
-  \                                          })\n\
-  \, ([\"kpxhs\",\"entry\"],                 Val { fg = Black,  bg = Def,    styles = [] })\n\
-  \, ([\"kpxhs\",\"entry\",\"focused\"],       Val { fg = Red,    bg = Def,    styles = [] })\n\
-  \]"
-
+  -- the docs has to be built BEFORE the program can be compiled
+  -- Must compile (`stack install`) in repo's root dir
+  -- Warning: if decodeUtf8 fails, it fails at runtime (but that's a big if)
+  decodeUtf8 $(embedFile "docs/out/default_theme.hs")

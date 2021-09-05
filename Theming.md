@@ -2,7 +2,7 @@
 
 This file is now documentation for other developers, in particular it justifies design decisions, evaluates its pros and cons, and discusses security measures.
 
-Read the user guide in the manual here: https://github.com/twenty5151/kpxhs/blob/master/docs/kpxhs.1.md
+Read the user guide in the manual here: https://github.com/twenty5151/kpxhs/blob/master/docs/out/kpxhs.1.md
 
 ## Reasons for design decisions
 
