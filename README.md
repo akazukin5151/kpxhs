@@ -1,6 +1,6 @@
 # kpxhs
 
-[![commits since](https://img.shields.io/github/commits-since/twenty5151/kpxhs/latest)](https://GitHub.com/twenty5151/kpxhs/commit/)
+[![commits since](https://img.shields.io/github/commits-since/twenty5151/kpxhs/latest)](https://GitHub.com/twenty5151/kpxhs/commit/) [![status](https://img.shields.io/badge/status-active-green)](https://img.shields.io/badge/status-active-green)
 
 [Keepass](https://keepass.info/) database interactive TUI viewer based on `keepassxc-cli`
 
