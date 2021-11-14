@@ -143,7 +143,7 @@ Requires [keepassxc](https://github.com/keepassxreboot/keepassxc/) installed wit
 
 # BUGS
 
-The issue tracker and repo is in: <https://github.com/twenty5151/kpxhs>
+The issue tracker and repo is in: <https://github.com/akazukin5151/kpxhs>
 
 # LICENSE
 

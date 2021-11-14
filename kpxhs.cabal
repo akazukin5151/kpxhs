@@ -2,12 +2,12 @@ name:                kpxhs
 version:             1.7
 synopsis:            Interactive Keepass database TUI viewer
 description:         Supports copying username and password; based on keepassxc-cli
-homepage:            https://github.com/twenty5151/kpxhs
+homepage:            https://github.com/akazukin5151/kpxhs
 license:             GPL-3
 license-file:        LICENSE
-author:              twenty5151
+author:              akazukin5151
 maintainer:          tsuiyikching@protonmail.com
-copyright:           2021 twenty5151
+copyright:           2021 akazukin5151
 category:            Password
 build-type:          Simple
 cabal-version:       >=1.10

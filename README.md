@@ -1,6 +1,6 @@
 # kpxhs
 
-[![commits since](https://img.shields.io/github/commits-since/twenty5151/kpxhs/latest)](https://GitHub.com/twenty5151/kpxhs/commit/) [![status](https://img.shields.io/badge/status-active-green)](https://img.shields.io/badge/status-active-green)
+[![commits since](https://img.shields.io/github/commits-since/akazukin5151/kpxhs/latest)](https://GitHub.com/akazukin5151/kpxhs/commit/) [![status](https://img.shields.io/badge/status-active-green)](https://img.shields.io/badge/status-active-green)
 
 [Keepass](https://keepass.info/) database interactive TUI viewer based on `keepassxc-cli`
 
@@ -50,13 +50,13 @@ You need to install [keepassxc](https://github.com/keepassxreboot/keepassxc/) wi
 
 ## Install using pre-compiled binary
 
-Just go to the [releases](https://github.com/twenty5151/kpxhs/releases/) page and grab the latest binary for your OS. Only UNIX (linux and macos) is supported. Binaries are compiled and uploaded using Github actions
+Just go to the [releases](https://github.com/akazukin5151/kpxhs/releases/) page and grab the latest binary for your OS. Only UNIX (linux and macos) is supported. Binaries are compiled and uploaded using Github actions
 
 ## Build from source using [Stack](https://docs.haskellstack.org/en/stable/README/)
 
 No superuser permissions are needed (unless if you need to install stack itself)
 
-1. `git clone https://github.com/twenty5151/kpxhs`
+1. `git clone https://github.com/akazukin5151/kpxhs`
 2. `cd kpxhs`
 3. Optional: `git checkout` your desired stable version tag (otherwise you will be using the unstable master branch)
 4. `make build` (compile)
@@ -92,9 +92,9 @@ kpxhs - Interactive Keepass database TUI viewer
     e                       Page down
 ```
 
-Read the man page for more details. The rendered markdown is available online at https://github.com/twenty5151/kpxhs/blob/master/docs/out/kpxhs.1.md
+Read the man page for more details. The rendered markdown is available online at https://github.com/akazukin5151/kpxhs/blob/master/docs/out/kpxhs.1.md
 
-Alternatively, it can be installed for offline reading manually. No superuser permissions are required. Copy the pre-built man page in [docs/out/kpxhs.1](https://github.com/twenty5151/kpxhs/raw/master/docs/out/kpxhs.1) to somewhere in your `manpath` (eg, `~/.local/share/man/man1/`). View with `man kpxhs`.
+Alternatively, it can be installed for offline reading manually. No superuser permissions are required. Copy the pre-built man page in [docs/out/kpxhs.1](https://github.com/akazukin5151/kpxhs/raw/master/docs/out/kpxhs.1) to somewhere in your `manpath` (eg, `~/.local/share/man/man1/`). View with `man kpxhs`.
 
 The man page can also be manually built with `cd docs && make` and installed with `make copy`. `pandoc` is required for this manual build. For the `whatis` program to work with `kpxhs`, refresh the mandb with `mandb` after `make copy`
 
