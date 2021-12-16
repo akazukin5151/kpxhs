@@ -18,7 +18,7 @@ import Types
     ( Event (ClearClipCount)
     , Field
     , State
-    , View (BrowserView, EntryDetailsView, ExitDialogView, LoginView, SearchView)
+    , View (BrowserView, EntryDetailsView, ExitDialogView, LoginView, SearchView, LoginFrozenView)
     , activeView
     , countdownThreadId
     , currentPath
@@ -89,6 +89,7 @@ viewDefaultFooter st =
     SearchView       -> [exit, tab " focus list "]
     EntryDetailsView -> [back, username, password]
     LoginView        -> initialFooter $ st ^. focusRing
+    LoginFrozenView  -> initialFooter $ st ^. focusRing
     ExitDialogView   -> [("", "")]
     BrowserView      ->
       let extra = if isCopyable st then [username, password] else [] in

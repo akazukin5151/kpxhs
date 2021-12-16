@@ -19,6 +19,7 @@ import           Lens.Micro.TH        (makeLenses)
 data CmdAction = Ls | Clip | Show
 
 data View = LoginView
+          | LoginFrozenView
           | BrowserView
           | SearchView
           | EntryDetailsView
