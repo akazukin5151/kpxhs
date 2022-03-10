@@ -4,7 +4,6 @@ module UI.BrowserUI (drawBrowser) where
 
 import           Brick.AttrMap        (attrMapLookup)
 import qualified Brick.AttrMap        as A
-import qualified Brick.Focus          as F
 import           Brick.Markup         (markup, (@?))
 import           Brick.Types          (Padding (Pad), Widget)
 import qualified Brick.Widgets.Border as B
@@ -29,17 +28,16 @@ import           Lens.Micro           ((&), (^.))
 import Common    (pathToStr)
 import Constants (goUpText)
 import Types
-    ( Field (BrowserField)
+    ( Field
     , State
     , currentCmd
     , currentPath
-    , focusRing
     , footer
     , searchField
     , theMap
-    , visibleEntries
+    , visibleEntries, View (SearchView, BrowserView), activeView
     )
-import UI.Common (getEditor)
+import qualified Brick.Widgets.Edit as E
 
 
 drawBrowser :: State -> [Widget Field]
@@ -66,7 +64,9 @@ drawCmd st = padLeft (Pad 2) $ str x
 drawSearchBox :: State -> Widget Field
 drawSearchBox st = str "Search: " <+> hLimitPercent 75 ed
   where
-    ed = getEditor st searchField TT.unlines
+    ed =
+      E.renderEditor
+        (txt . TT.unlines) (st ^. activeView == SearchView) (st ^. searchField)
 
 drawBrowserList :: State -> Widget Field
 drawBrowserList st =
@@ -131,8 +131,8 @@ drawBrowserLabel st = B.borderWithLabel label
 drawBorderColor :: State -> Widget Field -> Widget Field
 drawBorderColor st = res
   where
-    name = case F.focusGetCurrent (st ^. focusRing) of
-      Just BrowserField -> "list_border" <> "focused"
-      _                 -> "list_border"
+    name = case st ^. activeView of
+      BrowserView -> "list_border" <> "focused"
+      _           -> "list_border"
     borderColor = attrMapLookup ("kpxhs" <> name) $ st^.theMap
     res = updateAttrMap (A.applyAttrMappings [(B.borderAttr, borderColor)])

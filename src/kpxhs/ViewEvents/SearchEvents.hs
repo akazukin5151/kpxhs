@@ -19,11 +19,10 @@ import Types
     , State
     , allEntryNames
     , currentPath
-    , isClipboardCleared
     , searchField
-    , visibleEntries, footer
+    , visibleEntries, footer, View(BrowserView), activeView
     )
-import ViewEvents.Common (commonTabEvent, prepareExit)
+import ViewEvents.Common (commonTabEvent, updateFooterGuarded)
 
 
 searchEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next State)
@@ -31,17 +30,15 @@ searchEvent =
   commonTabEvent
     ( \st e ->
         case e of
-          T.VtyEvent (V.EvKey V.KEsc [])    -> handleEsc st
-          T.VtyEvent ev                     -> M.continue =<< handleSearch st ev
-          _                                 -> M.continue st
+          T.VtyEvent (V.EvKey V.KEsc []) -> M.continue $ exitSearch st
+          T.VtyEvent ev                  -> M.continue =<< handleSearch st ev
+          _                              -> M.continue st
     )
 
-handleEsc :: State -> T.EventM Field (T.Next State)
-handleEsc st =
-  -- Esc on search will attempt an exit, even if Browser is inside dirs
-  if st^.isClipboardCleared
-    then M.halt st
-    else M.continue $ prepareExit st
+exitSearch :: State -> State
+exitSearch st =
+  st & activeView .~ BrowserView
+     & updateFooterGuarded
 
 handleSearch :: State -> V.Event -> T.EventM Field State
 handleSearch st e = do

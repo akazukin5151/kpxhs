@@ -3,17 +3,15 @@
 
 module ViewEvents.Common where
 
-import qualified Brick.Focus            as F
 import qualified Brick.Main             as M
 import           Brick.Types            (Widget)
 import qualified Brick.Types            as T
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Maybe             (isJust)
-import           Data.Text              (Text)
 import qualified Graphics.Vty           as V
-import           Lens.Micro             ((%~), (&), (.~), (^.))
+import           Lens.Micro             ((&), (.~), (^.))
 
-import Common           (annotate, defaultDialog, exit, initialFooter, tab)
+import Common           (annotate, defaultDialog, initialFooter)
 import Types
     ( Event (ClearClipCount)
     , Field
@@ -49,28 +47,14 @@ commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next S
                -> T.EventM Field (T.Next State)
 commonTabEvent fallback st e =
   case e of
-    T.VtyEvent (V.EvKey (V.KChar '\t') []) -> f focusNextWithView
-    T.VtyEvent (V.EvKey V.KBackTab [])     -> f focusPrevWithView
-    T.AppEvent (ClearClipCount count)      -> liftContinue2 handleClipCount st count
-    _                                      -> fallback st e
-  where
-    f x = M.continue $ _handleTab st x (st ^. activeView)
+    T.VtyEvent (V.EvKey (V.KChar '/') []) -> M.continue $ focusSearch st
+    T.AppEvent (ClearClipCount count)     -> liftContinue2 handleClipCount st count
+    _                                     -> fallback st e
 
-_handleTab :: State -> (State -> View -> State) -> View -> State
-_handleTab st f BrowserView = f st SearchView
-_handleTab st f _           = f st BrowserView
-
-focusWithView :: (F.FocusRing Field -> F.FocusRing Field) -> State -> View -> State
-focusWithView f st view =
-  st & focusRing  %~ f
-     & activeView .~ view
+focusSearch :: State -> State
+focusSearch st =
+  st & activeView .~ SearchView
      & updateFooterGuarded
-
-focusNextWithView :: State -> View -> State
-focusNextWithView = focusWithView F.focusNext
-
-focusPrevWithView :: State -> View -> State
-focusPrevWithView = focusWithView F.focusPrev
 
 -- | Restores the default footer for the current view
 --  Should be only used when transitioning to a new view or field
@@ -86,7 +70,7 @@ updateFooterGuarded st =
 viewDefaultFooter :: State -> Widget Field
 viewDefaultFooter st =
   annotate $ case st^.activeView of
-    SearchView       -> [exit, tab " focus list "]
+    SearchView       -> [esc " focus list "]
     EntryDetailsView -> [back, username, password]
     LoginView        -> initialFooter $ st ^. focusRing
     LoginFrozenView  -> initialFooter $ st ^. focusRing
@@ -97,11 +81,10 @@ viewDefaultFooter st =
         [] -> [exitq, focus_search] <> extra
         _  -> [backq, focus_search] <> extra
   where
+    esc x = ("Esc", x)
     exitq = ("q", " exit  ")
-    back = ("Esc", " back  ")
+    back = esc " back  "
     backq = ("q", " back  ")
     username = ("u", " copy username  ")
     password = ("p", " copy password")
-
-focus_search :: (Text, Text)
-focus_search = ("Tab", " focus search  ")
+    focus_search = ("/", " search  ")

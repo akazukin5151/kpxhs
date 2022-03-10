@@ -2,7 +2,6 @@
 
 module ViewEvents.LoginFrozenEvents (loginFrozenEvent) where
 
-import qualified Brick.Focus        as F
 import qualified Brick.Main         as M
 import qualified Brick.Types        as T
 import           Brick.Widgets.Core (txt)
@@ -14,14 +13,13 @@ import           System.Exit        (ExitCode (ExitSuccess))
 import Common            (toBrowserList)
 import Types
     ( Event (Login)
-    , Field (BrowserField, SearchField)
+    , Field
     , State
-    , View (SearchView)
     , activeView
     , allEntryNames
-    , focusRing
     , footer
     , visibleEntries
+    , View (BrowserView)
     )
 import ViewEvents.Common (updateFooter)
 import ViewEvents.Utils  (processStdout)
@@ -38,8 +36,7 @@ gotoBrowser st _                                = st
 
 gotoBrowserSuccess :: State -> [Text] -> State
 gotoBrowserSuccess st ent =
-  st & activeView     .~ SearchView
+  st & activeView     .~ BrowserView
      & visibleEntries .~ toBrowserList ent
      & allEntryNames  .~ Map.singleton "." ent
-     & focusRing      .~ F.focusRing [SearchField, BrowserField]
      & updateFooter
