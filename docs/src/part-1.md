@@ -32,10 +32,10 @@ Interactive [Keepass](https://keepass.info/) database TUI viewer. The database a
 : Go up a directory, or attempt to quit if in root directory.
 
 `Esc`
-: In entry details view, go back to browser
+: Focus or go back to browser (from entry details or search)
 
 `Tab, Shift-Tab`
-: Cycle focus between elements (eg: list and search bar; login fields; exit dialog)
+: Cycle focus between elements in login fields and exit dialog
 
 `Enter`
 : Show entry details of selected entry. Attempts login if locked
@@ -63,8 +63,9 @@ The following table shows a summary of the keybindings and their effects in each
 |Key  | Browser           | Search       | Entry details| Login      | Exit dialog
 |-----|-------------------|--------------|--------------|------------|------------
 |q    | Go up dir or quit | -            | -            | -          | -
-|Esc  | Clear command     | Quit         | Back         | Quit       | -
-|Tab  | Focus Search      | Focus Browser| -            | Cycle Focus| Cycle Focus
+|Esc  | Clear command     | Focus Browser| Back         | Quit       | -
+|/    | Focus Search      | -            | -            | -          | -
+|Tab  | -                 | -            | -            | Cycle Focus| Cycle Focus
 |Enter| Show details      | -            | -            | Unlock     | -
 |j    | Move down         | -            | -            | -          | -
 |k    | Move up           | -            | -            | -          | -
@@ -78,12 +79,13 @@ The following table shows a summary of the keybindings and their effects in each
 
 1. \`kpxhs\`
 2. \`YOUR_PASSWORD<Enter>\` (Assuming database path stored in config and no keyfile)
-3. (Focus is on search bar by default) \`git\` (List filtered to items with "git" in title)
-4. \`Tab\` (Focus to list)
-5. \`j\` (Focus one entry below)
-6. \`p\` (Copy password)
-7. \`Esc\` (quit)
-8. (Focus is on clear clipboard and exit by default) \`Enter\` (clear clipboard and exit)
+3. \`/\` (Focus search bar)
+4. \`git\` (Filter list to items with "git" in title)
+5. \`Esc\` (Focus to list)
+6. \`j\` (Focus one entry below)
+7. \`p\` (Copy password)
+8. \`Esc\` (quit)
+9. (Focus is on clear clipboard and exit by default) \`Enter\` (clear clipboard and exit)
 
 # CONFIGURATION
 

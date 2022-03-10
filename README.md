@@ -79,6 +79,7 @@ kpxhs - Interactive Keepass database TUI viewer
     Esc                     Quit, back (elsewhere)
     q                       Quit, back (in browser)
     Tab                     Cycle focus
+    /                       Search (filter) items
     Enter                   Show entry details
     u                       Copy username
     p                       Copy password
