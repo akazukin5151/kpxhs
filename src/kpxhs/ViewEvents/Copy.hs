@@ -67,7 +67,7 @@ handleCopyInner st timeout' = do
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
-  clearClipboard >> pure (st & footer             .~ txt "Clipboard cleared"
+  clearClipboard *> pure (st & footer             .~ txt "Clipboard cleared"
                              & isClipboardCleared .~ True
                              & countdownThreadId  .~ Nothing
                              & counterValue       .~ Nothing)

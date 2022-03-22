@@ -48,7 +48,7 @@ cancelExit st = st & activeView .~ (st^.previousView)
 handleEnter :: State -> T.EventM Field (T.Next State)
 handleEnter st =
   case D.dialogSelection (st^.exitDialog) of
-    Just Clear  -> liftIO clearClipboard >> M.halt st
+    Just Clear  -> liftIO clearClipboard *> M.halt st
     Just Cancel -> M.continue $ cancelExit st
     Just Exit   -> M.halt st
     _           -> M.continue st

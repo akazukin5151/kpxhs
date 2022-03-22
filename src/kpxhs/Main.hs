@@ -85,7 +85,7 @@ main = do
     [x] | isCmd "version" x      -> print version
     [x] | isCmd "help" x         -> putStrLn help
     [x] | isCmd "write-config" x -> writeConfig
-    _                            -> putStrLn help >> exitFailure
+    _                            -> putStrLn help *> exitFailure
 
 tui :: IO ()
 tui = do
@@ -121,7 +121,7 @@ writeConfig = do
   let cfgPath = cfgdir </> "config.hs"
   let themePath = cfgdir </> "theme.hs"
   if dirExists
-     then assertFileDoesntExist cfgPath >> assertFileDoesntExist themePath
+     then assertFileDoesntExist cfgPath *> assertFileDoesntExist themePath
      else createDirectory cfgdir
 
   B.writeFile cfgPath $ encodeUtf8 defaultConfigText
@@ -133,4 +133,4 @@ assertFileDoesntExist :: FilePath -> IO ()
 assertFileDoesntExist path = do
   exists <- doesFileExist path
   when exists $
-    putStrLn (takeFileName path <> " already exists, aborting") >> exitFailure
+    putStrLn (takeFileName path <> " already exists, aborting") *> exitFailure
