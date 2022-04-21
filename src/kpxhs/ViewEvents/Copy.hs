@@ -43,7 +43,7 @@ copyEntryCommon st entry ctype = do
   let (dir, pw, kf) = getCreds st
   let attr = _copyTypeToStr ctype
   void $ forkIO $ do
-    (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr] pw kf
+    (code, _, stderr) <- runCmd Clip dir [entry, "-a", attr, "0"] pw kf
     writeBChan (st^.chan) $ Copying (code, stderr)
   pure $ st & footer .~ txt "Copying..."
 
