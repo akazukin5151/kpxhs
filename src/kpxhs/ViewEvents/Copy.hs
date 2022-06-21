@@ -32,6 +32,7 @@ import Types
     , isClipboardCleared
     )
 import ViewEvents.Utils (getCreds, runCmd)
+import Data.Functor (($>))
 
 
 _copyTypeToStr :: CopyType -> Text
@@ -67,10 +68,11 @@ handleCopyInner st timeout' = do
 
 handleClipCount :: State -> Int -> IO State
 handleClipCount st 0     =
-  clearClipboard *> pure (st & footer             .~ txt "Clipboard cleared"
-                             & isClipboardCleared .~ True
-                             & countdownThreadId  .~ Nothing
-                             & counterValue       .~ Nothing)
+  clearClipboard $>
+    (st & footer             .~ txt "Clipboard cleared"
+        & isClipboardCleared .~ True
+        & countdownThreadId  .~ Nothing
+        & counterValue       .~ Nothing)
 handleClipCount st count =
   case st ^. clearTimeout of
     Nothing       -> pure st
