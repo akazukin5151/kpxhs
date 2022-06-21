@@ -97,7 +97,9 @@ data State = State
     -- cleared
     _currentCmd         :: String,
     -- | The app's attribute map
-    _theMap             :: AttrMap
+    _theMap             :: AttrMap,
+    -- | The first field to focus when first logging in
+    _fieldToFocus       :: Field
   }
 
 makeLenses ''State

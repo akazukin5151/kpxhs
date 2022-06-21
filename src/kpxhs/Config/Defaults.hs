@@ -22,6 +22,7 @@ defaultConfig :: Config
 defaultConfig = Config { timeout = Just (Seconds 10)
                        , dbPath = Nothing
                        , keyfilePath = Nothing
+                       , focusSearchOnStart = Just False
                        }
 
 defaultConfigText :: Text
@@ -29,6 +30,7 @@ defaultConfigText =
   "Config { timeout = Just (Seconds 10)\n\
   \       , dbPath = Nothing\n\
   \       , keyfilePath = Nothing\n\
+  \       , focusSearchOnStart = Just False\n\
   \       }"
 
 

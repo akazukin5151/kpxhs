@@ -29,17 +29,13 @@ import Config.Defaults (defaultConfigText, defaultThemeText)
 import Constants       (help, version)
 import Events          (appEvent)
 import Types
-    ( Event
-    , Field (KeyfileField, PasswordField, PathField, SearchField)
-    , State (..)
-    , View (LoginView)
-    )
 import UI              (drawUI)
 
 
 initialState :: F.FocusRing Field
-             -> Text -> Text -> Maybe Int -> BChan Event -> A.AttrMap -> State
-initialState ring dbdir kfdir timeout' chan theMap =
+             -> Text -> Text -> Maybe Int -> BChan Event -> A.AttrMap
+             -> Field -> State
+initialState ring dbdir kfdir timeout' chan theMap field_to_focus =
   State
     { _visibleEntries     = toBrowserList [],
       _allEntryNames      = Map.empty,
@@ -61,7 +57,8 @@ initialState ring dbdir kfdir timeout' chan theMap =
       _countdownThreadId  = Nothing,
       _counterValue       = Nothing,
       _currentCmd         = "",
-      _theMap             = theMap
+      _theMap             = theMap,
+      _fieldToFocus       = field_to_focus
     }
 
 mkMap :: [(A.AttrName, V.Attr)] -> A.AttrMap
@@ -91,7 +88,7 @@ tui :: IO ()
 tui = do
   home <- getHomeDirectory
   let cfgdir = home </> ".config/kpxhs/"
-  (timeout', dbdir, kfdir, ring, theme) <- parseConfig cfgdir
+  (timeout', dbdir, kfdir, ring, theme, field) <- parseConfig cfgdir
   let theMap = mkMap theme
 
   chan <- newBChan 10
@@ -100,7 +97,7 @@ tui = do
 
   void $
     M.customMain initialVty buildVty (Just chan) (theApp theMap)
-      (initialState ring dbdir kfdir timeout' chan theMap)
+      (initialState ring dbdir kfdir timeout' chan theMap field)
 
 -- `head` is safe because the cmd is hardcoded by me,
 -- not passed in by the user

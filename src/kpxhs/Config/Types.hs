@@ -73,4 +73,5 @@ data Timeout = Seconds Int | DoNotClear
 data Config = Config { timeout     :: Maybe Timeout
                      , dbPath      :: Maybe Text
                      , keyfilePath :: Maybe Text
+                     , focusSearchOnStart :: Maybe Bool
                      } deriving (Show, Read)

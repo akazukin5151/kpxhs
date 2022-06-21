@@ -7,19 +7,19 @@ import qualified Brick.Types        as T
 import           Brick.Widgets.Core (txt)
 import qualified Data.Map.Strict    as Map
 import           Data.Text          (Text)
-import           Lens.Micro         ((&), (.~))
+import           Lens.Micro         ((&), (.~), (^.))
 import           System.Exit        (ExitCode (ExitSuccess))
 
 import Common            (toBrowserList)
 import Types
     ( Event (Login)
-    , Field
+    , Field (SearchField)
     , State
     , activeView
     , allEntryNames
     , footer
     , visibleEntries
-    , View (BrowserView)
+    , View (BrowserView, SearchView), fieldToFocus
     )
 import ViewEvents.Common (updateFooter)
 import ViewEvents.Utils  (processStdout)
@@ -36,7 +36,10 @@ gotoBrowser st _                                = st
 
 gotoBrowserSuccess :: State -> [Text] -> State
 gotoBrowserSuccess st ent =
-  st & activeView     .~ BrowserView
+  st & activeView     .~ view
      & visibleEntries .~ toBrowserList ent
      & allEntryNames  .~ Map.singleton "." ent
      & updateFooter
+  where
+    field = st ^. fieldToFocus
+    view = if field == SearchField then SearchView else BrowserView

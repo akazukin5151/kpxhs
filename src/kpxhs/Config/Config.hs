@@ -17,16 +17,16 @@ import Config.Defaults (defaultConfig, defaultTheme)
 import Config.Eval     (eval, evalName)
 import Config.Types
     ( ActualTheme
-    , Config (dbPath, keyfilePath, timeout)
+    , Config (dbPath, keyfilePath, timeout, focusSearchOnStart)
     , Timeout (DoNotClear, Seconds)
     )
-import Types           (Field (KeyfileField, PasswordField, PathField))
+import Types           (Field (KeyfileField, PasswordField, PathField, SearchField, BrowserField))
 
 
 fallback :: IOException -> IO B.ByteString
 fallback _ = pure ""
 
-parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, ActualTheme)
+parseConfig :: String -> IO (Maybe Int, Text, Text, F.FocusRing Field, ActualTheme, Field)
 parseConfig cfgdir = do
   file <- catch (B.readFile $ cfgdir </> "config.hs") fallback
   attrMap <- parseTheme $ cfgdir </> "theme.hs"
@@ -38,7 +38,9 @@ parseConfig cfgdir = do
   let kf_path  = fromMaybe "" (keyfilePath config)
   let ring     = if db_path == "" then pathfirst else passwordfirst
   let timeout' = timeoutToMaybe $ fromMaybe (Seconds 10) (timeout config)
-  pure (timeout', db_path, kf_path, ring, attrMap)
+  let should_focus = fromMaybe False (focusSearchOnStart config)
+  let field_to_focus = if should_focus then SearchField else BrowserField
+  pure (timeout', db_path, kf_path, ring, attrMap, field_to_focus)
   where
     pathfirst = F.focusRing [PathField, PasswordField, KeyfileField]
     passwordfirst = F.focusRing [PasswordField, KeyfileField, PathField]
