@@ -1,5 +1,5 @@
 name:                kpxhs
-version:             1.9
+version:             1.10
 synopsis:            Interactive Keepass database TUI viewer
 description:         Supports copying username and password; based on keepassxc-cli
 homepage:            https://github.com/akazukin5151/kpxhs

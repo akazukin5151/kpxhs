@@ -1,4 +1,4 @@
-% kpxhs(1) Version 1.9 | kpxhs manual
+% kpxhs(1) Version 1.10 | kpxhs manual
 
 # NAME
 
@@ -103,10 +103,11 @@ The config file is located in \`~/.config/kpxhs/config.hs\`. Make sure it is enc
 Config { timeout = Just (Seconds 10)
        , dbPath = Just "/home/me/kpxhs/test/kpxhs_test.kdbx"
        , keyfilePath = Just "/home/me/kpxhs/test/keyfile.key"
+       , focusSearchOnStart = Just False
        }
 ```
 
-**It must be a valid Haskell expression** of a record with three fields: timeout, dbPath, and keyfilePath. All three are Maybe types - they are optional and you can always omit specifying them by writing \`Nothing\`. Do not delete a field however, as it will result in an invalid config.
+**It must be a valid Haskell expression** of a record with four fields: timeout, dbPath, keyfilePath, and focusSearchOnStart. All three are Maybe types - they are optional and you can always omit specifying them by writing \`Nothing\`. Do not delete a field however, as it will result in an invalid config.
 
 The paths can be any UTF-8 string; no validation is performed on them.
 
@@ -142,6 +143,19 @@ After copying a username or password, *kpxhs* can automatically clear the clipbo
 
 `Nothing`
 : Fall back to the default, which is the empty string ""
+
+### focusSearchOnStart
+
+Whether to focus the search bar after initial login, so `/` key doesn't have to be pressed to focus it. There are two valid values:
+
+`Just True`
+: Focus the search bar after initial login
+
+`Just False`
+: Focus the browser list after initial login
+
+`Nothing`
+: Fall back to the default, which is to focus the browser list after initial login
 
 
 ## THEMING
