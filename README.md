@@ -44,7 +44,7 @@
 
 
 # Usage requirements
-You need to install [keepassxc](https://github.com/keepassxreboot/keepassxc/) with `keepassxc-cli` and have it available in PATH. The few most recent versions should work, but if there are incompatibilities in future versions it will be noted here.
+You need to install [keepassxc](https://github.com/keepassxreboot/keepassxc/) with `keepassxc-cli` and have it available in PATH. Versions 2.6.4 to 2.7.2 is known to work, but previous versions should still work if they're not too old.
 
 # Installing
 
