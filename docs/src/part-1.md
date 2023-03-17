@@ -1,4 +1,4 @@
-% kpxhs(1) Version 1.10 | kpxhs manual
+% kpxhs(1) Version 1.11 | kpxhs manual
 
 # NAME
 
