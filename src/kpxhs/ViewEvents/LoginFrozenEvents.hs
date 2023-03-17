@@ -19,7 +19,7 @@ import Types
     , allEntryNames
     , footer
     , visibleEntries
-    , View (BrowserView, SearchView), fieldToFocus
+    , View (BrowserView, SearchView, LoginView), fieldToFocus
     )
 import ViewEvents.Common (updateFooter)
 import ViewEvents.Utils  (processStdout)
@@ -31,7 +31,7 @@ loginFrozenEvent st _              = M.continue st
 gotoBrowser :: State -> Event -> State
 gotoBrowser st (Login (ExitSuccess, stdout, _)) = gotoBrowserSuccess st
                                                     $ processStdout stdout
-gotoBrowser st (Login (_, _, stderr))           = st & footer .~ txt stderr
+gotoBrowser st (Login (_, _, stderr))           = loginFail st stderr
 gotoBrowser st _                                = st
 
 gotoBrowserSuccess :: State -> [Text] -> State
@@ -43,3 +43,8 @@ gotoBrowserSuccess st ent =
   where
     field = st ^. fieldToFocus
     view = if field == SearchField then SearchView else BrowserView
+
+loginFail :: State -> Text -> State
+loginFail st stderr =
+  st & footer .~ txt stderr
+     & activeView .~ LoginView
