@@ -33,6 +33,7 @@ import Types
     )
 import ViewEvents.Utils (getCreds, runCmd)
 import Data.Functor (($>))
+import Data.Foldable (forM_)
 
 
 _copyTypeToStr :: CopyType -> Text
@@ -57,10 +58,9 @@ handleCopy st (ExitSuccess, _)        =
 
 handleCopyInner :: State -> Int -> IO State
 handleCopyInner st timeout' = do
-  -- If there already exists a countdown thread, kill it first to prevent interference
-  case st ^. countdownThreadId of
-    Just x  -> killThread x
-    Nothing -> pure ()
+  -- If there already exists a countdown thread, kill it first to
+  -- prevent interference
+  forM_ (st ^. countdownThreadId) killThread
   -- Save the tid in case if it needs to be cancelled later
   tid <- forkIO $ writeBChan (st^.chan) $ ClearClipCount timeout'
   pure $ st & isClipboardCleared .~ False
