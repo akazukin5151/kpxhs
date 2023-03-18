@@ -1,5 +1,4 @@
 -- | Utils to navigate around the list
-{-# LANGUAGE OverloadedStrings #-}
 
 module ViewEvents.BrowserEvents.Utils
     ( listMoveWith
