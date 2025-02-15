@@ -31,9 +31,6 @@ import ViewEvents.Utils (isCopyable)
 liftContinue :: IO b -> T.EventM n (T.Next b)
 liftContinue g = liftIO g >>= M.continue
 
-liftContinue2 :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
-liftContinue2 g st x = liftIO (g st x) >>= M.continue
-
 prepareExit :: State -> State
 prepareExit st =
   st & previousView .~ (st^.activeView)
@@ -47,7 +44,7 @@ commonTabEvent :: (State -> T.BrickEvent Field Event -> T.EventM Field (T.Next S
 commonTabEvent fallback st e =
   case e of
     T.VtyEvent (V.EvKey (V.KChar '/') []) -> M.continue $ focusSearch st
-    T.AppEvent (ClearClipCount count)     -> liftContinue2 handleClipCount st count
+    T.AppEvent (ClearClipCount count)     -> liftContinue $ handleClipCount st count
     _                                     -> fallback st e
 
 focusSearch :: State -> State

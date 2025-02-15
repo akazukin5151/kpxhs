@@ -30,7 +30,7 @@ import ViewEvents.BrowserEvents.Utils      (listMovePageDown, listMovePageUp)
 import ViewEvents.BrowserEvents.VimCommand (handleVimDigit, handleVimMotion)
 import ViewEvents.Common
     ( commonTabEvent
-    , liftContinue2
+    , liftContinue
     , prepareExit
     , updateFooterGuarded
     )
@@ -48,7 +48,7 @@ browserEvent =
           T.VtyEvent (V.EvKey (V.KChar 'p') []) | isCopyable st -> copyPassword st
           T.VtyEvent (V.EvKey (V.KChar 'u') []) | isCopyable st -> copyUsername st
           T.VtyEvent ev                         -> M.continue $ handleNav ev st
-          T.AppEvent ev                         -> liftContinue2 handleAppEvent st ev
+          T.AppEvent ev                         -> liftContinue $ handleAppEvent st ev
           _                                     -> M.continue st
     )
 
@@ -66,10 +66,10 @@ handleQuit st =
     _           -> M.continue $ goUpParent st
 
 copyPassword :: State -> T.EventM Field (T.Next State)
-copyPassword st = liftContinue2 copyEntryFromBrowser st CopyPassword
+copyPassword st = liftContinue $ copyEntryFromBrowser st CopyPassword
 
 copyUsername :: State -> T.EventM Field (T.Next State)
-copyUsername st = liftContinue2 copyEntryFromBrowser st CopyUsername
+copyUsername st = liftContinue $ copyEntryFromBrowser st CopyUsername
 
 copyEntryFromBrowser :: State -> CopyType -> IO State
 copyEntryFromBrowser st ctype =

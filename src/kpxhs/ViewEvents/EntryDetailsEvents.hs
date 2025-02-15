@@ -22,7 +22,7 @@ import Types
     , footer
     , selectedEntryName
     )
-import ViewEvents.Common (liftContinue2, updateFooterGuarded)
+import ViewEvents.Common (liftContinue, updateFooterGuarded)
 import ViewEvents.Copy
     ( copyEntryCommon
     , handleClipCount
@@ -34,12 +34,12 @@ entryDetailsEvent :: State -> T.BrickEvent Field Event -> T.EventM Field (T.Next
 entryDetailsEvent st (T.VtyEvent e) =
   case e of
     V.EvKey V.KEsc []        -> M.continue $ returnToBrowser st
-    V.EvKey (V.KChar 'p') [] -> liftContinue2 copyEntryFromDetails st CopyPassword
-    V.EvKey (V.KChar 'u') [] -> liftContinue2 copyEntryFromDetails st CopyUsername
+    V.EvKey (V.KChar 'p') [] -> liftContinue $ copyEntryFromDetails st CopyPassword
+    V.EvKey (V.KChar 'u') [] -> liftContinue $ copyEntryFromDetails st CopyUsername
     _                        -> M.continue st
 entryDetailsEvent st (T.AppEvent (ClearClipCount count)) =
-  liftContinue2 handleClipCount st count
-entryDetailsEvent st (T.AppEvent (Copying ev)) = liftContinue2 handleCopy st ev
+  liftContinue $ handleClipCount st count
+entryDetailsEvent st (T.AppEvent (Copying ev)) = liftContinue $ handleCopy st ev
 entryDetailsEvent st _ = M.continue st
 
 returnToBrowser :: State -> State
