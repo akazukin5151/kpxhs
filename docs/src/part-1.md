@@ -129,10 +129,10 @@ After copying a username or password, *kpxhs* can automatically clear the clipbo
 *kpxhs* can auto-fill the database path with a given string. There are two valid values:
 
 `Just "xxx"`
-: Fill in the database path with the string "xxx", without quotes.
+: Fill in the database path with the string "xxx", without quotes. If non-empty, the default focus when starting the app is on the password field.
 
 `Nothing`
-: Fall back to the default, which is the empty string ""
+: Fall back to the default, which is the empty string "". The default focus when starting the app is on the database path field.
 
 ### keyfilePath
 
