@@ -30,7 +30,7 @@ import Types
     , keyfileField
     , passwordField
     )
-import ViewEvents.Common (liftContinue1, updateFooter)
+import ViewEvents.Common (liftContinue, updateFooter)
 import ViewEvents.Utils  (getCreds, runCmd)
 
 
@@ -45,7 +45,7 @@ passwordEvent st (T.VtyEvent e) =
     V.EvKey V.KEsc []              -> M.halt st
     V.EvKey (V.KChar '\t') []      -> focus F.focusNext st
     V.EvKey V.KBackTab []          -> focus F.focusPrev st
-    V.EvKey V.KEnter [] | valid st -> liftContinue1 loginInBackground st
+    V.EvKey V.KEnter [] | valid st -> liftContinue $ loginInBackground st
     _                              -> M.continue =<< handleFieldInput st e
 passwordEvent st _ = M.continue st
 

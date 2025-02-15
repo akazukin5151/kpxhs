@@ -28,9 +28,8 @@ import Types
 import ViewEvents.Copy  (handleClipCount)
 import ViewEvents.Utils (isCopyable)
 
-
-liftContinue1 :: (a -> IO b) -> a -> T.EventM n (T.Next b)
-liftContinue1 g st = liftIO (g st) >>= M.continue
+liftContinue :: IO b -> T.EventM n (T.Next b)
+liftContinue g = liftIO g >>= M.continue
 
 liftContinue2 :: (a -> b -> IO c) -> a -> b -> T.EventM n (T.Next c)
 liftContinue2 g st x = liftIO (g st x) >>= M.continue

@@ -34,11 +34,11 @@ import ViewEvents.BrowserEvents.Core
     , goUpParent
     , showEntryWithCache
     )
-import ViewEvents.Common             (liftContinue1)
+import ViewEvents.Common             (liftContinue)
 import ViewEvents.Utils              (getCreds, getSelectedEntry, isDir, runCmd)
 
 handleEnter :: State -> T.EventM Field (T.Next State)
-handleEnter st = liftContinue1 f st
+handleEnter st = liftContinue $ f st
   where
     f = if isDir st then enterDirFork else showEntryFork
 
