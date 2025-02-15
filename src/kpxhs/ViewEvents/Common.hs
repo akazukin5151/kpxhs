@@ -76,7 +76,7 @@ viewDefaultFooter st =
     LoginFrozenView  -> initialFooter $ st ^. focusRing
     ExitDialogView   -> [("", "")]
     BrowserView      ->
-      let extra = if isCopyable st then [username, password] else [] in
+      let extra = if isCopyable st then [view_details, username, password] else [open_folder] in
       case st^.currentPath of
         [] -> [exitq, focus_search] <> extra
         _  -> [backq, focus_search] <> extra
@@ -88,3 +88,5 @@ viewDefaultFooter st =
     username = ("u", " copy username  ")
     password = ("p", " copy password")
     focus_search = ("/", " search  ")
+    view_details = ("Enter", " details  ")
+    open_folder = ("Enter", " open folder  ")
