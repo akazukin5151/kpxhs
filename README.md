@@ -89,8 +89,6 @@ kpxhs - Interactive Keepass database TUI viewer
     [n]k, [n]w              Move up n items   (default: 1)
     g                       Move to top
     G                       Move to bottom
-    q                       Page up
-    e                       Page down
 ```
 
 Read the man page for more details. The rendered markdown is available online at https://github.com/akazukin5151/kpxhs/blob/master/docs/out/kpxhs.1.md
